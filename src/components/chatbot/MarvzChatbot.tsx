@@ -49,7 +49,7 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
           >
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-semibold text-white">MARVZ AI Online</span>
-            <span className="text-slate-400">| How can we assist you?</span>
+            <span className="text-slate-400">| How can I help you today?</span>
             <Sparkles className="w-3.5 h-3.5 text-red-400 group-hover:rotate-12 transition-transform" />
           </div>
         )}

@@ -1,0 +1,535 @@
+{
+  "settings": {
+    "chatbotName": "MARVZ AI Assistant",
+    "welcomeMessage": "Hello! Welcome to MARVZ & INNOVATION TECH. How can I assist you today?",
+    "welcomeMessageBn": "হ্যালো! MARVZ & INNOVATION TECH-এ আপনাকে স্বাগতম। আজ আপনাকে কীভাবে সাহায্য করতে পারি?",
+    "brandPrimaryColor": "#DC2626",
+    "brandAccentColor": "#EF4444",
+    "brandTheme": "Dark Obsidian",
+    "enableBangla": true,
+    "enableEnglish": true,
+    "defaultLanguage": "Auto",
+    "aiModel": "gemini-3.8-flash",
+    "temperature": 0.65,
+    "enableLeadFormPrompt": true,
+    "enableHumanEscalation": true,
+    "enableQuickReplies": true,
+    "enableVoiceInput": true,
+    "contactEmail": "contact@marvztech.com",
+    "contactPhone": "+880 1800-MARVZ-TECH",
+    "contactWhatsApp": "+880 1711-000000",
+    "officeLocation": "Innovation Hub, Level 4, Tech Park"
+  },
+  "faqs": [
+    {
+      "id": "faq-1",
+      "category": "AI",
+      "question": "What AI and Machine Learning solutions does MARVZ develop?",
+      "questionBn": "আপনারা কি কি এআই ও মেশিন লার্নিং সেবা প্রদান করেন?",
+      "answer": "MARVZ engineers bespoke Generative AI agents, Large Language Model (LLM) fine-tuning, automated workflow pipelines, Computer Vision for defect & facial recognition, and predictive data science analytics.",
+      "answerBn": "আমরা কাস্টম জেনারেটিভ এআই সিস্টেম, এলএলএম ইন্টিগ্রেশন, কম্পিউটার ভিশন, অটোমেটেড ওয়ার্কফ্লো এবং প্রেডিক্টিভ ডেটা অ্যানালিটিক্স সলিউশন ডেভেলপ করি।",
+      "tags": [
+        "ai",
+        "machine learning",
+        "llm",
+        "computer vision",
+        "data science"
+      ],
+      "hitCount": 42,
+      "isPublished": true,
+      "updatedAt": "2026-11-10T10:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-2",
+      "category": "Drones",
+      "question": "Do you offer custom UAV drone design and pilot training?",
+      "questionBn": "আপনারা কি কাস্টম ড্রোন তৈরি ও পাইলট ট্রেনিং করান?",
+      "answer": "Yes! We develop autonomous UAV solutions for aerial mapping, infrastructure inspection, and precision agriculture. We also host practical flight workshops with ArduPilot/PX4 avionics in our dedicated indoor test cage.",
+      "answerBn": "হ্যাঁ! আমরা অ্যারিয়াল ম্যাপিং ও এগ্রিকালচারাল ড্রোনের পাশাপাশি হ্যান্ডস-অন ড্রোন অ্যাসেম্বলি এবং ফ্লাইট ট্রেনিং পরিচালনা করি।",
+      "tags": [
+        "drone",
+        "uav",
+        "flight",
+        "aerial mapping",
+        "fpv"
+      ],
+      "hitCount": 38,
+      "isPublished": true,
+      "updatedAt": "2026-11-09T10:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-3",
+      "category": "Robotics",
+      "question": "What industrial automation and robotics solutions are available?",
+      "questionBn": "আপনাদের রোবোটিক্স ও ইন্ডাস্ট্রিয়াল অটোমেশন সেবা কেমন?",
+      "answer": "We build 6-axis robotic arms for pick-and-place, assembly, ROS 2-based autonomous ground vehicles, and IoT sensor telemetry networks with real-time industrial dashboards.",
+      "answerBn": "আমরা ইন্ডাস্ট্রিয়াল ৬-অ্যাক্সিস রোবোটিক আর্ম, ROS ২ বেসড অটোনমাস সিস্টেম এবং আইওটি অটোমেশন তৈরি করি।",
+      "tags": [
+        "robotics",
+        "automation",
+        "ros",
+        "iot",
+        "hardware",
+        "embedded"
+      ],
+      "hitCount": 29,
+      "isPublished": true,
+      "updatedAt": "2026-11-08T10:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-4",
+      "category": "Software",
+      "question": "What tech stack do you use for web and mobile development?",
+      "questionBn": "সফটওয়্যার ও মোবাইল অ্যাপ ডেভেলপমেন্টে কি টেকনোলজি ব্যবহার করেন?",
+      "answer": "We craft scalable applications using React, Next.js, Node.js, Python FastAPI, PostgreSQL, AWS/GCP cloud architectures, and cross-platform mobile apps with Flutter & React Native.",
+      "answerBn": "আমরা React, Next.js, Node.js, Python, PostgreSQL এবং Flutter/React Native দিয়ে হাই-পারফরম্যান্স ওয়েব ও মোবাইল অ্যাপ্লিকেশন ডেভেলপ করি।",
+      "tags": [
+        "software",
+        "web development",
+        "mobile apps",
+        "react",
+        "flutter",
+        "cloud"
+      ],
+      "hitCount": 51,
+      "isPublished": true,
+      "updatedAt": "2026-11-10T22:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-5",
+      "category": "Cybersecurity",
+      "question": "Do you perform security audits and ethical hacking?",
+      "questionBn": "আপনারা কি সিকিউরিটি অডিট ও এথিক্যাল হ্যাকিং ট্রেনিং দেন?",
+      "answer": "Yes. Our offensive and defensive security teams conduct Vulnerability Assessment and Penetration Testing (VAPT), cloud security posture reviews, and train corporate engineers in red-team defensive tactics.",
+      "answerBn": "হ্যাঁ, আমরা এন্টারপ্রাইজ VAPT সিকিউরিটি অডিট করি এবং প্র্যাকটিক্যাল এথিক্যাল হ্যাকিং ও সাইবার ডিফেন্স ট্রেনিং প্রদান করি।",
+      "tags": [
+        "cybersecurity",
+        "vapt",
+        "ethical hacking",
+        "infosec",
+        "pentesting"
+      ],
+      "hitCount": 24,
+      "isPublished": true,
+      "updatedAt": "2026-11-08T02:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-6",
+      "category": "Training",
+      "question": "Are your IT training programs hands-on with physical hardware?",
+      "questionBn": "আপনাদের আইটি ট্রেনিং কি প্র্যাকটিক্যাল ও হার্ডওয়্যার ভিত্তিক?",
+      "answer": "Every training track features physical prototyping kits (microcontrollers, flight controllers, sensor arrays), real cloud sandboxes, and capstone projects evaluated by industry leads.",
+      "answerBn": "অবশ্যই! আমাদের প্রতিটি কোর্সে রিয়েল হার্ডওয়্যার কিটস, ল্যাব প্র্যাকটিস এবং ইন্ডাস্ট্রি প্রজেক্ট অন্তর্ভুক্ত থাকে।",
+      "tags": [
+        "training",
+        "courses",
+        "bootcamp",
+        "admission",
+        "hardware lab"
+      ],
+      "hitCount": 65,
+      "isPublished": true,
+      "updatedAt": "2026-11-11T04:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-7",
+      "category": "Internships",
+      "question": "Who is eligible for MARVZ internships and research fellowships?",
+      "questionBn": "কারা MARVZ ইন্টার্নশিপ ও রিসার্চ ফেলোশিপে আবেদন করতে পারবেন?",
+      "answer": "Students and fresh graduates in Computer Science, Electrical/Robotics Engineering, or related technical fields with strong passion for innovation. We offer 3-month and 6-month cohorts with mentorship and certificates.",
+      "answerBn": "সিএসই, ইইই বা রোবোটিক্স ব্যাকগ্রাউন্ডের শিক্ষার্থী ও ফ্রেশ গ্র্যাজুয়েটরা ৩ থেকে ৬ মাসের এই ফেলোশিপে আবেদন করতে পারেন।",
+      "tags": [
+        "internship",
+        "careers",
+        "jobs",
+        "research fellowship",
+        "students"
+      ],
+      "hitCount": 47,
+      "isPublished": true,
+      "updatedAt": "2026-11-10T04:29:29.840Z",
+      "source": "Manual"
+    },
+    {
+      "id": "faq-8",
+      "category": "Contact",
+      "question": "How do I visit your Innovation Hub or schedule a consultation?",
+      "questionBn": "আপনাদের ইনোভেশন হাব কীভাবে ভিজিট করব বা মিটিং বুক করব?",
+      "answer": "Our Innovation Hub is located at Level 4, Tech Park. You can book an appointment via our chatbot lead form, call +880 1800-MARVZ-TECH, or message our WhatsApp advisor line at +880 1711-000000.",
+      "answerBn": "আমাদের অফিস টেক পার্কের লেভেল ৪-এ অবস্থিত। চ্যাটবটে ফর্ম পূরণ করে বা সরাসরি হোয়াটসঅ্যাপে (+880 1711-000000) যোগাযোগ করে মিটিং বুক করতে পারেন।",
+      "tags": [
+        "contact",
+        "office",
+        "location",
+        "phone",
+        "whatsapp",
+        "address"
+      ],
+      "hitCount": 33,
+      "isPublished": true,
+      "updatedAt": "2026-11-10T19:29:29.840Z",
+      "source": "Manual"
+    }
+  ],
+  "unansweredQuestions": [
+    {
+      "id": "una-1794401412545",
+      "question": "আপনারা কি ড্রোন ট্রেনিং দেন?",
+      "visitorLanguage": "Bangla",
+      "askedAt": "2026-11-11T12:50:12.545Z",
+      "conversationId": "conv-1794401404042",
+      "status": "Pending Review"
+    },
+    {
+      "id": "una-1794401397876",
+      "question": "What services do you provide?",
+      "visitorLanguage": "English",
+      "askedAt": "2026-11-11T12:49:57.876Z",
+      "conversationId": "conv-1794401389349",
+      "status": "Pending Review"
+    },
+    {
+      "id": "una-1",
+      "question": "Do you offer installment payment facilities for the 6-month Robotics Engineering Bootcamp?",
+      "visitorLanguage": "English",
+      "askedAt": "2026-11-11T05:29:29.840Z",
+      "conversationId": "conv-202",
+      "status": "Pending Review",
+      "suggestedAnswer": "Yes, we provide 2 to 3 flexible installment milestones for enrolled bootcamp students upon registration verification."
+    },
+    {
+      "id": "una-2",
+      "question": "আপনারা কি ড্রোনের ড্রাফটিং ও কমার্শিয়াল লাইসেন্সিং বিএফসিএ/সিভিল এভিয়েশন অনুমোদনে সাহায্য করেন?",
+      "visitorLanguage": "Bangla",
+      "askedAt": "2026-11-11T01:29:29.840Z",
+      "conversationId": "conv-203",
+      "status": "Pending Review",
+      "suggestedAnswer": "হ্যাঁ, আমাদের ড্রোন কোর্সে সিভিল এভিয়েশন অথরিটি অনুমোদিত রেগুলেশন গাইডলাইন এবং পাইলট কমপ্লায়েন্স সার্টিফিকেশন প্রস্তুতি অন্তর্ভুক্ত রয়েছে।"
+    },
+    {
+      "id": "una-3",
+      "question": "Can your enterprise software team integrate directly with an on-premises Oracle ERP database?",
+      "visitorLanguage": "English",
+      "askedAt": "2026-11-10T18:29:29.840Z",
+      "conversationId": "conv-204",
+      "status": "Pending Review",
+      "suggestedAnswer": "Absolutely. We build custom ETL pipelines and authenticated microservices bridging legacy Oracle ERPs to modern cloud portals."
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-1",
+      "name": "MARVZ_AI_Course_Curriculum_2026.pdf",
+      "fileType": "pdf",
+      "fileSize": "1.8 MB",
+      "uploadedAt": "2026-11-09T22:29:29.840Z",
+      "category": "Training",
+      "status": "Indexed",
+      "extractedText": "MARVZ AI & Deep Learning Masterclass: 16 weeks duration. Covers PyTorch, Transformer architectures, Fine-tuning Llama and Gemini models, Vector DBs (Chroma/Pinecone), RAG engineering, and Autonomous Agents. Includes capstone deployment to Google Cloud Run.",
+      "chunkCount": 8
+    },
+    {
+      "id": "doc-2",
+      "name": "Industrial_Robotics_Lab_SpecSheet.docx",
+      "fileType": "docx",
+      "fileSize": "840 KB",
+      "uploadedAt": "2026-11-08T22:29:29.840Z",
+      "category": "Robotics",
+      "status": "Indexed",
+      "extractedText": "Robotics Prototyping Facility Specifications: Equipped with four 6-axis industrial robotic arms, high-precision stepper controllers, digital oscilloscopes, CNC PCB milling station, and stereo vision cameras. Available for client pilot validation and research internships.",
+      "chunkCount": 5
+    },
+    {
+      "id": "doc-3",
+      "name": "Corporate_Consulting_RateCard_Policy.txt",
+      "fileType": "txt",
+      "fileSize": "120 KB",
+      "uploadedAt": "2026-11-07T16:29:29.840Z",
+      "category": "Services",
+      "status": "Indexed",
+      "extractedText": "Enterprise Consultation Framework: Preliminary discovery call is complimentary. Full technical architecture blueprint and proof-of-concept (PoC) sprint typically delivers within 14 business days. NDA signed prior to code sharing.",
+      "chunkCount": 3
+    }
+  ],
+  "leads": [
+    {
+      "id": "lead-101",
+      "name": "Rahim Chowdhury",
+      "email": "rahim.chowdhury@techventures.io",
+      "phone": "+880 1712-345678",
+      "category": "Services",
+      "requirements": "Need enterprise AI automation pipeline for inventory prediction and customer support integration.",
+      "timestamp": "2026-11-11T06:29:29.840Z",
+      "status": "Interested",
+      "source": "Chatbot",
+      "adminNotes": "Spoke on phone. Very keen on computer vision module for warehouse. Scheduled tech scoping demo for Thursday.",
+      "estimatedValue": "$8,500"
+    },
+    {
+      "id": "lead-102",
+      "name": "Sarah Jenkins",
+      "email": "s.jenkins@aeroglobal.co.uk",
+      "phone": "+44 20 7946 0912",
+      "category": "Training",
+      "requirements": "Interested in sending a batch of 8 aerospace engineering graduates to the UAV Drone Flight & Telemetry bootcamp.",
+      "timestamp": "2026-11-10T16:29:29.840Z",
+      "status": "Contacted",
+      "source": "Chatbot",
+      "adminNotes": "Sent corporate brochure and syllabus. Waiting for department procurement review.",
+      "estimatedValue": "$12,000"
+    },
+    {
+      "id": "lead-103",
+      "name": "Tanvir Hasan",
+      "email": "tanvir.cse.buet@gmail.com",
+      "phone": "+880 1819-987654",
+      "category": "Internships",
+      "requirements": "Undergraduate student applying for Spring Robotics & Embedded Systems Research Fellowship.",
+      "timestamp": "2026-11-10T06:29:29.840Z",
+      "status": "New",
+      "source": "Chatbot",
+      "adminNotes": "Strong GitHub portfolio in ROS 2. Assigned to Lab Lead for interview screening."
+    },
+    {
+      "id": "lead-104",
+      "name": "Mahbubur Rahman",
+      "email": "mahbub@apexindustries.bd",
+      "phone": "+880 1911-223344",
+      "category": "Consulting",
+      "requirements": "Industrial automation consultation for 6-axis robotic arms in textile manufacturing plant.",
+      "timestamp": "2026-11-09T10:29:29.840Z",
+      "status": "Converted",
+      "source": "Direct Form",
+      "adminNotes": "Contract signed! Phase 1 sensor calibration starts next week.",
+      "estimatedValue": "$24,000"
+    },
+    {
+      "id": "lead-105",
+      "name": "Dr. Katherine Bell",
+      "email": "katherine.bell@singapore-research.edu",
+      "phone": "+65 6790 4123",
+      "category": "Partnerships",
+      "requirements": "Academic research collaboration in autonomous agricultural drones and multi-spectral sensors.",
+      "timestamp": "2026-11-08T18:29:29.840Z",
+      "status": "Contacted",
+      "source": "Chatbot",
+      "adminNotes": "Joint whitepaper proposal under review. Follow-up meeting scheduled via Zoom."
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv-1794401433549",
+      "visitorId": "vis-1794401433549",
+      "visitorName": "Visitor",
+      "visitorLanguage": "Banglish",
+      "status": "Bot Handling",
+      "lastActivity": "2026-11-11T12:50:33.549Z",
+      "createdAt": "2026-11-11T12:50:33.549Z",
+      "messages": [
+        {
+          "id": "m-1794401433549",
+          "sender": "visitor",
+          "text": "apnader shathe kivabe contact korbo?",
+          "timestamp": "12:50 PM",
+          "language": "Banglish",
+          "flagHuman": false
+        },
+        {
+          "id": "m-1794401442051",
+          "sender": "bot",
+          "text": "Our Innovation Hub is located at Level 4, Tech Park. You can book an appointment via our chatbot lead form, call +880 1800-MARVZ-TECH, or message our WhatsApp advisor line at +880 1711-000000.",
+          "timestamp": "12:50 PM",
+          "language": "Banglish"
+        }
+      ],
+      "unreadAdminCount": 1
+    },
+    {
+      "id": "conv-1794401404042",
+      "visitorId": "vis-1794401404042",
+      "visitorName": "Visitor",
+      "visitorLanguage": "Bangla",
+      "status": "Bot Handling",
+      "lastActivity": "2026-11-11T12:50:04.042Z",
+      "createdAt": "2026-11-11T12:50:04.042Z",
+      "messages": [
+        {
+          "id": "m-1794401404043",
+          "sender": "visitor",
+          "text": "আপনারা কি ড্রোন ট্রেনিং দেন?",
+          "timestamp": "12:50 PM",
+          "language": "Bangla",
+          "flagHuman": false
+        },
+        {
+          "id": "m-1794401412546",
+          "sender": "bot",
+          "text": "ধন্যবাদ আপনার বার্তার জন্য! MARVZ & INNOVATION TECH-এ আমরা এআই, ড্রোন ইঞ্জিনিয়ারিং, রোবোটিক্স, কাস্টম সফটওয়্যার ও প্রফেশনাল ট্রেনিং নিয়ে কাজ করছি। আপনার নির্দিষ্ট প্রশ্নের বিস্তারিত তথ্যের জন্য আমাদের ইঞ্জিনিয়ারের সাথে সরাসরি কথা বলতে পারেন।",
+          "timestamp": "12:50 PM",
+          "language": "Bangla"
+        }
+      ],
+      "unreadAdminCount": 1
+    },
+    {
+      "id": "conv-1794401389349",
+      "visitorId": "vis-1794401389349",
+      "visitorName": "Visitor",
+      "visitorLanguage": "English",
+      "status": "Bot Handling",
+      "lastActivity": "2026-11-11T12:49:49.349Z",
+      "createdAt": "2026-11-11T12:49:49.349Z",
+      "messages": [
+        {
+          "id": "m-1794401389350",
+          "sender": "visitor",
+          "text": "What services do you provide?",
+          "timestamp": "12:49 PM",
+          "language": "English",
+          "flagHuman": false
+        },
+        {
+          "id": "m-1794401397877",
+          "sender": "bot",
+          "text": "Thank you for reaching out to **MARVZ & INNOVATION TECH**! 🚀\n\nWe specialize in **AI & Machine Learning**, **Drone Engineering**, **Industrial Robotics**, **Enterprise Software**, and **Professional Hardware Bootcamps**.\n\nWould you like more details on any of these areas, or would you like to speak directly with an engineer?",
+          "timestamp": "12:49 PM",
+          "language": "English"
+        }
+      ],
+      "unreadAdminCount": 1
+    },
+    {
+      "id": "conv-1794393292386",
+      "visitorId": "vis-1794400765769",
+      "visitorName": "Visitor",
+      "visitorLanguage": "English",
+      "status": "Bot Handling",
+      "lastActivity": "2026-11-11T12:39:25.769Z",
+      "createdAt": "2026-11-11T12:39:25.769Z",
+      "messages": [
+        {
+          "id": "m-1794400765769",
+          "sender": "visitor",
+          "text": "Tell me about the core technology services offered by MARVZ & INNOVATION TECH.",
+          "timestamp": "12:39 PM",
+          "language": "English",
+          "flagHuman": false
+        },
+        {
+          "id": "m-1794401031799",
+          "sender": "bot",
+          "text": "At **MARVZ & INNOVATION TECH**, we deliver cutting-edge engineering and enterprise solutions across five primary technological domains:\n\n---\n\n### 1. **Artificial Intelligence & Machine Learning**\n* **Generative AI & LLMs:** Custom AI agents, LLM fine-tuning, retrieval-augmented generation (RAG), and automated intelligent workflows.\n* **Computer Vision:** High-accuracy models for defect detection, facial recognition, and object tracking.\n* **Predictive Analytics:** Tailored data science models to forecast trends and optimize business operations.\n\n### 2. **Robotics & Industrial Automation**\n* **Robotic Arms:** Development and programming of 6-axis industrial robotic arms for assembly, pick-and-place, and sorting.\n* **Autonomous Ground Vehicles (AGVs):** ROS 2-based autonomous navigation systems.\n* **IoT & Telemetry:** Sensor-driven telemetry networks paired with real-time operational monitoring dashboards.\n\n### 3. **Autonomous UAV & Drone Technology**\n* **Custom UAV Systems:** Autonomous drones engineered for precision agriculture, aerial mapping, and infrastructure inspection.\n* **Flight Avionics & Testing:** Integration with ArduPilot and PX4 avionics, supported by our dedicated indoor test cage.\n\n### 4. **Enterprise Software & Cloud Engineering**\n* **Modern Web Stacks:** Scalable enterprise platforms built with **React, Next.js, Node.js, and Python (FastAPI)**.\n* **Mobile Development:** Cross-platform iOS and Android applications via **Flutter** and **React Native**.\n* **Cloud & Database Architecture:** High-availability deployment on **AWS/GCP** with robust PostgreSQL databases.\n\n### 5. **Cybersecurity & VAPT**\n* **Security Audits:** Comprehensive Vulnerability Assessment and Penetration Testing (VAPT).\n* **Cloud",
+          "timestamp": "12:43 PM",
+          "language": "English"
+        }
+      ],
+      "unreadAdminCount": 1
+    },
+    {
+      "id": "conv-101",
+      "visitorId": "vis-901",
+      "visitorName": "Rahim Chowdhury",
+      "visitorEmail": "rahim.chowdhury@techventures.io",
+      "visitorPhone": "+880 1712-345678",
+      "visitorLanguage": "English",
+      "status": "Human Joined",
+      "lastActivity": "2026-11-11T08:29:29.840Z",
+      "createdAt": "2026-11-11T06:29:29.840Z",
+      "unreadAdminCount": 0,
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "visitor",
+          "text": "Hello, we are an logistics company looking to integrate automated inventory tracking.",
+          "timestamp": "10:14 AM",
+          "language": "English"
+        },
+        {
+          "id": "m2",
+          "sender": "bot",
+          "text": "Welcome to MARVZ! We specialize in Computer Vision for defect & package tracking, as well as AI predictive inventory pipelines. Would you like to review our case studies?",
+          "timestamp": "10:14 AM"
+        },
+        {
+          "id": "m3",
+          "sender": "visitor",
+          "text": "Yes, and could I speak with someone about integrating with custom warehouse cameras?",
+          "timestamp": "10:16 AM",
+          "flagHuman": true
+        },
+        {
+          "id": "m4",
+          "sender": "agent",
+          "agentName": "Engr. Zamil (Lead AI Architect)",
+          "text": "Hi Rahim! I have joined the conversation. We can definitely configure custom RTSP streams from your warehouse IP cameras directly into our edge inference models.",
+          "timestamp": "10:18 AM"
+        }
+      ]
+    },
+    {
+      "id": "conv-102",
+      "visitorId": "vis-902",
+      "visitorName": "Sarah Jenkins",
+      "visitorEmail": "s.jenkins@aeroglobal.co.uk",
+      "visitorLanguage": "English",
+      "status": "Needs Human Support",
+      "lastActivity": "2026-11-10T16:29:29.840Z",
+      "createdAt": "2026-11-10T15:29:29.840Z",
+      "unreadAdminCount": 1,
+      "messages": [
+        {
+          "id": "m201",
+          "sender": "visitor",
+          "text": "Can we book an exclusive corporate batch for 8 trainees in Drone Avionics & Telemetry?",
+          "timestamp": "08:45 AM"
+        },
+        {
+          "id": "m202",
+          "sender": "bot",
+          "text": "Yes! We conduct tailored corporate cohorts with customized flight telemetry rigs in our indoor flight cage. I will notify our training director for custom invoicing.",
+          "timestamp": "08:45 AM"
+        },
+        {
+          "id": "m203",
+          "sender": "visitor",
+          "text": "Please connect me with an administrator to discuss UK billing and schedule dates.",
+          "timestamp": "08:47 AM",
+          "flagHuman": true
+        }
+      ]
+    },
+    {
+      "id": "conv-103",
+      "visitorId": "vis-903",
+      "visitorName": "Farhan Kabir",
+      "visitorLanguage": "Bangla",
+      "status": "Bot Handling",
+      "lastActivity": "2026-11-11T09:29:29.840Z",
+      "createdAt": "2026-11-11T08:59:29.840Z",
+      "unreadAdminCount": 0,
+      "messages": [
+        {
+          "id": "m301",
+          "sender": "visitor",
+          "text": "আপনারা কি রোবোটিক্স ল্যাবে প্রজেক্ট করার সুযোগ দেন?",
+          "timestamp": "11:20 AM",
+          "language": "Bangla"
+        },
+        {
+          "id": "m302",
+          "sender": "bot",
+          "text": "হ্যাঁ! আমাদের ইনোভেশন ল্যাবে ফিজিক্যাল রোবোটিক আর্মস, ROS 2 ওয়ার্কস্টেশন এবং থ্রিডি প্রিন্টিং প্রোটোটাইপিং সুবিধা রয়েছে। শিক্ষার্থীরা গবেষণা ও প্রজেক্টের জন্য ল্যাব অ্যাক্সেস পেয়ে থাকেন।",
+          "timestamp": "11:20 AM",
+          "language": "Bangla"
+        }
+      ]
+    }
+  ],
+  "visitorCount": 1431
+}

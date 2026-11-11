@@ -127,7 +127,7 @@ interface ControlCenterSettings {
 // Default Seed Data
 const DEFAULT_SETTINGS: ControlCenterSettings = {
   chatbotName: 'MARVZ AI Assistant',
-  welcomeMessage: 'Hello! Welcome to MARVZ & INNOVATION TECH. How can I assist you today?',
+  welcomeMessage: 'Hello! Welcome to MARVZ & INNOVATION TECH. How can I help you today?',
   welcomeMessageBn: 'হ্যালো! MARVZ & INNOVATION TECH-এ আপনাকে স্বাগতম। আজ আপনাকে কীভাবে সাহায্য করতে পারি?',
   brandPrimaryColor: '#DC2626',
   brandAccentColor: '#EF4444',
@@ -600,14 +600,20 @@ ${docSnippets}
 ${store.settings.systemInstructionOverride ? `ADMIN SPECIAL INSTRUCTIONS:\n${store.settings.systemInstructionOverride}\n` : ''}
 
 BEHAVIOR AND TONE GUIDELINES:
-1. Multilingual Support:
-   - English enabled: ${store.settings.enableEnglish ? 'YES' : 'NO'}
-   - Bangla enabled: ${store.settings.enableBangla ? 'YES' : 'NO'}
-   - Default Mode: ${store.settings.defaultLanguage}
-   - Fluently understand and respond in English, Bangla (বাংলা), and Banglish (Bengali written in English letters).
-2. Professional, futuristic, crisp, and welcoming tone.
-3. Use clean markdown and bullet points. Never make false promises or hallucinate prices outside the knowledge base.
-4. When users ask for customized enterprise quotations, suggest using the consultation booking form or contacting human support.
+1. Personality: Professional, friendly, intelligent, helpful, modern, and customer-centric.
+2. Source of Truth: Use only the approved company knowledge base and documents as your absolute source of truth.
+3. Strict Accuracy: NEVER invent or hallucinate course fees, batch schedules, certificates, job opportunities, or unstated company policies. If any information is not covered or unavailable, politely tell the visitor: "For specific details regarding this, please contact our team directly at ${store.settings.contactPhone} or on WhatsApp at ${store.settings.contactWhatsApp}."
+4. Multilingual & Banglish:
+   - Understand and respond fluently in Bengali (বাংলা), English, and Banglish (Bengali written with Latin alphabets).
+   - Automatically detect and adapt to the visitor's preferred language.
+   - Robustly handle spelling mistakes and informal colloquial phrasing without confusion.
+5. Conversation Context & Follow-ups:
+   - Remember the visitor's previous statements within the session.
+   - Answer follow-up questions coherently without repeating introductory pleasantries.
+   - Never give irrelevant, repetitive, or generic canned responses.
+6. Lead Conversion & Human Assistance:
+   - Guide prospective learners and corporate clients toward booking a consultation, applying for internships, or contacting human advisors.
+   - When requested or when complex custom requirements arise, present the direct WhatsApp desk (+880 1711-000000) or phone connection.
 `;
 }
 
@@ -718,7 +724,7 @@ app.post('/api/chat', async (req, res) => {
         contents.push({ role: 'user', parts: [{ text: trimmed }] });
 
         const dynamicPrompt = buildDynamicSystemInstruction();
-        const response = await aiClient.models.generateContent({
+        const geminiPromise = aiClient.models.generateContent({
           model: store.settings.aiModel || 'gemini-3.8-flash',
           contents,
           config: {
@@ -729,9 +735,14 @@ app.post('/api/chat', async (req, res) => {
           },
         });
 
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('Gemini timeout')), 8500)
+        );
+
+        const response: any = await Promise.race([geminiPromise, timeoutPromise]);
         botReplyText = response.text || "I'm here to assist you with MARVZ & INNOVATION TECH. Could you please specify your requirement?";
       } catch (geminiError: any) {
-        console.warn('Gemini call failed, switching to dynamic fallback:', geminiError?.message || geminiError);
+        console.warn('Gemini call failed or timed out, switching to dynamic fallback:', geminiError?.message || geminiError);
         replySource = 'marvz-fallback-engine';
       }
     } else {
