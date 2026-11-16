@@ -80,31 +80,27 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-      <div className="relative w-full max-w-lg bg-[#090f1d] border border-red-500/30 rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+      <div className="relative w-full max-w-lg bg-white border border-[#E5E7EB] rounded-2xl shadow-2xl overflow-hidden p-6 sm:p-8">
         
-        {/* Subtle decorative glow */}
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-600 to-red-950 flex items-center justify-center border border-red-500/40 text-white shadow-lg shadow-red-900/30">
-              <Building2 className="w-5 h-5 text-red-100" />
+            <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[#30343B]">
+              <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-[#202124]">
                 Consultation & Project Inquiry
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#777777]">
                 Direct connection with MARVZ & INNOVATION TECH engineering leads
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6] transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5" />
@@ -114,82 +110,82 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
         {/* Success State */}
         {isSuccess ? (
           <div className="py-12 text-center flex flex-col items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40 mb-4 animate-bounce">
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200 mb-4">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h4 className="text-xl font-bold text-white mb-2">Inquiry Confirmed!</h4>
-            <p className="text-sm text-slate-300 max-w-sm">
-              Thank you, <strong className="text-white">{formData.name}</strong>. Our engineering advisory team has received your brief and will connect with you within 2-4 business hours.
+            <h4 className="text-xl font-bold text-[#202124] mb-2">Inquiry Confirmed</h4>
+            <p className="text-sm text-[#777777] max-w-sm">
+              Thank you, <strong className="text-[#202124]">{formData.name}</strong>. Our engineering advisory team has received your brief and will connect with you within 2-4 business hours.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             {errorMsg && (
-              <div className="p-3 rounded-lg bg-red-950/50 border border-red-500/50 text-red-200 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{errorMsg}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1.5">
                 Full Name *
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <User className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
                 <input
                   type="text"
                   required
                   placeholder="e.g. Alex Morgan / আরিফ চৌধুরী"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-sm focus:outline-none focus:bg-white focus:border-[#30343B] focus:ring-1 focus:ring-[#30343B]"
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1.5">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                  <Mail className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
                   <input
                     type="email"
                     placeholder="name@company.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-sm focus:outline-none focus:bg-white focus:border-[#30343B] focus:ring-1 focus:ring-[#30343B]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1.5">
                   Phone / WhatsApp
                 </label>
                 <div className="relative">
-                  <Phone className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                  <Phone className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
                   <input
                     type="tel"
                     placeholder="+880 1711-000000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-sm focus:outline-none focus:bg-white focus:border-[#30343B] focus:ring-1 focus:ring-[#30343B]"
                   />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1.5">
                 Area of Interest *
               </label>
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] text-sm focus:outline-none focus:bg-white focus:border-[#30343B] focus:ring-1 focus:ring-[#30343B]"
               >
                 <option value="Services">Enterprise Software & AI Development</option>
                 <option value="Training">Hands-on IT Training & Certification</option>
@@ -201,17 +197,17 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1.5">
                 Project Requirements / Message
               </label>
               <div className="relative">
-                <FileText className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <FileText className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
                 <textarea
                   rows={3}
                   placeholder="Tell us what you'd like to build, learn, or research..."
                   value={formData.requirements}
                   onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-sm focus:outline-none focus:bg-white focus:border-[#30343B] focus:ring-1 focus:ring-[#30343B]"
                 />
               </div>
             </div>
@@ -220,14 +216,14 @@ export const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 text-sm font-medium transition-colors"
+                className="px-4 py-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] text-sm font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-sm font-semibold shadow-lg shadow-red-900/40 hover:shadow-red-700/50 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>

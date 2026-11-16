@@ -8,10 +8,8 @@ import {
   CheckCircle2,
   XCircle,
   Tag,
-  Filter,
   Save,
   X,
-  AlertCircle,
   GraduationCap,
   Briefcase,
   Phone,
@@ -19,6 +17,7 @@ import {
   Layers
 } from 'lucide-react';
 import { FAQItem } from '../../types/admin';
+import { adminFetch } from '../../utils/adminApi';
 
 interface KnowledgeBaseViewProps {
   onRefreshStats?: () => void;
@@ -49,7 +48,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
   const fetchFaqs = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/kb');
+      const res = await adminFetch('/api/admin/kb');
       if (res.ok) {
         const data = await res.json();
         setFaqs(data.faqs || []);
@@ -117,9 +116,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
       const url = editingFaq ? `/api/admin/kb/${editingFaq.id}` : '/api/admin/kb';
       const method = editingFaq ? 'PUT' : 'POST';
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
@@ -146,7 +144,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
     }
 
     try {
-      const res = await fetch(`/api/admin/kb/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/kb/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setFaqs((prev) => prev.filter((f) => f.id !== id));
         if (onRefreshStats) onRefreshStats();
@@ -159,9 +157,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
   const handleTogglePublish = async (faq: FAQItem) => {
     try {
       const updatedStatus = !faq.isPublished;
-      const res = await fetch(`/api/admin/kb/${faq.id}`, {
+      const res = await adminFetch(`/api/admin/kb/${faq.id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPublished: updatedStatus }),
       });
       if (res.ok) {
@@ -206,20 +203,20 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
     <div className="space-y-6">
       
       {/* View Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-red-500" />
+          <h2 className="text-xl font-bold text-[#202124] flex items-center gap-2">
+            <BookOpen className="w-5 h-5 text-[#30343B]" />
             AI Knowledge Base Management
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#777777] mt-1">
             Teach and update the chatbot without writing code. Changes immediately take effect in visitor conversations.
           </p>
         </div>
 
         <button
           onClick={() => openAddModal(selectedCategory === 'all' ? 'AI' : selectedCategory)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-semibold shadow-lg shadow-red-950/40 transition-all self-start sm:self-auto"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold transition-colors self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Q&A</span>
@@ -230,8 +227,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
         <div
           className={`p-3.5 rounded-xl border text-xs flex items-center justify-between ${
             statusMessage.type === 'success'
-              ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300'
-              : 'bg-red-950/40 border-red-500/40 text-red-300'
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+              : 'bg-red-50 border-red-200 text-red-800'
           }`}
         >
           <span>{statusMessage.text}</span>
@@ -242,14 +239,14 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
       )}
 
       {/* Tabs for quick domain actions */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-3 text-xs overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 border-b border-[#E5E7EB] pb-3 text-xs overflow-x-auto scrollbar-none">
         <button
           onClick={() => {
             setActiveTab('faqs');
             setSelectedCategory('all');
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-            activeTab === 'faqs' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+            activeTab === 'faqs' ? 'bg-[#30343B] text-white' : 'bg-white border border-[#E5E7EB] text-[#777777] hover:text-[#202124]'
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
@@ -261,8 +258,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
             setActiveTab('courses');
             setSelectedCategory('Training');
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-            activeTab === 'courses' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+            activeTab === 'courses' ? 'bg-[#30343B] text-white' : 'bg-white border border-[#E5E7EB] text-[#777777] hover:text-[#202124]'
           }`}
         >
           <GraduationCap className="w-3.5 h-3.5" />
@@ -274,8 +271,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
             setActiveTab('internships');
             setSelectedCategory('Internships');
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-            activeTab === 'internships' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+            activeTab === 'internships' ? 'bg-[#30343B] text-white' : 'bg-white border border-[#E5E7EB] text-[#777777] hover:text-[#202124]'
           }`}
         >
           <Briefcase className="w-3.5 h-3.5" />
@@ -287,8 +284,8 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
             setActiveTab('contact');
             setSelectedCategory('Contact');
           }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-            activeTab === 'contact' ? 'bg-red-600 text-white' : 'text-slate-400 hover:text-white'
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+            activeTab === 'contact' ? 'bg-[#30343B] text-white' : 'bg-white border border-[#E5E7EB] text-[#777777] hover:text-[#202124]'
           }`}
         >
           <Phone className="w-3.5 h-3.5" />
@@ -296,16 +293,16 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
         </button>
       </div>
 
-      {/* Search & Category Filter Pills */}
-      <div className="p-4 rounded-2xl bg-[#080d1a] border border-slate-800 space-y-3">
+      {/* Search & Category Filter */}
+      <div className="p-4 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs space-y-3">
         <div className="relative">
-          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
           <input
             type="text"
             placeholder="Search FAQs by question, answer, tag, or Bangla text..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700/80 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
           />
         </div>
 
@@ -314,10 +311,10 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat.id
-                  ? 'bg-slate-700 text-white shadow-sm border border-slate-600'
-                  : 'bg-slate-900/80 text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                  ? 'bg-[#30343B] text-white'
+                  : 'bg-[#F3F4F6] text-[#777777] hover:text-[#202124] border border-[#E5E7EB]'
               }`}
             >
               {cat.label}
@@ -326,19 +323,19 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
         </div>
       </div>
 
-      {/* FAQs List Table / Cards */}
+      {/* FAQs List */}
       <div className="space-y-3">
         {loading ? (
-          <div className="py-16 text-center text-slate-400 text-xs font-mono">
+          <div className="py-16 text-center text-[#777777] text-xs font-mono">
             Loading Knowledge Items...
           </div>
         ) : filteredFaqs.length === 0 ? (
-          <div className="py-16 text-center rounded-2xl bg-[#080d1a] border border-slate-800 text-slate-400">
-            <BookOpen className="w-8 h-8 mx-auto text-slate-600 mb-2" />
-            <p className="text-sm">No knowledge items match your current filter.</p>
+          <div className="py-16 text-center rounded-2xl bg-white border border-[#E5E7EB] text-[#777777]">
+            <BookOpen className="w-8 h-8 mx-auto text-[#777777] mb-2" />
+            <p className="text-sm text-[#202124]">No knowledge items match your current filter.</p>
             <button
               onClick={() => openAddModal()}
-              className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 text-white text-xs font-semibold hover:bg-red-500"
+              className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#30343B] text-white text-xs font-semibold hover:bg-[#202124]"
             >
               <Plus className="w-4 h-4" /> Add Item Now
             </button>
@@ -347,49 +344,49 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
           filteredFaqs.map((faq) => (
             <div
               key={faq.id}
-              className="p-5 rounded-2xl bg-[#080d1a] border border-slate-800 hover:border-slate-700 transition-all flex flex-col md:flex-row md:items-start justify-between gap-4 group"
+              className="p-5 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/30 transition-colors flex flex-col md:flex-row md:items-start justify-between gap-4 shadow-xs"
             >
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-red-950/80 text-red-300 border border-red-900/50">
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-[#F3F4F6] text-[#30343B] border border-[#E5E7EB]">
                     {faq.category}
                   </span>
                   
                   {faq.isPublished ? (
-                    <span className="text-[10px] flex items-center gap-1 px-2 py-0.5 rounded font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span className="text-[10px] flex items-center gap-1 px-2 py-0.5 rounded font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
                       <CheckCircle2 className="w-3 h-3" /> Live in AI
                     </span>
                   ) : (
-                    <span className="text-[10px] flex items-center gap-1 px-2 py-0.5 rounded font-medium bg-slate-800 text-slate-400 border border-slate-700">
+                    <span className="text-[10px] flex items-center gap-1 px-2 py-0.5 rounded font-medium bg-[#F3F4F6] text-[#777777] border border-[#E5E7EB]">
                       <XCircle className="w-3 h-3" /> Draft
                     </span>
                   )}
 
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <span className="text-[10px] font-mono text-[#777777] tabular-nums">
                     Asked {faq.hitCount} times
                   </span>
-                  <span className="text-[10px] text-slate-600">
+                  <span className="text-[10px] text-[#777777]">
                     • Updated {new Date(faq.updatedAt).toLocaleDateString()}
                   </span>
                 </div>
 
                 {/* Question */}
                 <div>
-                  <h4 className="text-sm font-bold text-white group-hover:text-red-400 transition-colors">
+                  <h4 className="text-sm font-bold text-[#202124]">
                     {faq.question}
                   </h4>
                   {faq.questionBn && (
-                    <p className="text-xs text-slate-400 font-medium mt-0.5">
+                    <p className="text-xs text-[#777777] font-medium mt-0.5">
                       বাংলা: {faq.questionBn}
                     </p>
                   )}
                 </div>
 
                 {/* Answer */}
-                <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-300 leading-relaxed space-y-1.5">
+                <div className="p-3 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-xs text-[#202124] leading-relaxed space-y-1.5">
                   <p>{faq.answer}</p>
                   {faq.answerBn && (
-                    <p className="text-slate-400 border-l-2 border-red-500/50 pl-2 text-[11px]">
+                    <p className="text-[#777777] pt-1.5 border-t border-[#E5E7EB] text-[11px]">
                       বাংলা: {faq.answerBn}
                     </p>
                   )}
@@ -398,11 +395,11 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                 {/* Tags */}
                 {faq.tags.length > 0 && (
                   <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                    <Tag className="w-3 h-3 text-slate-500" />
+                    <Tag className="w-3 h-3 text-[#777777]" />
                     {faq.tags.map((tag, tIdx) => (
                       <span
                         key={tIdx}
-                        className="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800"
+                        className="text-[10px] font-mono text-[#777777] bg-[#F3F4F6] px-2 py-0.5 rounded border border-[#E5E7EB]"
                       >
                         #{tag}
                       </span>
@@ -415,10 +412,10 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
               <div className="shrink-0 flex items-center gap-2 self-end md:self-start pt-1">
                 <button
                   onClick={() => handleTogglePublish(faq)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors border ${
                     faq.isPublished
-                      ? 'bg-slate-800 text-slate-400 hover:text-white'
-                      : 'bg-emerald-600/30 text-emerald-300 hover:bg-emerald-600 hover:text-white'
+                      ? 'bg-[#F3F4F6] border-[#E5E7EB] text-[#777777] hover:text-[#202124]'
+                      : 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-600 hover:text-white'
                   }`}
                   title={faq.isPublished ? 'Deactivate from Chatbot' : 'Activate in Chatbot'}
                 >
@@ -427,7 +424,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
 
                 <button
                   onClick={() => openEditModal(faq)}
-                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                  className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-[#202124] transition-colors"
                   title="Edit Knowledge Item"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
@@ -435,7 +432,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
 
                 <button
                   onClick={() => handleDelete(faq.id, faq.question)}
-                  className="p-2 rounded-lg bg-slate-800 hover:bg-red-600/80 text-slate-300 hover:text-white transition-colors"
+                  className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-red-50 border border-[#E5E7EB] text-[#777777] hover:text-red-700 hover:border-red-200 transition-colors"
                   title="Delete Item"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -448,17 +445,17 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
 
       {/* Add / Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-          <div className="relative w-full max-w-2xl bg-[#090f1f] border border-red-500/40 rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
+          <div className="relative w-full max-w-2xl bg-white border border-[#E5E7EB] rounded-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             
-            <div className="p-5 border-b border-slate-800 flex items-center justify-between bg-gradient-to-r from-red-950/40 to-slate-900">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-red-500" />
+            <div className="p-5 border-b border-[#E5E7EB] flex items-center justify-between bg-[#F3F4F6]">
+              <h3 className="text-base font-bold text-[#202124] flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-[#30343B]" />
                 {editingFaq ? 'Edit Knowledge Item' : 'Teach Chatbot New Information'}
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1.5 rounded-lg text-[#777777] hover:text-[#202124] hover:bg-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -467,13 +464,13 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
             <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs">
               
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Category *
                 </label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 >
                   <option value="AI">Artificial Intelligence & ML</option>
                   <option value="Drones">Drone Technology & UAV Engineering</option>
@@ -488,7 +485,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Primary Question (English) *
                 </label>
                 <input
@@ -497,12 +494,12 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   placeholder="e.g. What are the prerequisites for the Drone Piloting course?"
                   value={formData.question}
                   onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Question in Bengali (বাংলা প্রশ্ন - ঐচ্ছিক)
                 </label>
                 <input
@@ -510,12 +507,12 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   placeholder="যেমন: ড্রোন পাইলটিং কোর্সে ভর্তির যোগ্যতা কি?"
                   value={formData.questionBn}
                   onChange={(e) => setFormData({ ...formData, questionBn: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Accurate Answer (English) *
                 </label>
                 <textarea
@@ -524,12 +521,12 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   placeholder="Provide precise details, key dates, prerequisites, and instructions..."
                   value={formData.answer}
                   onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Answer in Bengali (বাংলা উত্তর - ঐচ্ছিক)
                 </label>
                 <textarea
@@ -537,12 +534,12 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   placeholder="বাংলায় স্পষ্ট ও পেশাদার উত্তর দিন..."
                   value={formData.answerBn}
                   onChange={(e) => setFormData({ ...formData, answerBn: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
                   Search Tags (Comma separated)
                 </label>
                 <input
@@ -550,7 +547,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   placeholder="e.g. drone, pilot, admission, license"
                   value={formData.tags}
                   onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                 />
               </div>
 
@@ -560,18 +557,18 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                   id="pub-check"
                   checked={formData.isPublished}
                   onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                  className="w-4 h-4 rounded text-red-600 focus:ring-red-500 bg-slate-900 border-slate-700"
+                  className="w-4 h-4 rounded accent-[#30343B]"
                 />
-                <label htmlFor="pub-check" className="text-slate-300 cursor-pointer font-medium">
+                <label htmlFor="pub-check" className="text-[#202124] cursor-pointer font-medium">
                   Make available immediately to live AI chatbot
                 </label>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-end gap-3">
+              <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] font-medium"
                 >
                   Cancel
                 </button>
@@ -579,7 +576,7 @@ export const KnowledgeBaseView: React.FC<KnowledgeBaseViewProps> = ({ onRefreshS
                 <button
                   type="submit"
                   disabled={saveLoading}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold shadow-md disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white font-semibold disabled:opacity-50 transition-colors"
                 >
                   <Save className="w-4 h-4" />
                   <span>{saveLoading ? 'Saving...' : 'Save Knowledge Item'}</span>

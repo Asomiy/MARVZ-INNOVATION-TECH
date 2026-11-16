@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { Menu, X, ArrowUpRight, Shield } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 
 interface NavbarProps {
@@ -9,147 +9,154 @@ interface NavbarProps {
   onOpenControlCenter?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, onOpenInquiry, onOpenControlCenter }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  onOpenInquiry,
+  onOpenControlCenter,
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     { id: 'home', label: 'Home' },
-    { id: 'cinematic', label: '3D Animation' },
+    { id: 'cinematic', label: 'Architecture' },
     { id: 'about', label: 'About' },
     { id: 'technologies', label: 'Technologies' },
     { id: 'what-we-do', label: 'What We Do' },
     { id: 'projects', label: 'Projects' },
     { id: 'training', label: 'Training' },
+    { id: 'find-our-office', label: 'Office' },
     { id: 'contact', label: 'Contact' },
   ];
 
   const handleNavClick = (id: string) => {
     setActiveTab(id);
     setMobileMenuOpen(false);
-
     const el = document.getElementById(id);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
-    } else {
+    } else if (id === 'home') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#081426]/95 backdrop-blur-md border-b border-slate-800/80 transition-all">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-8 h-20">
-          
-          {/* Zone 1: Official MARVZ & INNOVATION TECH Logo */}
+        <div className="flex items-center justify-between h-16">
+          {/* Official Brand Logo (Top-Left Corner) */}
           <button
             onClick={() => handleNavClick('home')}
-            className="flex items-center text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB] rounded-lg"
+            className="flex items-center text-left focus:outline-none shrink-0"
             aria-label="MARVZ & INNOVATION TECH Home"
           >
-            <BrandLogo size="md" showText={true} />
+            <BrandLogo size="md" showText={true} showTagline={true} />
           </button>
 
-          {/* Zone 2: Single-line navigation links */}
-          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-300">
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`whitespace-nowrap shrink-0 transition-colors py-1 relative ${
-                  activeTab === item.id
-                    ? 'text-white font-semibold'
-                    : 'text-slate-300 hover:text-white'
-                }`}
-              >
-                {item.label}
-                {activeTab === item.id && (
-                  <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#2563EB] to-[#06B6D4] rounded-full" />
-                )}
-              </button>
-            ))}
+          {/* Desktop Single-Line Navigation */}
+          <nav className="hidden xl:flex items-center gap-1" aria-label="Main Navigation">
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => handleNavClick(item.id)}
+                  className={`relative px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-150 rounded-md whitespace-nowrap shrink-0 ${
+                    isActive
+                      ? 'text-[#202124] bg-[#F3F4F6] font-semibold'
+                      : 'text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6]/60'
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-[#30343B] rounded-full" />
+                  )}
+                </button>
+              );
+            })}
           </nav>
 
-          {/* Zone 3: Actions - AI Control Center & Let's Talk */}
-          <div className="hidden sm:flex items-center gap-3 shrink-0">
+          {/* Right CTA & Admin Actions */}
+          <div className="hidden xl:flex items-center gap-2 shrink-0">
             {onOpenControlCenter && (
               <button
                 onClick={onOpenControlCenter}
-                className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-red-200 bg-red-950/60 hover:bg-red-900/60 border border-red-500/40 rounded-xl transition-all whitespace-nowrap shrink-0 hover:text-white"
-                title="Open MARVZ AI Control Center Admin Dashboard"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0"
+                title="Open MARVZ Admin Panel & AI Control Center"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-red-400" />
-                <span>AI Control Center</span>
+                <Shield className="w-3.5 h-3.5 text-[#30343B]" />
+                <span>Admin Panel</span>
               </button>
             )}
 
             <button
               onClick={() => onOpenInquiry('General Collaboration & Inquiry')}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-[#2563EB] hover:bg-[#1d4ed8] rounded-xl shadow-lg shadow-[#2563EB]/25 hover:shadow-xl transition-all whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#06B6D4]"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg shadow-xs transition-colors duration-150 whitespace-nowrap shrink-0"
             >
               <span>Let's Talk</span>
-              <ArrowUpRight className="w-4 h-4" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
 
-          {/* Mobile menu toggle */}
-          <div className="flex lg:hidden">
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2563EB]"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
+          {/* Mobile/Tablet Menu Trigger */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="xl:hidden p-2 rounded-lg text-[#202124] hover:bg-[#F3F4F6] transition-colors"
+            aria-label="Toggle Menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Navigation Drawer with Official Logo */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-slate-800 bg-[#081426] px-4 pt-3 pb-6">
-          <div className="pb-3 mb-2 border-b border-slate-800/80">
-            <BrandLogo size="sm" showText={true} />
+        <div className="xl:hidden bg-white border-b border-[#E5E7EB] px-4 pt-3 pb-5 space-y-1.5 shadow-md">
+          <div className="pb-3 mb-2 border-b border-[#E5E7EB] flex items-center justify-between">
+            <BrandLogo size="sm" showText={true} showTagline={true} />
           </div>
-          <nav className="flex flex-col gap-2">
-            {navItems.map((item) => (
+
+          {navItems.map((item) => {
+            const isActive = activeTab === item.id;
+            return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === item.id
-                    ? 'bg-[#2563EB]/15 text-[#06B6D4] font-semibold'
-                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                className={`block w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-[#F3F4F6] text-[#202124] font-semibold border border-[#E5E7EB]'
+                    : 'text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6]'
                 }`}
               >
                 {item.label}
               </button>
-            ))}
-            <div className="pt-4 border-t border-slate-800 mt-2 space-y-2">
-              {onOpenControlCenter && (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenControlCenter();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold text-red-200 bg-red-950/60 border border-red-500/40 rounded-xl"
-                >
-                  <ShieldCheck className="w-4 h-4 text-red-400" />
-                  <span>MARVZ AI Control Center</span>
-                </button>
-              )}
+            );
+          })}
 
+          <div className="pt-3 flex flex-col gap-2 border-t border-[#E5E7EB] mt-3">
+            {onOpenControlCenter && (
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  onOpenInquiry('General Collaboration & Inquiry');
+                  onOpenControlCenter();
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#2563EB] to-[#1d4ed8] rounded-xl shadow-md"
+                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-[#202124] bg-[#F3F4F6] border border-[#E5E7EB] rounded-lg"
               >
-                <span>Let's Talk</span>
-                <ArrowUpRight className="w-4 h-4" />
+                <Shield className="w-4 h-4 text-[#30343B]" />
+                <span>Admin Panel</span>
               </button>
-            </div>
-          </nav>
+            )}
+
+            <button
+              onClick={() => {
+                setMobileMenuOpen(false);
+                onOpenInquiry('General Collaboration & Inquiry');
+              }}
+              className="w-full py-2.5 text-sm font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg transition-colors"
+            >
+              Let's Talk
+            </button>
+          </div>
         </div>
       )}
     </header>

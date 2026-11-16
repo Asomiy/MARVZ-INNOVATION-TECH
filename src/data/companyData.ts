@@ -56,7 +56,7 @@ export const STARTUP_INFO = {
   ]
 };
 
-// 6 Core Technology Cards with REAL authentic stock photography from Unsplash
+// 6 Core Technology Cards backed by bespoke White & Ash studio technology imagery
 export const CORE_TECHNOLOGIES: TechnologyCard[] = [
   {
     id: 'ai-ml',
@@ -64,8 +64,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'Applied Intelligence & Neural Modeling',
     description:
       'Developing neural network architectures, computer vision pipelines, natural language models, and practical AI automation that solve real problems.',
-    imageUrl: 'https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Computer screen showing deep learning algorithms and machine code visualization',
+    imageUrl: '/assets/tech/ai-workstation.jpg',
+    altText: 'Dual-display AI engineering workstation displaying neural network graphs and code',
     keyTopics: ['Neural Networks & Deep Learning', 'Computer Vision & Inspection', 'Generative AI & LLM Systems', 'Predictive Analytics'],
     applications: ['Automated visual inspection', 'Agentic workflow automation', 'Predictive industrial maintenance']
   },
@@ -75,8 +75,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'Digital Resilience & Threat Defense',
     description:
       'Safeguarding networks, operating systems, and connected architectures through penetration testing, protocol inspection, and zero-trust security.',
-    imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Cybersecurity operations monitors showing network traffic and threat analysis',
+    imageUrl: '/assets/tech/cyber-rack.jpg',
+    altText: 'Enterprise cybersecurity network appliance and fiber-optic patch panel on laboratory bench',
     keyTopics: ['Ethical Hacking & Penetration Testing', 'Network Protocol Hardening', 'Zero-Trust Architecture', 'Security Audits'],
     applications: ['Penetration testing audits', 'Secure API gateway design', 'Hardware and firmware vulnerability testing']
   },
@@ -86,8 +86,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'Aerodynamics & Autonomous Avionics',
     description:
       'Designing, building, and programming multi-rotor and fixed-wing UAVs with custom flight controllers, telemetry links, and payload integration.',
-    imageUrl: 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Real quadcopter drone showing carbon fiber frame, motors, and electronic wiring',
+    imageUrl: '/assets/tech/uav-prototype.jpg',
+    altText: 'Autonomous carbon-fiber quadcopter UAV with LiDAR optical gimbal on white calibration pad',
     keyTopics: ['UAV Frame Assembly & Aerodynamics', 'PX4 & ArduPilot Flight Controllers', 'Telemetry & Sensor Fusion', 'Autonomous Mission Planning'],
     applications: ['Agricultural crop health mapping', 'Infrastructure inspection', 'Autonomous delivery prototypes']
   },
@@ -97,8 +97,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'Kinematics & Industrial Mechatronics',
     description:
       'Bridging code and physical movement with multi-axis articulated arms, motor drives, microcontrollers, and collaborative automation systems.',
-    imageUrl: 'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Industrial robotic arm operating over precision electronic assembly station',
+    imageUrl: '/assets/tech/robotics-arm.jpg',
+    altText: 'Brushed aluminum 6-axis articulated robotic arm inspecting an electronic PCB module',
     keyTopics: ['Articulated Manipulators & Kinematics', 'Embedded Microcontrollers (STM32/ESP32)', 'Motor Drivers & Closed-Loop Control', 'ROS 2 Framework'],
     applications: ['Automated pick-and-place lines', 'Inspection and sorting robotics', 'Custom mechatronic test fixtures']
   },
@@ -108,8 +108,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'Sensors, Firmware & Connected Nodes',
     description:
       'Connecting physical environments through low-power sensor nodes, wireless telemetry (LoRa, MQTT, BLE), and real-time cloud data pipelines.',
-    imageUrl: 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Real electronic printed circuit board, microcontrollers, and electronic components',
+    imageUrl: '/assets/tech/iot-pcb.jpg',
+    altText: 'Custom matte-charcoal embedded IoT circuit board with microcontroller die and RF antenna',
     keyTopics: ['Embedded C/C++ Firmware', 'LoRaWAN, MQTT & Zigbee Networks', 'Low-Power Node Optimization', 'Sensor Signal Conditioning'],
     applications: ['Remote environmental telemetry', 'Industrial smart monitoring', 'Energy optimization sensors']
   },
@@ -119,8 +119,8 @@ export const CORE_TECHNOLOGIES: TechnologyCard[] = [
     tagline: 'High-Concurrency & Cloud Systems',
     description:
       'Engineering robust, scalable software across modern full-stack web architectures, distributed backends, mobile solutions, and cloud pipelines.',
-    imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Developer workstation with dual monitors running code editor and terminal',
+    imageUrl: '/assets/tech/hero-ai-lab.jpg',
+    altText: 'Modern R&D engineering lab bench with edge AI compute unit, oscilloscope, and drone hardware',
     keyTopics: ['Modern TypeScript & React Ecosystems', 'Distributed Node.js & Go Backends', 'Relational & Time-Series Databases', 'DevOps & Containerization'],
     applications: ['High-throughput telemetry dashboards', 'Hardware control interfaces', 'Cloud SaaS infrastructure']
   }
@@ -178,8 +178,8 @@ export const PROJECT_SHOWCASE: ProjectShowcase[] = [
     id: 'proj-drone-inspection',
     title: 'Autonomous Industrial Inspection UAV',
     domain: 'Drone Engineering',
-    imageUrl: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Professional drone quadcopter on field testing ground',
+    imageUrl: '/assets/tech/uav-prototype.jpg',
+    altText: 'Autonomous carbon-fiber quadcopter UAV with LiDAR optical gimbal on white calibration pad',
     overview:
       'Custom-engineered multi-rotor drone carrying high-definition inspection cameras with programmed waypoint navigation and fail-safe return-to-base protocols.',
     stack: ['Carbon Composite Frame', 'PX4 Autopilot', 'Telemetry 915MHz', 'LiPo 6S Battery System'],
@@ -189,8 +189,8 @@ export const PROJECT_SHOWCASE: ProjectShowcase[] = [
     id: 'proj-robotics-arm',
     title: 'Multi-Axis Articulated Assembly Arm',
     domain: 'Robotics & Automation',
-    imageUrl: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Precision electronics testing workbench with microscope and testing instruments',
+    imageUrl: '/assets/tech/robotics-arm.jpg',
+    altText: 'Brushed aluminum 6-axis articulated robotic arm inspecting an electronic PCB module',
     overview:
       'Robotic arm prototype engineered for micro-component positioning, combining optical feedback with sub-millimeter motor drive repeatability.',
     stack: ['Brushless Servo Actuators', 'FreeRTOS', 'CAN Bus Protocol', 'OpenCV Vision Feed'],
@@ -200,8 +200,8 @@ export const PROJECT_SHOWCASE: ProjectShowcase[] = [
     id: 'proj-edge-iot',
     title: 'Distributed Environmental Sensor Node',
     domain: 'IoT & Smart Systems',
-    imageUrl: 'https://images.unsplash.com/photo-1553406830-ef2513450d76?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Electronics prototyping bench with breadboard, wires, and microcontroller',
+    imageUrl: '/assets/tech/iot-pcb.jpg',
+    altText: 'Custom embedded IoT printed circuit board with silicon microcontroller die and RF antenna',
     overview:
       'Low-power sensor telemetry node measuring atmospheric and structural parameters, sending encrypted packets via long-range wireless links.',
     stack: ['ESP32 Microcontroller', 'LoRaWAN Transceiver', 'Solar Energy Harvesting', 'MQTT Pipeline'],
@@ -211,8 +211,8 @@ export const PROJECT_SHOWCASE: ProjectShowcase[] = [
     id: 'proj-cyber-defense',
     title: 'Zero-Trust Protocol Sandboxing Suite',
     domain: 'Cybersecurity',
-    imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1000&q=80',
-    altText: 'Server rack wiring with glowing ethernet cables and hardware network interfaces',
+    imageUrl: '/assets/tech/cyber-rack.jpg',
+    altText: 'Enterprise brushed aluminum cybersecurity network appliance and fiber-optic patch panel',
     overview:
       'Virtual testing architecture for simulating network intrusions, analyzing malicious payloads, and testing cryptographic key rotation.',
     stack: ['Linux Kernel eBPF', 'WireGuard mTLS', 'Packet Inspection', 'Sandboxed VMs'],
@@ -290,7 +290,7 @@ export const COLLABORATION_MODELS = [
 
 export const FAQS = [
   {
-    q: 'What is MARZV & INNOVATION TECH?',
+    q: 'What is MARVZ & INNOVATION TECH?',
     a: 'We are an emerging technology startup operating at the intersection of hands-on technology education, engineering development, and applied research. We focus on drones, robotics, AI, cybersecurity, and IoT.'
   },
   {

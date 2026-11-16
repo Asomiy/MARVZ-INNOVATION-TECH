@@ -1,53 +1,86 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 @layer base {
-  :root {
-    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+  html {
+    scroll-behavior: smooth;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    font-family: var(--font-sans);
-    background-color: #081426;
-    color: #e2e8f0;
-    overflow-x: hidden;
+    background-color: #FFFFFF;
+    color: #202124;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* Custom subtle corporate styling */
-.glass-panel {
-  background: rgba(11, 16, 32, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Custom sleek scrollbar in Ash & Charcoal */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-.glass-panel-subtle {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+::-webkit-scrollbar-track {
+  background: #F3F4F6;
 }
 
-.gradient-tech-border {
-  border-image: linear-gradient(to bottom right, rgba(8, 124, 255, 0.35), rgba(0, 212, 255, 0.1), rgba(255, 255, 255, 0.04)) 1;
+::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 3px;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+.clean-panel {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 1px 3px rgba(32, 33, 36, 0.05);
 }
 
-.animate-fadeIn {
-  animation: fadeIn 0.2s ease-out forwards;
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.animate-slideUp {
-  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+/* Subtle static White & Ash engineering grid patterns */
+.bg-tech-grid-white {
+  background-image:
+    linear-gradient(to right, rgba(203, 213, 225, 0.32) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(203, 213, 225, 0.32) 1px, transparent 1px);
+  background-size: 44px 44px;
 }
 
+.bg-tech-dots-ash {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.34) 1.25px, transparent 1.25px);
+  background-size: 24px 24px;
+}
+
+.bg-tech-isometric-white {
+  background-image:
+    linear-gradient(30deg, rgba(203, 213, 225, 0.25) 1px, transparent 1px),
+    linear-gradient(150deg, rgba(203, 213, 225, 0.25) 1px, transparent 1px);
+  background-size: 52px 30px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

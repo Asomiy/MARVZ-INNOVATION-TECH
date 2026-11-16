@@ -9,7 +9,7 @@
     "enableBangla": true,
     "enableEnglish": true,
     "defaultLanguage": "Auto",
-    "aiModel": "gemini-3.8-flash",
+    "aiModel": "gemini-3.1-flash-lite",
     "temperature": 0.65,
     "enableLeadFormPrompt": true,
     "enableHumanEscalation": true,
@@ -18,8 +18,476 @@
     "contactEmail": "contact@marvztech.com",
     "contactPhone": "+880 1800-MARVZ-TECH",
     "contactWhatsApp": "+880 1711-000000",
-    "officeLocation": "Innovation Hub, Level 4, Tech Park"
+    "officeLocation": "3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh."
   },
+  "locationConfig": {
+    "officeName": "MARVZ & INNOVATION TECH — Dhaka HQ",
+    "officeAddress": "3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh.",
+    "landmarkNote": "Near Metro Pillar 304, West Shewrapara, Mirpur Corridor",
+    "cityCountry": "Dhaka-1216, Bangladesh",
+    "contactPhone": "+880 1800-627898",
+    "contactWhatsApp": "+880 1711-000000",
+    "contactEmail": "hello@marvztech.com",
+    "workingHours": "Saturday – Thursday: 09:30 AM – 06:30 PM (BST)",
+    "mapSearchQuery": "Aysha Tower, House No. 756, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh",
+    "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Aysha%20Tower%2C%20House%20No.%20756%2C%20West%20Shewrapara%2C%20Near%20Metro%20Pillar%20304%2C%20Dhaka-1216%2C%20Bangladesh",
+    "directionsUrl": "https://www.google.com/maps/dir/?api=1&destination=Aysha%20Tower%2C%20House%20No.%20756%2C%20West%20Shewrapara%2C%20Near%20Metro%20Pillar%20304%2C%20Dhaka-1216%2C%20Bangladesh",
+    "updatedAt": "2026-11-14T07:30:42.296Z"
+  },
+  "websiteContent": {
+    "heroHeadline": "Building Tomorrow",
+    "heroHighlight": "Through Technology.",
+    "heroTagline": "Think Beyond. Build Tomorrow.",
+    "heroDescription": "MARVZ & INNOVATION TECH explores emerging technologies, develops technical capabilities, and transforms innovative ideas into practical solutions.",
+    "heroImageUrl": "/assets/tech/hero-ai-lab.jpg",
+    "heroSecondaryImageUrl": "/assets/tech/uav-prototype.jpg",
+    "announcementEnabled": false,
+    "announcementText": "",
+    "aboutHeading": "Who We Are",
+    "aboutSubheading": "Pioneering Emerging Technologies with a Fresh, Hands-On Approach",
+    "aboutDescription": "MARVZ & INNOVATION TECH is an emerging technology startup dedicated to exploring next-generation technologies, delivering practical engineering education, and building practical technology-driven solutions.",
+    "aboutImageUrl": "/assets/tech/robotics-arm.jpg",
+    "services": [
+      {
+        "id": "ai-ml",
+        "title": "AI & Machine Learning",
+        "tagline": "Applied Intelligence & Neural Modeling",
+        "description": "Developing neural network architectures, computer vision pipelines, natural language models, and practical AI automation that solve real problems.",
+        "imageUrl": "/assets/tech/ai-workstation.jpg",
+        "altText": "Dual-display AI engineering workstation displaying neural network graphs and code",
+        "keyTopics": [
+          "Neural Networks & Deep Learning",
+          "Computer Vision & Inspection",
+          "Generative AI & LLM Systems",
+          "Predictive Analytics"
+        ],
+        "applications": [
+          "Automated visual inspection",
+          "Agentic workflow automation",
+          "Predictive industrial maintenance"
+        ]
+      },
+      {
+        "id": "cybersecurity",
+        "title": "Cybersecurity & Defense",
+        "tagline": "Digital Resilience & Threat Defense",
+        "description": "Safeguarding networks, operating systems, and connected architectures through penetration testing, protocol inspection, and zero-trust security.",
+        "imageUrl": "/assets/tech/cyber-rack.jpg",
+        "altText": "Enterprise cybersecurity network appliance and fiber-optic patch panel on laboratory bench",
+        "keyTopics": [
+          "Ethical Hacking & Penetration Testing",
+          "Network Protocol Hardening",
+          "Zero-Trust Architecture",
+          "Security Audits"
+        ],
+        "applications": [
+          "Penetration testing audits",
+          "Secure API gateway design",
+          "Hardware and firmware vulnerability testing"
+        ]
+      },
+      {
+        "id": "drone-tech",
+        "title": "Drone Engineering & UAVs",
+        "tagline": "Aerodynamics & Autonomous Avionics",
+        "description": "Designing, building, and programming multi-rotor and fixed-wing UAVs with custom flight controllers, telemetry links, and payload integration.",
+        "imageUrl": "/assets/tech/uav-prototype.jpg",
+        "altText": "Autonomous carbon-fiber quadcopter UAV with LiDAR optical gimbal on white calibration pad",
+        "keyTopics": [
+          "UAV Frame Assembly & Aerodynamics",
+          "PX4 & ArduPilot Flight Controllers",
+          "Telemetry & Sensor Fusion",
+          "Autonomous Mission Planning"
+        ],
+        "applications": [
+          "Agricultural crop health mapping",
+          "Infrastructure inspection",
+          "Autonomous delivery prototypes"
+        ]
+      },
+      {
+        "id": "robotics",
+        "title": "Robotics & Automation",
+        "tagline": "Kinematics & Industrial Mechatronics",
+        "description": "Bridging code and physical movement with multi-axis articulated arms, motor drives, microcontrollers, and collaborative automation systems.",
+        "imageUrl": "/assets/tech/robotics-arm.jpg",
+        "altText": "Brushed aluminum 6-axis articulated robotic arm inspecting an electronic PCB module",
+        "keyTopics": [
+          "Articulated Manipulators & Kinematics",
+          "Embedded Microcontrollers (STM32/ESP32)",
+          "Motor Drivers & Closed-Loop Control",
+          "ROS 2 Framework"
+        ],
+        "applications": [
+          "Automated pick-and-place lines",
+          "Inspection and sorting robotics",
+          "Custom mechatronic test fixtures"
+        ]
+      },
+      {
+        "id": "iot",
+        "title": "IoT & Smart Systems",
+        "tagline": "Sensors, Firmware & Connected Nodes",
+        "description": "Connecting physical environments through low-power sensor nodes, wireless telemetry (LoRa, MQTT, BLE), and real-time cloud data pipelines.",
+        "imageUrl": "/assets/tech/iot-pcb.jpg",
+        "altText": "Custom matte-charcoal embedded IoT circuit board with microcontroller die and RF antenna",
+        "keyTopics": [
+          "Embedded C/C++ Firmware",
+          "LoRaWAN, MQTT & Zigbee Networks",
+          "Low-Power Node Optimization",
+          "Sensor Signal Conditioning"
+        ],
+        "applications": [
+          "Remote environmental telemetry",
+          "Industrial smart monitoring",
+          "Energy optimization sensors"
+        ]
+      },
+      {
+        "id": "software",
+        "title": "Software Engineering",
+        "tagline": "High-Concurrency & Cloud Systems",
+        "description": "Engineering robust, scalable software across modern full-stack web architectures, distributed backends, mobile solutions, and cloud pipelines.",
+        "imageUrl": "/assets/tech/hero-ai-lab.jpg",
+        "altText": "Modern R&D engineering lab bench with edge AI compute unit, oscilloscope, and drone hardware",
+        "keyTopics": [
+          "Modern TypeScript & React Ecosystems",
+          "Distributed Node.js & Go Backends",
+          "Relational & Time-Series Databases",
+          "DevOps & Containerization"
+        ],
+        "applications": [
+          "High-throughput telemetry dashboards",
+          "Hardware control interfaces",
+          "Cloud SaaS infrastructure"
+        ]
+      }
+    ],
+    "uploadedAssets": [],
+    "updatedAt": "2026-11-14T07:30:42.297Z"
+  },
+  "trainingPrograms": [
+    {
+      "id": "drone-build-camp",
+      "title": "Hands-on Drone Assembly & Flight Calibration",
+      "level": "Beginner to Intermediate",
+      "duration": "3-Day Intensive Workshop",
+      "format": "Physical Lab Sessions",
+      "price": 8500,
+      "currency": "BDT",
+      "seatsTotal": 20,
+      "seatsAvailable": 7,
+      "status": "Open",
+      "nextBatchDate": "2026-06-05",
+      "description": "Assemble a multi-rotor quadcopter from frame to props. Solder ESCs, configure flight controllers via QGroundControl, and conduct test flights on dedicated grounds.",
+      "hardwareTools": [
+        "Soldering Stations",
+        "Multimeters & Oscilloscopes",
+        "Carbon Frames",
+        "Thrust Test Rigs"
+      ]
+    },
+    {
+      "id": "robotics-ros-lab",
+      "title": "Embedded Robotics & Microcontroller Programming",
+      "level": "Intermediate",
+      "duration": "4-Week Weekend Lab",
+      "format": "Hands-on Hardware Lab",
+      "price": 12000,
+      "currency": "BDT",
+      "seatsTotal": 18,
+      "seatsAvailable": 5,
+      "status": "Open",
+      "nextBatchDate": "2026-06-12",
+      "description": "Program motor drivers, read encoder feedback, and implement inverse kinematics on articulated arms using C++ and modern microcontroller boards.",
+      "hardwareTools": [
+        "ESP32 & STM32 Development Boards",
+        "Logic Analyzers",
+        "Stepper Motors & Servos",
+        "Breadboard Prototyping"
+      ]
+    },
+    {
+      "id": "ai-vision-practical",
+      "title": "Applied Computer Vision & Edge AI Deployment",
+      "level": "Intermediate to Advanced",
+      "duration": "2-Day Sprint",
+      "format": "Lab + Compute Workstation",
+      "price": 9500,
+      "currency": "BDT",
+      "seatsTotal": 24,
+      "seatsAvailable": 11,
+      "status": "Open",
+      "nextBatchDate": "2026-06-19",
+      "description": "Train lightweight convolutional models for object detection and deploy them onto physical edge hardware accelerators with real-time video feeds.",
+      "hardwareTools": [
+        "Edge AI Accelerators",
+        "High-Res Optical Sensors",
+        "Python & PyTorch Environments",
+        "Inference Benchmarks"
+      ]
+    },
+    {
+      "id": "cyber-sandbox-lab",
+      "title": "Hands-On Network Defense & Ethical Hacking",
+      "level": "Intermediate",
+      "duration": "Weekend Intensive",
+      "format": "Sandboxed Cyber Range",
+      "price": 7500,
+      "currency": "BDT",
+      "seatsTotal": 25,
+      "seatsAvailable": 9,
+      "status": "Upcoming",
+      "nextBatchDate": "2026-07-03",
+      "description": "Learn penetration testing methodologies, analyze Wireshark packet captures, identify OWASP vulnerabilities, and engineer defensive mitigations.",
+      "hardwareTools": [
+        "Isolated Cyber Range",
+        "Hardware Protocol Analyzers",
+        "Linux CLI Environments",
+        "Security Tooling"
+      ]
+    }
+  ],
+  "trainingRegistrations": [
+    {
+      "id": "treg-101",
+      "programId": "drone-build-camp",
+      "programTitle": "Hands-on Drone Assembly & Flight Calibration",
+      "studentName": "Nafis Ahmed",
+      "email": "nafis.aero@mist.edu.bd",
+      "phone": "+880 1715-224466",
+      "organization": "MIST Aeronautical Club",
+      "experienceLevel": "Beginner (Foundations)",
+      "feeAmount": 8500,
+      "currency": "BDT",
+      "paymentStatus": "Paid",
+      "paymentMethod": "bKash",
+      "transactionId": "BKH9X21048",
+      "registrationStatus": "Confirmed",
+      "registeredAt": "2026-11-13T17:30:42.297Z"
+    },
+    {
+      "id": "treg-102",
+      "programId": "robotics-ros-lab",
+      "programTitle": "Embedded Robotics & Microcontroller Programming",
+      "studentName": "Sadia Afrin",
+      "email": "sadia.afrin@eee.buet.ac.bd",
+      "phone": "+880 1814-556677",
+      "organization": "BUET EEE Dept",
+      "experienceLevel": "Intermediate",
+      "feeAmount": 12000,
+      "currency": "BDT",
+      "paymentStatus": "Paid",
+      "paymentMethod": "Bank Transfer",
+      "transactionId": "DBBL-88412",
+      "registrationStatus": "Confirmed",
+      "registeredAt": "2026-11-12T23:30:42.297Z"
+    },
+    {
+      "id": "treg-103",
+      "programId": "ai-vision-practical",
+      "programTitle": "Applied Computer Vision & Edge AI Deployment",
+      "studentName": "Mehedi Hasan Rony",
+      "email": "rony.dev@gmail.com",
+      "phone": "+880 1918-778899",
+      "organization": "BracU Robotics Lab",
+      "experienceLevel": "Advanced / Professional",
+      "feeAmount": 9500,
+      "currency": "BDT",
+      "paymentStatus": "Pending",
+      "paymentMethod": "Nagad",
+      "transactionId": "NGD441209",
+      "registrationStatus": "Pending Verification",
+      "registeredAt": "2026-11-14T01:30:42.297Z"
+    }
+  ],
+  "internships": [
+    {
+      "id": "int-101",
+      "fullName": "Tanvir Hasan",
+      "email": "tanvir.cse.buet@gmail.com",
+      "phone": "+880 1819-987654",
+      "university": "BUET",
+      "department": "Computer Science & Engineering",
+      "semesterOrYear": "Final Year (4th Year)",
+      "track": "Robotics & Embedded Systems",
+      "portfolioUrl": "https://github.com/tanvir-ros2",
+      "resumeFileName": "Tanvir_Hasan_Robotics_CV.pdf",
+      "coverNote": "Built a ROS 2 LiDAR SLAM rover for national robotics competition and worked extensively with STM32 CAN bus motor control.",
+      "status": "Under Review",
+      "adminNotes": "Strong ROS 2 repo. Schedule lab interview at West Shewrapara HQ.",
+      "appliedAt": "2026-11-13T11:30:42.297Z"
+    },
+    {
+      "id": "int-102",
+      "fullName": "Nusrat Jahan Mim",
+      "email": "nusrat.mim@nsu.edu",
+      "phone": "+880 1611-334455",
+      "university": "North South University",
+      "department": "Electrical & Electronic Engineering",
+      "semesterOrYear": "Fresh Graduate (2026)",
+      "track": "AI & Machine Learning",
+      "portfolioUrl": "https://github.com/nusrat-vision",
+      "resumeFileName": "Nusrat_Jahan_AI_CV.pdf",
+      "coverNote": "Focused on YOLOv8 quantized object detection on Jetson Orin Nano and PyTorch edge optimization.",
+      "status": "Approved",
+      "adminNotes": "Approved for Summer AI Vision Fellowship.",
+      "appliedAt": "2026-11-12T05:30:42.297Z"
+    },
+    {
+      "id": "int-103",
+      "fullName": "Imran Hossain",
+      "email": "imran.uav@aust.edu",
+      "phone": "+880 1719-112200",
+      "university": "AUST",
+      "department": "Mechanical & Production Engineering",
+      "semesterOrYear": "3rd Year",
+      "track": "Drone Technology & UAV",
+      "portfolioUrl": "https://github.com/imran-px4",
+      "resumeFileName": "Imran_UAV_Resume.pdf",
+      "coverNote": "Designed carbon-fiber quadcopter frames in SolidWorks and tuned ArduPilot PID loops for payload stability.",
+      "status": "Pending",
+      "adminNotes": "",
+      "appliedAt": "2026-11-14T03:30:42.297Z"
+    }
+  ],
+  "contactMessages": [
+    {
+      "id": "msg-101",
+      "fullName": "Dr. Ashfaqul Karim",
+      "email": "akarim@dhakatech-uni.edu.bd",
+      "phone": "+880 1711-889900",
+      "collaboratorType": "University / Educational Institution",
+      "technologyDomain": "Drone Technology & UAV Engineering",
+      "subject": "University Hardware Bootcamp Collaboration",
+      "message": "We would like to invite MARVZ engineering leads to co-host a 3-day UAV Avionics & Robotics seminar for 60 EEE undergraduates next month.",
+      "status": "In Progress",
+      "replies": [
+        {
+          "id": "rep-1",
+          "senderName": "Engr. Zamil Rahman",
+          "message": "Thank you Dr. Karim! We have shared the syllabus deck and proposed lab schedule.",
+          "sentAt": "2026-11-13T21:30:42.297Z"
+        }
+      ],
+      "createdAt": "2026-11-13T07:30:42.297Z"
+    },
+    {
+      "id": "msg-102",
+      "fullName": "Farhana Yasmin",
+      "email": "farhana@bengal-agro.com",
+      "phone": "+880 1922-445566",
+      "collaboratorType": "Company / Enterprise Team",
+      "technologyDomain": "Artificial Intelligence & Machine Learning",
+      "subject": "Automated Quality Inspection Prototype",
+      "message": "Looking to discuss a computer vision sorting prototype at your West Shewrapara office next Tuesday.",
+      "status": "New",
+      "replies": [],
+      "createdAt": "2026-11-14T04:30:42.297Z"
+    }
+  ],
+  "activities": [
+    {
+      "id": "act-1794641447860-503",
+      "type": "auth",
+      "title": "Admin Sign-In",
+      "description": "Engr. Zamil Rahman (Super Admin) signed into Admin Dashboard.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-14T07:30:47.860Z"
+    },
+    {
+      "id": "act-1",
+      "type": "location",
+      "title": "Dhaka HQ Location Configured",
+      "description": "Official office address set to 3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Dhaka-1216.",
+      "actor": "System Setup",
+      "timestamp": "2026-11-14T06:30:42.297Z"
+    },
+    {
+      "id": "act-2",
+      "type": "inquiry",
+      "title": "New Contact Inquiry Received",
+      "description": "Farhana Yasmin inquired about Automated Quality Inspection Prototype.",
+      "actor": "Website Contact Form",
+      "timestamp": "2026-11-14T04:30:42.297Z"
+    },
+    {
+      "id": "act-3",
+      "type": "internship",
+      "title": "Internship Application Submitted",
+      "description": "Imran Hossain applied for Drone Technology & UAV fellowship.",
+      "actor": "Public Careers Portal",
+      "timestamp": "2026-11-14T03:30:42.297Z"
+    },
+    {
+      "id": "act-4",
+      "type": "training",
+      "title": "New Training Registration",
+      "description": "Mehedi Hasan Rony registered for Applied Computer Vision & Edge AI Deployment.",
+      "actor": "Training Portal",
+      "timestamp": "2026-11-14T01:30:42.297Z"
+    }
+  ],
+  "adminAccounts": [
+    {
+      "id": "adm-001",
+      "name": "Engr. Zamil Rahman",
+      "email": "admin@marvztech.com",
+      "role": "Super Admin",
+      "phone": "+880 1800-627898",
+      "department": "Executive & Engineering Governance",
+      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
+      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
+      "isActive": true,
+      "lastLogin": "2026-11-14T07:30:47.860Z"
+    },
+    {
+      "id": "adm-002",
+      "name": "Admissions & Content Lead",
+      "email": "editor@marvztech.com",
+      "role": "Content Manager",
+      "phone": "+880 1711-000001",
+      "department": "Website Content & Knowledge Base",
+      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
+      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
+      "isActive": true,
+      "lastLogin": "2026-11-13T07:30:42.489Z"
+    },
+    {
+      "id": "adm-003",
+      "name": "HR & Training Desk",
+      "email": "coordinator@marvztech.com",
+      "role": "HR & Training Coordinator",
+      "phone": "+880 1711-000002",
+      "department": "Internships & Bootcamps",
+      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
+      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
+      "isActive": true,
+      "lastLogin": "2026-11-12T07:30:42.489Z"
+    },
+    {
+      "id": "adm-004",
+      "name": "Support Desk Dispatch",
+      "email": "support@marvztech.com",
+      "role": "Support Agent",
+      "phone": "+880 1711-000003",
+      "department": "Live Chat & Client Inquiries",
+      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
+      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
+      "isActive": true,
+      "lastLogin": "2026-11-11T07:30:42.489Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "marvz-sess-38f87edc0a5c5198621d320ca5fd33fd744ee5121c50d1c2",
+      "userId": "adm-001",
+      "email": "admin@marvztech.com",
+      "role": "Super Admin",
+      "createdAt": "2026-11-14T07:30:47.860Z",
+      "expiresAt": "2026-11-21T07:30:47.860Z"
+    }
+  ],
   "faqs": [
     {
       "id": "faq-1",
@@ -531,5 +999,5 @@
       ]
     }
   ],
-  "visitorCount": 1431
+  "visitorCount": 1435
 }

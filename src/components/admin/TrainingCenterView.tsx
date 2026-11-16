@@ -11,10 +11,9 @@ import {
   BookOpen,
   ArrowRight,
   ShieldCheck,
-  Check,
-  MessageSquare
 } from 'lucide-react';
 import { UnansweredQuestion } from '../../types/admin';
+import { adminFetch } from '../../utils/adminApi';
 
 interface TrainingCenterViewProps {
   onKnowledgeUpdated?: () => void;
@@ -49,7 +48,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
   const fetchUnanswered = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/unanswered');
+      const res = await adminFetch('/api/admin/unanswered');
       if (res.ok) {
         const data = await res.json();
         setUnanswered(data.questions || []);
@@ -77,9 +76,8 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
 
     setSubmittingAnswer(true);
     try {
-      const res = await fetch(`/api/admin/unanswered/${selectedQuestion.id}/answer`, {
+      const res = await adminFetch(`/api/admin/unanswered/${selectedQuestion.id}/answer`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           answer: answerDraft.trim(),
           answerBn: answerDraftBn.trim(),
@@ -105,7 +103,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
 
   const handleDismissQuestion = async (id: string) => {
     try {
-      const res = await fetch(`/api/admin/unanswered/${id}`, { method: 'DELETE' });
+      const res = await adminFetch(`/api/admin/unanswered/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setUnanswered((prev) => prev.filter((u) => u.id !== id));
         if (selectedQuestion?.id === id) setSelectedQuestion(null);
@@ -174,23 +172,23 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
     <div className="space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5E7EB]">
         <div>
-          <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-red-500" />
+          <h2 className="text-xl font-bold text-[#202124] flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#30343B]" />
             Chatbot Training Center & AI Playground
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-[#777777] mt-1">
             Review unanswered visitor queries, write verified answers, and test AI responses in real-time.
           </p>
         </div>
 
-        {/* Tab Pills */}
-        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+        {/* Tab Switcher */}
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white border border-[#E5E7EB] text-xs">
           <button
             onClick={() => setActiveTab('unanswered')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-              activeTab === 'unanswered' ? 'bg-red-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+              activeTab === 'unanswered' ? 'bg-[#30343B] text-white' : 'text-[#777777] hover:text-[#202124]'
             }`}
           >
             <HelpCircle className="w-3.5 h-3.5" />
@@ -199,8 +197,8 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
 
           <button
             onClick={() => setActiveTab('sandbox')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
-              activeTab === 'sandbox' ? 'bg-red-600 text-white shadow' : 'text-slate-400 hover:text-white'
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-colors ${
+              activeTab === 'sandbox' ? 'bg-[#30343B] text-white' : 'text-[#777777] hover:text-[#202124]'
             }`}
           >
             <Bot className="w-3.5 h-3.5" />
@@ -210,12 +208,12 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
       </div>
 
       {successNotice && (
-        <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 text-xs flex items-center justify-between">
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-700" />
             <span>{successNotice}</span>
           </div>
-          <button onClick={() => setSuccessNotice(null)} className="text-emerald-400 font-bold">
+          <button onClick={() => setSuccessNotice(null)} className="text-emerald-800 font-bold">
             ✕
           </button>
         </div>
@@ -228,22 +226,22 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
           {/* Left Column: Questions List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-amber-400" />
+              <h3 className="text-sm font-bold text-[#202124] flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-[#30343B]" />
                 Visitor Questions Pending Review
               </h3>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-[#777777] font-mono">
                 {unanswered.length} records
               </span>
             </div>
 
             {loading ? (
-              <div className="py-12 text-center text-xs text-slate-400">Loading unanswered questions...</div>
+              <div className="py-12 text-center text-xs text-[#777777]">Loading unanswered questions...</div>
             ) : unanswered.length === 0 ? (
-              <div className="py-16 text-center rounded-2xl bg-[#080d1a] border border-slate-800 text-slate-400">
-                <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto mb-2" />
-                <h4 className="text-sm font-bold text-white">All Visitor Questions Answered!</h4>
-                <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+              <div className="py-16 text-center rounded-2xl bg-white border border-[#E5E7EB] text-[#777777]">
+                <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
+                <h4 className="text-sm font-bold text-[#202124]">All Visitor Questions Answered!</h4>
+                <p className="text-xs text-[#777777] mt-1 max-w-sm mx-auto">
                   The AI knowledge base has addressed all recent visitor inquiries. Check the Sandbox to test new simulated prompts.
                 </p>
               </div>
@@ -252,32 +250,32 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                 {unanswered.map((item) => (
                   <div
                     key={item.id}
-                    className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                    className={`p-4 rounded-2xl border transition-colors cursor-pointer ${
                       selectedQuestion?.id === item.id
-                        ? 'bg-red-950/20 border-red-500 shadow-md shadow-red-950/30'
-                        : 'bg-[#080d1a] border-slate-800 hover:border-slate-700'
+                        ? 'bg-[#F3F4F6] border-[#30343B]'
+                        : 'bg-white border-[#E5E7EB] hover:border-[#30343B]/40'
                     }`}
                     onClick={() => handleSelectToAnswer(item)}
                   >
-                    <div className="flex items-center justify-between text-[10px] text-slate-400 mb-2">
-                      <span className="px-2 py-0.5 rounded font-mono uppercase bg-slate-900 border border-slate-800 text-amber-400">
+                    <div className="flex items-center justify-between text-[10px] text-[#777777] mb-2">
+                      <span className="px-2 py-0.5 rounded font-mono uppercase bg-[#F3F4F6] border border-[#E5E7EB] text-[#30343B]">
                         {item.visitorLanguage}
                       </span>
                       <span>{new Date(item.askedAt).toLocaleDateString()} {new Date(item.askedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>
 
-                    <p className="text-xs font-semibold text-white">
+                    <p className="text-xs font-semibold text-[#202124]">
                       "{item.question}"
                     </p>
 
                     {item.suggestedAnswer && (
-                      <p className="mt-2 text-[11px] text-slate-400 bg-slate-950/70 p-2 rounded-lg border border-slate-800">
-                        <strong className="text-slate-300">Suggested Draft:</strong> {item.suggestedAnswer}
+                      <p className="mt-2 text-[11px] text-[#777777] bg-[#F3F4F6] p-2 rounded-lg border border-[#E5E7EB]">
+                        <strong className="text-[#202124]">Suggested Draft:</strong> {item.suggestedAnswer}
                       </p>
                     )}
 
-                    <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                      <span className="text-red-400 text-[11px] font-medium flex items-center gap-1">
+                    <div className="mt-3 pt-2 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
+                      <span className="text-[#30343B] text-[11px] font-semibold flex items-center gap-1">
                         Click to write answer <ArrowRight className="w-3 h-3" />
                       </span>
                       <button
@@ -285,7 +283,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                           e.stopPropagation();
                           handleDismissQuestion(item.id);
                         }}
-                        className="text-slate-500 hover:text-red-400 p-1"
+                        className="text-[#777777] hover:text-red-700 p-1"
                         title="Dismiss question"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -298,27 +296,27 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
           </div>
 
           {/* Right Column: Writing & Approving Box */}
-          <div className="p-6 rounded-2xl bg-[#080d1a] border border-slate-800 flex flex-col h-fit">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-3">
-              <BookOpen className="w-4 h-4 text-red-500" />
+          <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs flex flex-col h-fit">
+            <h3 className="text-sm font-bold text-[#202124] flex items-center gap-2 mb-3">
+              <BookOpen className="w-4 h-4 text-[#30343B]" />
               Write Verified Answer & Publish to Chatbot
             </h3>
 
             {selectedQuestion ? (
               <div className="space-y-4">
-                <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700/80">
-                  <span className="text-[10px] uppercase font-mono text-slate-400">Selected Question:</span>
-                  <p className="text-xs font-bold text-white mt-1">"{selectedQuestion.question}"</p>
+                <div className="p-3.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                  <span className="text-[10px] uppercase font-mono text-[#777777]">Selected Question:</span>
+                  <p className="text-xs font-bold text-[#202124] mt-1">"{selectedQuestion.question}"</p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1">
                     Assign Category
                   </label>
                   <select
                     value={categoryDraft}
                     onChange={(e) => setCategoryDraft(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                   >
                     <option value="AI">AI & Machine Learning</option>
                     <option value="Drones">Drone Technology & UAV</option>
@@ -333,7 +331,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1">
                     Official Answer in English *
                   </label>
                   <textarea
@@ -341,12 +339,12 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                     value={answerDraft}
                     onChange={(e) => setAnswerDraft(e.target.value)}
                     placeholder="Enter the official approved answer that the AI will use..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  <label className="block text-xs font-semibold text-[#202124] uppercase tracking-wider mb-1">
                     Official Answer in Bengali (বাংলায় উত্তর - ঐচ্ছিক)
                   </label>
                   <textarea
@@ -354,7 +352,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                     value={answerDraftBn}
                     onChange={(e) => setAnswerDraftBn(e.target.value)}
                     placeholder="বাংলা ভাষাভাষী ভিজিটরের জন্য উপযুক্ত স্পষ্ট উত্তর..."
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
                   />
                 </div>
 
@@ -362,7 +360,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                   <button
                     type="button"
                     onClick={() => setSelectedQuestion(null)}
-                    className="px-4 py-2 rounded-xl text-slate-400 hover:text-white text-xs"
+                    className="px-4 py-2 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] text-xs font-medium"
                   >
                     Cancel
                   </button>
@@ -371,7 +369,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                     type="button"
                     onClick={handleApproveAndPublish}
                     disabled={submittingAnswer || !answerDraft.trim()}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-semibold shadow-md disabled:opacity-50 transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold disabled:opacity-50 transition-colors"
                   >
                     <ShieldCheck className="w-4 h-4" />
                     <span>{submittingAnswer ? 'Publishing...' : 'Approve & Publish to AI'}</span>
@@ -379,7 +377,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                 </div>
               </div>
             ) : (
-              <div className="py-20 text-center text-slate-500 text-xs">
+              <div className="py-20 text-center text-[#777777] text-xs">
                 Select an unanswered question from the left panel to compose and approve an official answer.
               </div>
             )}
@@ -390,14 +388,14 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
 
       {/* View 2: Interactive Sandbox & Testing Playground */}
       {activeTab === 'sandbox' && (
-        <div className="p-6 rounded-2xl bg-[#080d1a] border border-slate-800 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-3">
             <div>
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Bot className="w-4 h-4 text-red-500" />
+              <h3 className="text-sm font-bold text-[#202124] flex items-center gap-2">
+                <Bot className="w-4 h-4 text-[#30343B]" />
                 Live Pre-Publication AI Sandbox
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-[#777777]">
                 Directly interact with the AI assistant to test recent document ingests, published FAQs, and system prompt changes.
               </p>
             </div>
@@ -411,7 +409,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                   },
                 ])
               }
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs text-[#202124] font-medium"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Clear Test Chat</span>
@@ -419,7 +417,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
           </div>
 
           {/* Test Messages Stream */}
-          <div className="h-96 overflow-y-auto p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 space-y-3 text-xs">
+          <div className="h-96 overflow-y-auto p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] space-y-3 text-xs">
             {testChatMessages.map((msg, i) => (
               <div
                 key={i}
@@ -427,7 +425,7 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
               >
                 <div className="flex items-start gap-2 max-w-[85%]">
                   {msg.role === 'bot' && (
-                    <div className="w-6 h-6 rounded-lg bg-red-600/30 border border-red-500/50 flex items-center justify-center shrink-0 mt-0.5 text-red-400">
+                    <div className="w-6 h-6 rounded-lg bg-[#30343B] flex items-center justify-center shrink-0 mt-0.5 text-white">
                       <Bot className="w-3.5 h-3.5" />
                     </div>
                   )}
@@ -435,32 +433,34 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
                   <div
                     className={`p-3 rounded-2xl ${
                       msg.role === 'user'
-                        ? 'bg-red-600 text-white rounded-tr-xs'
-                        : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-xs'
+                        ? 'bg-[#30343B] text-white rounded-tr-xs'
+                        : 'bg-white border border-[#E5E7EB] text-[#202124] rounded-tl-xs shadow-xs'
                     }`}
                   >
                     <p className="whitespace-pre-line leading-relaxed">{msg.text}</p>
                     {msg.source && (
-                      <span className="block mt-1 text-[9px] font-mono text-slate-400 border-t border-slate-800/60 pt-1">
+                      <span className={`block mt-1 text-[9px] font-mono border-t pt-1 ${
+                        msg.role === 'user' ? 'text-white/70 border-white/15' : 'text-[#777777] border-[#E5E7EB]'
+                      }`}>
                         Engine: {msg.source}
                       </span>
                     )}
                   </div>
 
                   {msg.role === 'user' && (
-                    <div className="w-6 h-6 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5 text-slate-300">
+                    <div className="w-6 h-6 rounded-lg bg-white border border-[#E5E7EB] flex items-center justify-center shrink-0 mt-0.5 text-[#30343B]">
                       <User className="w-3.5 h-3.5" />
                     </div>
                   )}
                 </div>
 
-                <span className="text-[10px] text-slate-500 mt-0.5 px-1">{msg.timestamp}</span>
+                <span className="text-[10px] text-[#777777] mt-0.5 px-1">{msg.timestamp}</span>
               </div>
             ))}
 
             {testingAi && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs">
-                <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+              <div className="flex items-center gap-2 text-[#777777] text-xs">
+                <div className="w-4 h-4 border-2 border-[#30343B] border-t-transparent rounded-full animate-spin" />
                 <span>Simulating MARVZ AI query response...</span>
               </div>
             )}
@@ -479,12 +479,12 @@ export const TrainingCenterView: React.FC<TrainingCenterViewProps> = ({ onKnowle
               placeholder="Type any test query in English, Bangla, or Banglish (e.g. 'drone pilot certification fees')..."
               value={testInput}
               onChange={(e) => setTestInput(e.target.value)}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+              className="flex-1 px-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
             />
             <button
               type="submit"
               disabled={!testInput.trim() || testingAi}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-semibold shadow-md disabled:opacity-40 transition-all"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold disabled:opacity-40 transition-colors"
             >
               <Send className="w-4 h-4" />
               <span>Simulate</span>

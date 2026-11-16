@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, Mail, ArrowRight, Sparkles, Building2, UserCheck } from 'lucide-react';
-import { AdminUser } from '../../types/admin';
+import { ShieldCheck, Lock, Mail } from 'lucide-react';
+import { AdminRole, AdminUser } from '../../types/admin';
 
 interface AdminLoginViewProps {
   onLoginSuccess: (user: AdminUser) => void;
@@ -13,7 +13,7 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
 }) => {
   const [email, setEmail] = useState('admin@marvztech.com');
   const [password, setPassword] = useState('marvz2026');
-  const [role, setRole] = useState<'Super Admin' | 'Knowledge Editor' | 'Support Agent'>('Super Admin');
+  const [role, setRole] = useState<AdminRole>('Super Admin');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -26,14 +26,14 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
       const res = await fetch('/api/admin/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({ email, password }),
       });
 
+      const data = await res.json();
       if (!res.ok) {
-        throw new Error('Invalid credentials. Password is "marvz2026".');
+        throw new Error(data.error || 'Invalid credentials. Default password is "marvz2026".');
       }
 
-      const data = await res.json();
       localStorage.setItem('marvz_admin_token', data.token);
       localStorage.setItem('marvz_admin_user', JSON.stringify(data.user));
       onLoginSuccess(data.user);
@@ -44,149 +44,144 @@ export const AdminLoginView: React.FC<AdminLoginViewProps> = ({
     }
   };
 
-  const handleQuickRoleLogin = (chosenRole: 'Super Admin' | 'Knowledge Editor' | 'Support Agent', chosenEmail: string) => {
+  const handleQuickRoleSelect = (chosenRole: AdminRole, chosenEmail: string) => {
     setRole(chosenRole);
     setEmail(chosenEmail);
     setPassword('marvz2026');
+    setErrorMsg('');
   };
 
   return (
-    <div className="min-h-screen bg-[#060a14] flex flex-col justify-center items-center p-4 relative overflow-hidden selection:bg-red-600/30">
-      
-      {/* Background ambient red glow */}
-      <div className="absolute top-1/4 -left-32 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Main Login Card */}
-      <div className="w-full max-w-md bg-[#090e1d] border border-red-500/30 rounded-3xl shadow-2xl p-8 relative z-10">
-        
-        {/* Logo & Header */}
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col justify-center items-center p-4">
+      <div className="w-full max-w-md bg-white border border-[#E5E7EB] rounded-2xl shadow-md p-8">
         <div className="flex flex-col items-center text-center mb-6">
-          <div className="w-14 h-14 rounded-2xl bg-slate-900 border border-red-500/50 p-2 shadow-xl shadow-red-950/50 mb-3">
+          <div className="w-14 h-14 rounded-2xl bg-[#181B20] border border-[#E5E7EB] p-2 shadow-xs mb-3 flex items-center justify-center">
             <img
               src="/assets/aistudio/Capture.JPG11_7f7b0bf9.JPG"
               alt="MARVZ Logo"
-              className="w-full h-full object-contain filter drop-shadow"
+              className="w-full h-full object-contain"
             />
           </div>
 
-          <h1 className="text-xl font-extrabold text-white tracking-tight">
-            MARVZ AI Control Center
+          <h1 className="text-xl font-bold text-[#202124] tracking-tight">
+            MARVZ Admin Panel & AI Control Center
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Enterprise Chatbot Telemetry, Knowledge Training & Live Human Operations
+          <p className="text-xs text-[#777777] mt-1">
+            Corporate CMS, Internships, Training Finance, Dhaka Location & AI Operations
           </p>
         </div>
 
         {errorMsg && (
-          <div className="p-3 mb-4 rounded-xl bg-red-950/60 border border-red-500/50 text-red-200 text-xs">
+          <div className="p-3 mb-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs">
             {errorMsg}
           </div>
         )}
 
         <form onSubmit={handleLogin} className="space-y-4 text-xs">
           <div>
-            <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
+            <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
               Admin Email
             </label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Security Access Key / Password
+            <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
+              Password
             </label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-[#777777]" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-red-500"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] placeholder-[#777777] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Select Role Privileges
+            <label className="block font-semibold text-[#202124] uppercase tracking-wider mb-1">
+              Account Role Reference
             </label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-red-500"
+              onChange={(e) => setRole(e.target.value as AdminRole)}
+              className="w-full px-3.5 py-2.5 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] text-xs focus:outline-none focus:bg-white focus:border-[#30343B]"
             >
               <option value="Super Admin">Super Admin (Full Governance)</option>
-              <option value="Knowledge Editor">Knowledge Editor (FAQs & Training)</option>
-              <option value="Support Agent">Support Agent (Live Chats & Leads)</option>
+              <option value="Content Manager">Content Manager (Website CMS & KB)</option>
+              <option value="HR & Training Coordinator">HR & Training Coordinator</option>
+              <option value="Support Agent">Support Agent (Inbox & Live Chats)</option>
             </select>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold text-xs shadow-lg shadow-red-950/60 transition-all"
+            className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white font-semibold text-xs transition-colors disabled:opacity-50"
           >
-            {loading ? (
-              <span>Authenticating...</span>
-            ) : (
-              <>
-                <ShieldCheck className="w-4 h-4" />
-                <span>Enter MARVZ AI Control Center</span>
-              </>
-            )}
+            <ShieldCheck className="w-4 h-4" />
+            <span>{loading ? 'Authenticating...' : 'Sign In to Admin Dashboard'}</span>
           </button>
         </form>
 
-        {/* Quick Demo Access Roles */}
-        <div className="mt-6 pt-5 border-t border-slate-800 space-y-2">
-          <div className="text-[11px] font-semibold text-slate-400 text-center">
-            Quick 1-Click Role Login:
+        {/* Quick Demo Accounts */}
+        <div className="mt-6 pt-5 border-t border-[#E5E7EB] space-y-2">
+          <div className="text-[11px] font-medium text-[#777777] text-center">
+            Quick Role Presets (Password: <span className="font-mono text-[#202124] font-semibold">marvz2026</span>):
           </div>
-          <div className="grid grid-cols-3 gap-1.5 text-[10px]">
+          <div className="grid grid-cols-2 gap-1.5 text-[10px]">
             <button
-              onClick={() => handleQuickRoleLogin('Super Admin', 'admin@marvztech.com')}
-              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-red-500/50 transition-colors font-mono text-center"
+              type="button"
+              onClick={() => handleQuickRoleSelect('Super Admin', 'admin@marvztech.com')}
+              className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] border border-[#E5E7EB] transition-colors font-mono text-center"
             >
               Super Admin
             </button>
             <button
-              onClick={() => handleQuickRoleLogin('Knowledge Editor', 'editor@marvztech.com')}
-              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-red-500/50 transition-colors font-mono text-center"
+              type="button"
+              onClick={() => handleQuickRoleSelect('Content Manager', 'editor@marvztech.com')}
+              className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] border border-[#E5E7EB] transition-colors font-mono text-center"
             >
-              KB Editor
+              Content Manager
             </button>
             <button
-              onClick={() => handleQuickRoleLogin('Support Agent', 'support@marvztech.com')}
-              className="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-red-500/50 transition-colors font-mono text-center"
+              type="button"
+              onClick={() => handleQuickRoleSelect('HR & Training Coordinator', 'coordinator@marvztech.com')}
+              className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] border border-[#E5E7EB] transition-colors font-mono text-center"
             >
-              Live Agent
+              HR & Training
+            </button>
+            <button
+              type="button"
+              onClick={() => handleQuickRoleSelect('Support Agent', 'support@marvztech.com')}
+              className="p-2 rounded-lg bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] border border-[#E5E7EB] transition-colors font-mono text-center"
+            >
+              Support Agent
             </button>
           </div>
         </div>
 
-        {/* Back to Website */}
         <div className="mt-5 text-center">
           <button
             onClick={onBackToWebsite}
-            className="text-xs text-slate-400 hover:text-white transition-colors"
+            className="text-xs text-[#777777] hover:text-[#202124] transition-colors"
           >
             ← Return to MARVZ & INNOVATION TECH Website
           </button>
         </div>
-
       </div>
-
     </div>
   );
 };

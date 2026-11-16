@@ -1,8 +1,15 @@
 /**
- * MARVZ AI Control Center - TypeScript Type Definitions
+ * MARVZ & INNOVATION TECH - Admin & Platform TypeScript Type Definitions
  */
 
 export type LeadStatus = 'New' | 'Contacted' | 'Interested' | 'Converted';
+
+export type AdminRole =
+  | 'Super Admin'
+  | 'Content Manager'
+  | 'HR & Training Coordinator'
+  | 'Knowledge Editor'
+  | 'Support Agent';
 
 export interface Lead {
   id: string;
@@ -24,7 +31,16 @@ export interface FAQItem {
   questionBn?: string;
   answer: string;
   answerBn?: string;
-  category: 'AI' | 'Software' | 'Robotics' | 'Drones' | 'Cybersecurity' | 'Training' | 'Internships' | 'Contact' | 'Custom';
+  category:
+    | 'AI'
+    | 'Software'
+    | 'Robotics'
+    | 'Drones'
+    | 'Cybersecurity'
+    | 'Training'
+    | 'Internships'
+    | 'Contact'
+    | 'Custom';
   tags: string[];
   hitCount: number;
   isPublished: boolean;
@@ -83,9 +99,12 @@ export interface AdminUser {
   id: string;
   name: string;
   email: string;
-  role: 'Super Admin' | 'Knowledge Editor' | 'Support Agent';
+  role: AdminRole;
+  phone?: string;
+  department?: string;
   avatar?: string;
   lastLogin: string;
+  isActive?: boolean;
 }
 
 export interface ControlCenterSettings {
@@ -111,6 +130,157 @@ export interface ControlCenterSettings {
   officeLocation: string;
 }
 
+export interface WebsiteServiceItem {
+  id: string;
+  title: string;
+  tagline: string;
+  description: string;
+  imageUrl: string;
+  altText: string;
+  keyTopics: string[];
+  applications: string[];
+}
+
+export interface UploadedMediaAsset {
+  id: string;
+  name: string;
+  url: string;
+  mimeType: string;
+  size: string;
+  uploadedAt: string;
+}
+
+export interface WebsiteContentConfig {
+  heroHeadline: string;
+  heroHighlight: string;
+  heroTagline: string;
+  heroDescription: string;
+  heroImageUrl: string;
+  heroSecondaryImageUrl: string;
+  announcementEnabled: boolean;
+  announcementText: string;
+  aboutHeading: string;
+  aboutSubheading: string;
+  aboutDescription: string;
+  aboutImageUrl: string;
+  services: WebsiteServiceItem[];
+  uploadedAssets: UploadedMediaAsset[];
+  updatedAt: string;
+}
+
+export interface LocationConfig {
+  officeName: string;
+  officeAddress: string;
+  landmarkNote: string;
+  cityCountry: string;
+  contactPhone: string;
+  contactWhatsApp: string;
+  contactEmail: string;
+  workingHours: string;
+  mapSearchQuery: string;
+  googleMapsUrl: string;
+  directionsUrl: string;
+  customLat?: number;
+  customLng?: number;
+  updatedAt: string;
+}
+
+export type InternshipStatus = 'Pending' | 'Under Review' | 'Approved' | 'Rejected';
+
+export interface InternshipApplication {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  university: string;
+  department: string;
+  semesterOrYear: string;
+  track: string;
+  portfolioUrl?: string;
+  resumeFileName?: string;
+  resumeUrl?: string;
+  coverNote: string;
+  status: InternshipStatus;
+  adminNotes?: string;
+  appliedAt: string;
+}
+
+export interface TrainingProgram {
+  id: string;
+  title: string;
+  level: string;
+  duration: string;
+  format: string;
+  price: number;
+  currency: 'BDT' | 'USD';
+  seatsTotal: number;
+  seatsAvailable: number;
+  status: 'Open' | 'Upcoming' | 'Closed';
+  nextBatchDate: string;
+  description: string;
+  hardwareTools: string[];
+}
+
+export type PaymentStatus = 'Pending' | 'Paid' | 'Partial' | 'Refunded';
+export type RegistrationStatus = 'Confirmed' | 'Pending Verification' | 'Waitlisted' | 'Cancelled';
+
+export interface TrainingRegistration {
+  id: string;
+  programId: string;
+  programTitle: string;
+  studentName: string;
+  email: string;
+  phone: string;
+  organization: string;
+  experienceLevel: string;
+  feeAmount: number;
+  currency: 'BDT' | 'USD';
+  paymentStatus: PaymentStatus;
+  paymentMethod: 'bKash' | 'Nagad' | 'Bank Transfer' | 'Card' | 'Cash at Office';
+  transactionId: string;
+  registrationStatus: RegistrationStatus;
+  adminNotes?: string;
+  registeredAt: string;
+}
+
+export type ContactMessageStatus = 'New' | 'In Progress' | 'Replied' | 'Resolved';
+
+export interface ContactReply {
+  id: string;
+  senderName: string;
+  message: string;
+  sentAt: string;
+}
+
+export interface ContactMessage {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  collaboratorType: string;
+  technologyDomain: string;
+  subject: string;
+  message: string;
+  status: ContactMessageStatus;
+  replies: ContactReply[];
+  createdAt: string;
+}
+
+export interface ActivityLogItem {
+  id: string;
+  type: 'inquiry' | 'internship' | 'training' | 'content' | 'location' | 'auth' | 'chatbot';
+  title: string;
+  description: string;
+  actor: string;
+  timestamp: string;
+}
+
+export interface PublicSiteData {
+  content: WebsiteContentConfig;
+  location: LocationConfig;
+  trainingPrograms: TrainingProgram[];
+}
+
 export interface AdminOverviewStats {
   totalVisitors: number;
   totalConversations: number;
@@ -118,8 +288,17 @@ export interface AdminOverviewStats {
   totalInquiries: number;
   unansweredQuestionsCount: number;
   leadConversionRate: string;
+  internshipApplicationsCount: number;
+  pendingInternshipsCount: number;
+  trainingRegistrationsCount: number;
+  paidTrainingCount: number;
+  trainingRevenueBDT: number;
+  contactMessagesCount: number;
+  unreadContactMessagesCount: number;
   faqHitList: Array<{ question: string; category: string; count: number }>;
   leadsByStatus: Record<LeadStatus, number>;
   leadsByCategory: Record<string, number>;
   conversationTrends: Array<{ date: string; botOnly: number; humanAssisted: number }>;
+  monthlyMetrics: Array<{ label: string; inquiries: number; trainings: number; internships: number }>;
+  recentActivities: ActivityLogItem[];
 }

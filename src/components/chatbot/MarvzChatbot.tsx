@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { MessageSquare, Sparkles } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { MessageSquare, Sparkles, GripHorizontal, GripVertical } from 'lucide-react';
 import { ChatWindow } from './ChatWindow';
 import { LeadCaptureModal } from './LeadCaptureModal';
 import { KnowledgeBaseModal } from './KnowledgeBaseModal';
 import { AdminDashboardModal } from './AdminDashboardModal';
+import { useDraggablePosition } from './useDraggablePosition';
 
 interface MarvzChatbotProps {
   onOpenControlCenter?: () => void;
@@ -16,6 +17,25 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [leadCategory, setLeadCategory] = useState('Services');
 
+  const launcherRef = useRef<HTMLDivElement>(null);
+
+  const {
+    position: launcherPos,
+    isDragging: isLauncherDragging,
+    handlePointerDown: handleLauncherPointerDown,
+    wasJustDragged: wasLauncherJustDragged,
+  } = useDraggablePosition({
+    elementRef: launcherRef,
+    storageKey: 'marvz_chatbot_launcher_pos',
+    fallbackSize: { width: 56, height: 76 },
+    edgePadding: 8,
+    isActive: true,
+    getInitialPosition: ({ width, height, viewportWidth, viewportHeight }) => ({
+      x: viewportWidth - width - 24,
+      y: viewportHeight - height - 24,
+    }),
+  });
+
   const handleOpenLeadModal = (category: string = 'Services') => {
     setLeadCategory(category);
     setIsLeadModalOpen(true);
@@ -23,9 +43,10 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
 
   const handleAskQuestionFromKb = (question: string) => {
     setIsOpen(true);
-    // Find input and submit via event or state
     setTimeout(() => {
-      const input = document.querySelector('input[placeholder*="Ask about"]') as HTMLInputElement;
+      const input = document.querySelector(
+        'input[placeholder*="Type your question"], input[placeholder*="আপনার প্রশ্ন"]'
+      ) as HTMLInputElement;
       if (input) {
         input.value = question;
         const form = input.closest('form');
@@ -36,56 +57,102 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
     }, 200);
   };
 
+  const isLauncherOnLeftHalf =
+    typeof window !== 'undefined' && launcherPos.x < window.innerWidth / 2;
+
   return (
     <>
-      {/* Floating Chat Trigger Button (Bottom-Right) */}
-      <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3">
-        
-        {/* Floating Notification / Greeting Pill (Shown when chat is closed) */}
-        {!isOpen && (
-          <div
-            onClick={() => setIsOpen(true)}
-            className="hidden md:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-[#090f1f]/95 border border-red-500/40 text-xs text-slate-200 shadow-2xl backdrop-blur-md cursor-pointer hover:border-red-400 hover:text-white transition-all transform hover:-translate-y-0.5 group"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-semibold text-white">MARVZ AI Online</span>
-            <span className="text-slate-400">| How can I help you today?</span>
-            <Sparkles className="w-3.5 h-3.5 text-red-400 group-hover:rotate-12 transition-transform" />
-          </div>
-        )}
+      {/* Draggable Floating Chat Launcher (Freely repositionable across entire viewport) */}
+      <div
+        ref={launcherRef}
+        style={{ left: `${launcherPos.x}px`, top: `${launcherPos.y}px` }}
+        className={`fixed z-[45] flex flex-col items-center touch-none select-none ${
+          isLauncherDragging ? 'cursor-grabbing' : ''
+        }`}
+      >
+        {/* Small Visual Drag Handle / Move Indicator */}
+        <div
+          onPointerDown={handleLauncherPointerDown}
+          className={`mb-1 px-2 py-0.5 rounded-full bg-white border shadow-sm flex items-center justify-center transition-colors duration-150 touch-none ${
+            isLauncherDragging
+              ? 'cursor-grabbing border-[#30343B] text-[#202124]'
+              : 'cursor-grab border-[#E5E7EB] text-[#777777] hover:text-[#202124] hover:border-[#30343B]/40'
+          }`}
+          title="Drag to move chatbot anywhere"
+          aria-label="Drag handle to move chatbot"
+        >
+          <GripHorizontal className="w-3.5 h-3.5" />
+        </div>
 
-        {/* Main Circular Floating Launcher */}
-        <div className="relative group">
-          
-          {/* Subtle glowing ambient pulse */}
-          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-red-600 via-red-500 to-red-700 opacity-60 blur-md group-hover:opacity-100 transition-opacity animate-pulse" />
+        {/* Circular Launcher Button + Adaptive Greeting Pill */}
+        <div className="relative flex items-center">
+          {/* Floating Greeting Pill (Auto-flips side so it stays inside screen) */}
+          {!isOpen && !isLauncherDragging && (
+            <div
+              onPointerDown={handleLauncherPointerDown}
+              onClick={(e) => {
+                if (wasLauncherJustDragged()) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  return;
+                }
+                setIsOpen(true);
+              }}
+              className={`hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-[#E5E7EB] text-xs text-[#202124] shadow-md cursor-pointer hover:bg-[#F3F4F6] transition-colors duration-150 whitespace-nowrap absolute top-1/2 -translate-y-1/2 touch-none ${
+                isLauncherOnLeftHalf ? 'left-full ml-3' : 'right-full mr-3'
+              }`}
+              title="Click to chat or drag to reposition"
+            >
+              <GripVertical className="w-3.5 h-3.5 text-[#777777] shrink-0" />
+              <span className="w-2 h-2 rounded-full bg-emerald-600 shrink-0" />
+              <span className="font-semibold text-[#202124]">MARVZ AI Online</span>
+              <span className="text-[#777777]">| How can I help you today?</span>
+              <Sparkles className="w-3.5 h-3.5 text-[#30343B] shrink-0" />
+            </div>
+          )}
 
+          {/* Main Circular Floating Launcher */}
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border transition-all duration-300 focus:outline-none ${
+            type="button"
+            onPointerDown={handleLauncherPointerDown}
+            onClick={(e) => {
+              if (wasLauncherJustDragged()) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+              }
+              setIsOpen((prev) => !prev);
+            }}
+            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg border transition-colors duration-150 focus:outline-none touch-none ${
+              isLauncherDragging ? 'cursor-grabbing ring-2 ring-[#30343B]/25' : 'cursor-grab active:cursor-grabbing'
+            } ${
               isOpen
-                ? 'bg-gradient-to-br from-slate-900 to-[#070b15] border-red-500 text-white rotate-90 scale-95'
-                : 'bg-gradient-to-br from-red-600 via-red-700 to-red-950 border-red-400 text-white hover:scale-105'
+                ? 'bg-white border-[#E5E7EB] text-[#202124] hover:bg-[#F3F4F6]'
+                : 'bg-[#30343B] border-[#30343B] text-white hover:bg-[#202124]'
             }`}
-            aria-label={isOpen ? 'Close MARVZ AI Assistant' : 'Open MARVZ AI Assistant'}
-            title="MARVZ AI Assistant"
+            aria-label={
+              isOpen
+                ? 'Close MARVZ AI Assistant (or drag to move)'
+                : 'Open MARVZ AI Assistant (or drag to move)'
+            }
+            title="Click to toggle chat, or drag to move anywhere"
           >
             {isOpen ? (
-              <span className="text-xl font-bold">✕</span>
+              <span className="text-lg font-bold">✕</span>
             ) : (
-              <div className="relative flex items-center justify-center">
-                <MessageSquare className="w-6 h-6 text-white drop-shadow" />
-                <span className="absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#090f1f] animate-ping" />
-                <span className="absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#090f1f]" />
+              <div className="relative flex items-center justify-center pointer-events-none">
+                <MessageSquare className="w-6 h-6 text-white" />
+                <span className="absolute -top-1.5 -right-1.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white" />
               </div>
             )}
           </button>
         </div>
       </div>
 
-      {/* The Interactive Chat Window */}
+      {/* The Interactive Draggable Chat Window */}
       <ChatWindow
         isOpen={isOpen}
+        launcherPos={launcherPos}
         onClose={() => setIsOpen(false)}
         onOpenKnowledgeBase={() => setIsKbOpen(true)}
         onOpenAdmin={() => {

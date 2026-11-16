@@ -1,51 +1,73 @@
-import React, { useState } from 'react';
-import { Sparkles, Wrench, Layers, Clock, ArrowRight, CheckCircle2, Shield, Plane, Bot } from 'lucide-react';
-import { WORKSHOP_TRACKS, WorkshopTrack } from '../data/companyData';
+import React from 'react';
+import { ArrowRight, Briefcase, GraduationCap } from 'lucide-react';
+import { WORKSHOP_TRACKS } from '../data/companyData';
+import { TrainingProgram } from '../types/admin';
 import { SafeImage } from './SafeImage';
+import { TechBackdrop } from './TechBackdrop';
 
 interface LearnExperimentSectionProps {
+  programs?: TrainingProgram[];
   onOpenInquiry: (initialSubject?: string) => void;
+  onOpenTrainingRegister?: (programId?: string) => void;
+  onOpenInternshipModal?: () => void;
 }
 
-export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({ onOpenInquiry }) => {
-  return (
-    <section id="training" className="py-20 bg-[#F3F6FA] text-[#081426] relative border-b border-slate-200 overflow-hidden">
-      
-      {/* Authentic Hardware Engineering Workbench Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <img
-          src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=2000&q=80"
-          alt="Hardware engineering workbench background"
-          className="w-full h-full object-cover object-center opacity-[0.08]"
-          referrerPolicy="no-referrer"
-        />
-        {/* Soft light scrim ensuring maximum legibility */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#F3F6FA]/90 via-[#F3F6FA]/80 to-[#F3F6FA]/90" />
-        <div className="absolute inset-0 bg-[radial-gradient(#2563EB_1px,transparent_1px)] [background-size:32px_32px] opacity-[0.05]" />
-      </div>
+export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({
+  programs,
+  onOpenInquiry,
+  onOpenTrainingRegister,
+  onOpenInternshipModal,
+}) => {
+  const displayPrograms: Array<
+    Partial<TrainingProgram> & {
+      id: string;
+      title: string;
+      level: string;
+      duration: string;
+      format: string;
+      description: string;
+      hardwareTools: string[];
+    }
+  > = programs && programs.length > 0 ? programs : WORKSHOP_TRACKS;
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        
+  return (
+    <section
+      id="training"
+      className="relative overflow-hidden py-20 bg-[#FFFFFF] text-[#202124] border-b border-[#E5E7EB]"
+    >
+      <TechBackdrop variant="coding-lab" />
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div className="max-w-3xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#2563EB] mb-2 font-semibold">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
               05. Hands-On Engineering Experiences
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#081426] tracking-tight leading-tight">
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
               Learn. Experiment. Innovate.
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed">
-              Step into an authentic engineering laboratory where you learn by soldering circuit components, configuring autonomous drone avionics, writing microcontroller firmware, and diagnosing real hardware signals.
+            <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
+              Step into an authentic engineering laboratory at our Dhaka headquarters where you learn by soldering
+              circuit components, configuring autonomous drone avionics, writing microcontroller firmware, and diagnosing
+              real hardware signals.
             </p>
           </div>
 
-          <div className="shrink-0">
+          <div className="shrink-0 flex flex-wrap items-center gap-3">
+            {onOpenInternshipModal && (
+              <button
+                onClick={onOpenInternshipModal}
+                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl transition-colors"
+              >
+                <Briefcase className="w-4 h-4 text-[#30343B]" />
+                <span>Apply for Internship</span>
+              </button>
+            )}
             <button
               onClick={() => onOpenInquiry('Host Workshop or Request Cohort')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-white bg-[#2563EB] hover:bg-[#1d4ed8] rounded-xl transition-all shadow-md"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors shadow-xs"
             >
-              <span>Host Workshop at Your Institution</span>
+              <span>Host Institution Workshop</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -53,92 +75,83 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({ 
 
         {/* 2-Column Split: Lab Methodology & Authentic Laboratory Photography */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
-          
-          {/* Left: 3 Principles of Learning at MARVZ */}
           <div className="lg:col-span-7 space-y-6">
-            <h3 className="text-2xl font-bold text-[#081426]">
-              No Slides. Real Engineering on Physical Hardware.
-            </h3>
-            
+            <h3 className="text-2xl font-bold text-[#202124]">No Slides. Real Engineering on Physical Hardware.</h3>
+
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <h4 className="text-sm font-bold text-[#081426] mb-1">
-                  1. Component-Level Fabrication
-                </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Understand every wire, resistor, and ESC. Participants solder power boards, balance motors, and inspect signals using digital oscilloscopes.
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                <h4 className="text-sm font-bold text-[#202124] mb-1">1. Component-Level Fabrication</h4>
+                <p className="text-xs text-[#777777] leading-relaxed">
+                  Understand every wire, resistor, and ESC. Participants solder power boards, balance motors, and inspect
+                  signals using digital oscilloscopes.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <h4 className="text-sm font-bold text-[#081426] mb-1">
-                  2. Open Firmware & Flight Stacks
-                </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Program modern industry standards like PX4, ArduPilot, FreeRTOS, and ROS 2 rather than locked proprietary consumer gadgets.
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                <h4 className="text-sm font-bold text-[#202124] mb-1">2. Open Firmware & Flight Stacks</h4>
+                <p className="text-xs text-[#777777] leading-relaxed">
+                  Program modern industry standards like PX4, ArduPilot, FreeRTOS, and ROS 2 rather than locked
+                  proprietary consumer gadgets.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm">
-                <h4 className="text-sm font-bold text-[#081426] mb-1">
-                  3. Field Calibration & Testing
-                </h4>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Test your autonomous flight missions and robotics kinematics on designated testing fixtures, tracking PID errors and telemetry drift in real time.
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                <h4 className="text-sm font-bold text-[#202124] mb-1">3. Field Calibration & Testing</h4>
+                <p className="text-xs text-[#777777] leading-relaxed">
+                  Test your autonomous flight missions and robotics kinematics on designated testing fixtures, tracking
+                  PID errors and telemetry drift in real time.
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Right: Authentic Real Photo of Workbench & Circuitry */}
           <div className="lg:col-span-5">
-            <div className="relative rounded-2xl overflow-hidden border border-slate-300 shadow-xl bg-white aspect-[4/3]">
+            <div className="relative rounded-2xl overflow-hidden border border-[#E5E7EB] shadow-md bg-[#F3F4F6] aspect-[4/3]">
               <SafeImage
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=1000&q=80"
-                alt="Real engineers prototyping with electronic components and measurement devices in lab"
+                src="/assets/tech/iot-pcb.jpg"
+                alt="Custom embedded microcontroller and RF hardware testing board on white engineering surface"
                 fallbackTitle="Physical Prototyping Benches"
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#081426]/90 via-[#081426]/20 to-transparent pointer-events-none" />
-              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-white/95 backdrop-blur-md border border-slate-200 text-xs shadow-md">
-                <span className="font-bold text-[#081426]">Active Testing Bench</span>
-                <p className="text-slate-600 text-[11px] mt-0.5">
+              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-white/95 backdrop-blur-xs border border-[#E5E7EB] text-xs shadow-sm">
+                <span className="font-bold text-[#202124]">Active Testing Bench</span>
+                <p className="text-[#777777] text-[11px] mt-0.5">
                   Real oscilloscopes, logic analyzers, and motor dynamometers.
                 </p>
               </div>
             </div>
           </div>
-
         </div>
 
-        {/* 4 Intensive Workshop Tracks */}
+        {/* Live Training Programs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {WORKSHOP_TRACKS.map((track) => (
+          {displayPrograms.map((track) => (
             <div
               key={track.id}
-              className="p-6 rounded-2xl bg-white border border-slate-200 hover:border-[#2563EB] transition-all flex flex-col justify-between group shadow-sm hover:shadow-md"
+              className="p-6 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/40 transition-colors flex flex-col justify-between shadow-xs hover:shadow-md"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs font-mono">
-                  <span className="text-[#2563EB] uppercase tracking-wider font-semibold">{track.level}</span>
-                  <span className="text-slate-500">{track.duration}</span>
+                  <span className="text-[#30343B] uppercase tracking-wider font-semibold">{track.level}</span>
+                  <span className="text-[#777777]">{track.duration}</span>
                 </div>
 
-                <h4 className="text-lg font-bold text-[#081426] group-hover:text-[#2563EB] transition-colors leading-snug">
+                <h4 className="text-lg font-bold text-[#202124] leading-snug">
                   {track.title}
                 </h4>
 
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  {track.description}
-                </p>
+                <p className="text-xs text-[#777777] leading-relaxed">{track.description}</p>
 
                 <div className="pt-2">
-                  <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">
+                  <div className="text-[11px] font-semibold text-[#202124] uppercase tracking-wider mb-2">
                     Hardware Equipment & Tools
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {track.hardwareTools.map((tool, idx) => (
-                      <span key={idx} className="text-[11px] text-slate-700 bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
+                      <span
+                        key={idx}
+                        className="text-[11px] text-[#202124] bg-[#F3F4F6] px-2.5 py-1 rounded border border-[#E5E7EB]"
+                      >
                         {tool}
                       </span>
                     ))}
@@ -146,22 +159,62 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({ 
                 </div>
               </div>
 
-              <div className="pt-6 border-t border-slate-200 mt-6 flex items-center justify-between">
-                <span className="text-xs text-slate-500 font-mono">
-                  {track.format}
-                </span>
+              <div className="pt-6 border-t border-[#E5E7EB] mt-6 flex flex-wrap items-center justify-between gap-3">
+                <div className="text-xs font-mono text-[#777777] space-y-0.5">
+                  {typeof track.price === 'number' && (
+                    <div className="font-bold text-[#202124] tabular-nums">
+                      {track.currency || 'BDT'} {track.price.toLocaleString()}
+                    </div>
+                  )}
+                  <div className="text-[11px] text-[#777777] flex items-center gap-2">
+                    <span>{track.format}</span>
+                    {track.seatsAvailable !== undefined && (
+                      <span className="text-[#30343B] font-semibold">· {track.seatsAvailable} seats left</span>
+                    )}
+                  </div>
+                </div>
 
                 <button
-                  onClick={() => onOpenInquiry(`Workshop Registration: ${track.title}`)}
-                  className="px-4 py-2 text-xs font-bold uppercase tracking-wider text-white bg-[#2563EB] hover:bg-[#1d4ed8] rounded-xl transition-colors shadow-sm"
+                  onClick={() =>
+                    onOpenTrainingRegister
+                      ? onOpenTrainingRegister(track.id)
+                      : onOpenInquiry(`Workshop Registration: ${track.title}`)
+                  }
+                  disabled={track.status === 'Closed'}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] disabled:bg-[#D1D5DB] disabled:text-[#777777] rounded-xl transition-colors shadow-xs"
                 >
-                  Inquire for Seat
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  <span>{track.status === 'Closed' ? 'Batch Full' : 'Register Seat'}</span>
                 </button>
               </div>
             </div>
           ))}
         </div>
 
+        {/* Dedicated Internship Fellowship Callout Banner */}
+        {onOpenInternshipModal && (
+          <div className="mt-12 p-6 sm:p-8 rounded-2xl bg-[#F3F4F6] text-[#202124] border border-[#E5E7EB] flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xs">
+            <div className="space-y-1.5 max-w-2xl">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] font-semibold">
+                Dhaka Lab Fellowships · Internships
+              </div>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-[#202124]">
+                Engineering Internships & Research Fellowships
+              </h3>
+              <p className="text-xs sm:text-sm text-[#777777] leading-relaxed">
+                Gain real R&D mentorship in AI, Drone Engineering, Robotics, Cybersecurity, IoT, and Software Engineering at
+                our West Shewrapara lab.
+              </p>
+            </div>
+            <button
+              onClick={onOpenInternshipModal}
+              className="shrink-0 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold uppercase tracking-wider shadow-xs transition-colors"
+            >
+              <Briefcase className="w-4 h-4" />
+              <span>Apply for Internship</span>
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
