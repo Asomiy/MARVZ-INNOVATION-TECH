@@ -3,6 +3,7 @@ import { ArrowRight, X, CheckCircle2, Layers } from 'lucide-react';
 import { PROJECT_SHOWCASE, ProjectShowcase } from '../data/companyData';
 import { SafeImage } from './SafeImage';
 import { TechBackdrop } from './TechBackdrop';
+import { Reveal } from './Reveal';
 
 interface InnovationInActionSectionProps {
   onOpenInquiry: (initialSubject?: string) => void;
@@ -23,94 +24,99 @@ export const InnovationInActionSection: React.FC<InnovationInActionSectionProps>
       <TechBackdrop variant="uav-telemetry" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-3xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
-              04. Prototypes & Applied Experiments
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="max-w-3xl">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
+                04. Prototypes &amp; Applied Experiments
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
+                Innovation in Action
+              </h2>
+              <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
+                Explore our ongoing experimental prototypes, real-world research hardware, and laboratory demonstrators
+                designed and validated in our engineering workspace.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
-              Innovation in Action
-            </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
-              Explore our ongoing experimental prototypes, real-world research hardware, and laboratory demonstrators
-              designed and validated in our engineering workspace.
-            </p>
-          </div>
 
-          <div className="shrink-0">
-            <button
-              onClick={() => onOpenInquiry('Custom Hardware or R&D Prototype Discussion')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors shadow-xs"
-            >
-              <span>Request R&D Collaboration</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="shrink-0">
+              <button
+                onClick={() => onOpenInquiry('Custom Hardware or R&D Prototype Discussion')}
+                className="group inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl hover:-translate-y-0.5 transition-all duration-300 shadow-xs hover:shadow-md"
+              >
+                <span>Request R&amp;D Collaboration</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Clean Portfolio Domain Filter */}
-        <div className="flex flex-wrap items-center gap-2 mb-8">
-          {domains.map((domain) => {
-            const isSelected = activeDomain === domain;
-            return (
-              <button
-                key={domain}
-                onClick={() => setActiveDomain(domain)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors duration-150 border ${
-                  isSelected
-                    ? 'bg-[#30343B] text-white border-[#30343B] shadow-xs'
-                    : 'bg-white text-[#777777] border-[#E5E7EB] hover:text-[#202124]'
-                }`}
-              >
-                {domain}
-              </button>
-            );
-          })}
-        </div>
+        <Reveal delayMs={60}>
+          <div className="flex flex-wrap items-center gap-2 mb-8">
+            {domains.map((domain) => {
+              const isSelected = activeDomain === domain;
+              return (
+                <button
+                  key={domain}
+                  onClick={() => setActiveDomain(domain)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all duration-200 border ${
+                    isSelected
+                      ? 'bg-[#30343B] text-white border-[#30343B] shadow-xs'
+                      : 'bg-white text-[#777777] border-[#E5E7EB] hover:text-[#202124] hover:border-[#30343B]/35'
+                  }`}
+                >
+                  {domain}
+                </button>
+              );
+            })}
+          </div>
+        </Reveal>
 
         {/* Showcase Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {visibleProjects.map((project) => (
-            <div
-              key={project.id}
-              onClick={() => setSelectedProject(project)}
-              className="group cursor-pointer rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/40 transition-all duration-200 flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5"
-            >
-              {/* Static Photography */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-[#F3F4F6] border-b border-[#E5E7EB]">
-                <SafeImage
-                  src={project.imageUrl}
-                  alt={project.altText}
-                  fallbackTitle={project.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-4 left-4 text-[10px] font-mono font-semibold text-[#202124] bg-white/95 px-2.5 py-1 rounded-md border border-[#E5E7EB] shadow-xs">
-                  {project.domain}
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="text-lg font-bold text-[#202124] leading-snug">
-                    {project.title}
-                  </h3>
-                  <p className="mt-2 text-xs text-[#777777] leading-relaxed">
-                    {project.overview}
-                  </p>
+        <div key={activeDomain} className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-marvz-panel-in">
+          {visibleProjects.map((project, idx) => (
+            <Reveal key={project.id} delayMs={idx * 70} className="h-full">
+              <div
+                onClick={() => setSelectedProject(project)}
+                className="group h-full cursor-pointer rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/45 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-1"
+              >
+                {/* Photography with Subtle Hover Scale */}
+                <div className="relative aspect-[16/10] overflow-hidden bg-[#F3F4F6] border-b border-[#E5E7EB]">
+                  <SafeImage
+                    src={project.imageUrl}
+                    alt={project.altText}
+                    fallbackTitle={project.title}
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                  />
+                  <div className="absolute top-4 left-4 text-[10px] font-mono font-semibold text-[#202124] bg-white/95 px-2.5 py-1 rounded-md border border-[#E5E7EB] shadow-xs">
+                    {project.domain}
+                  </div>
                 </div>
 
-                <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
-                  <span className="font-mono text-[#777777] flex items-center gap-1.5">
-                    <Layers className="w-3.5 h-3.5 text-[#30343B]" />
-                    {project.stack[0]}
-                  </span>
-                  <span className="font-semibold text-[#30343B] flex items-center gap-1">
-                    Inspect <ArrowRight className="w-3 h-3" />
-                  </span>
+                {/* Content */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-[#202124] leading-snug">
+                      {project.title}
+                    </h3>
+                    <p className="mt-2 text-xs text-[#777777] leading-relaxed">
+                      {project.overview}
+                    </p>
+                  </div>
+
+                  <div className="pt-4 border-t border-[#E5E7EB] flex items-center justify-between text-xs">
+                    <span className="font-mono text-[#777777] flex items-center gap-1.5">
+                      <Layers className="w-3.5 h-3.5 text-[#30343B]" />
+                      {project.stack[0]}
+                    </span>
+                    <span className="font-semibold text-[#30343B] flex items-center gap-1">
+                      Inspect <ArrowRight className="w-3 h-3 transition-transform duration-300 group-hover:translate-x-1" />
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
@@ -118,7 +124,7 @@ export const InnovationInActionSection: React.FC<InnovationInActionSectionProps>
       {/* Project Inspection Modal */}
       {selectedProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E7EB] shadow-xl p-6 sm:p-8 text-[#202124]">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E7EB] shadow-xl p-6 sm:p-8 text-[#202124] animate-marvz-panel-in">
             <button
               onClick={() => setSelectedProject(null)}
               className="absolute top-5 right-5 p-2 rounded-lg text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6]"

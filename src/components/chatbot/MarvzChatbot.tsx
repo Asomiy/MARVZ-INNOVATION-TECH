@@ -98,7 +98,7 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
                 }
                 setIsOpen(true);
               }}
-              className={`hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-[#E5E7EB] text-xs text-[#202124] shadow-md cursor-pointer hover:bg-[#F3F4F6] transition-colors duration-150 whitespace-nowrap absolute top-1/2 -translate-y-1/2 touch-none ${
+              className={`hidden md:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-[#E5E7EB] text-xs text-[#202124] shadow-md cursor-pointer hover:bg-[#F3F4F6] transition-all duration-200 whitespace-nowrap absolute top-1/2 -translate-y-1/2 touch-none animate-marvz-panel-in ${
                 isLauncherOnLeftHalf ? 'left-full ml-3' : 'right-full mr-3'
               }`}
               title="Click to chat or drag to reposition"
@@ -123,7 +123,7 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
               }
               setIsOpen((prev) => !prev);
             }}
-            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg border transition-colors duration-150 focus:outline-none touch-none ${
+            className={`relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg border transition-all duration-200 hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B]/40 touch-none ${
               isLauncherDragging ? 'cursor-grabbing ring-2 ring-[#30343B]/25' : 'cursor-grab active:cursor-grabbing'
             } ${
               isOpen

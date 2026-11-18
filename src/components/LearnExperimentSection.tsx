@@ -4,6 +4,7 @@ import { WORKSHOP_TRACKS } from '../data/companyData';
 import { TrainingProgram } from '../types/admin';
 import { SafeImage } from './SafeImage';
 import { TechBackdrop } from './TechBackdrop';
+import { Reveal } from './Reveal';
 
 interface LearnExperimentSectionProps {
   programs?: TrainingProgram[];
@@ -38,48 +39,50 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({
       <TechBackdrop variant="coding-lab" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-3xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
-              05. Hands-On Engineering Experiences
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="max-w-3xl">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
+                05. Hands-On Engineering Experiences
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
+                Learn. Experiment. Innovate.
+              </h2>
+              <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
+                Step into an authentic engineering laboratory at our Dhaka headquarters where you learn by soldering
+                circuit components, configuring autonomous drone avionics, writing microcontroller firmware, and diagnosing
+                real hardware signals.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
-              Learn. Experiment. Innovate.
-            </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
-              Step into an authentic engineering laboratory at our Dhaka headquarters where you learn by soldering
-              circuit components, configuring autonomous drone avionics, writing microcontroller firmware, and diagnosing
-              real hardware signals.
-            </p>
-          </div>
 
-          <div className="shrink-0 flex flex-wrap items-center gap-3">
-            {onOpenInternshipModal && (
+            <div className="shrink-0 flex flex-wrap items-center gap-3">
+              {onOpenInternshipModal && (
+                <button
+                  onClick={onOpenInternshipModal}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  <Briefcase className="w-4 h-4 text-[#30343B]" />
+                  <span>Apply for Internship</span>
+                </button>
+              )}
               <button
-                onClick={onOpenInternshipModal}
-                className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl transition-colors"
+                onClick={() => onOpenInquiry('Host Workshop or Request Cohort')}
+                className="group inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl hover:-translate-y-0.5 transition-all duration-300 shadow-xs hover:shadow-md"
               >
-                <Briefcase className="w-4 h-4 text-[#30343B]" />
-                <span>Apply for Internship</span>
+                <span>Host Institution Workshop</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
-            )}
-            <button
-              onClick={() => onOpenInquiry('Host Workshop or Request Cohort')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors shadow-xs"
-            >
-              <span>Host Institution Workshop</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* 2-Column Split: Lab Methodology & Authentic Laboratory Photography */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center mb-16">
-          <div className="lg:col-span-7 space-y-6">
+          <Reveal delayMs={60} className="lg:col-span-7 space-y-6">
             <h3 className="text-2xl font-bold text-[#202124]">No Slides. Real Engineering on Physical Hardware.</h3>
 
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] hover:bg-white hover:border-[#30343B]/35 transition-all duration-300">
                 <h4 className="text-sm font-bold text-[#202124] mb-1">1. Component-Level Fabrication</h4>
                 <p className="text-xs text-[#777777] leading-relaxed">
                   Understand every wire, resistor, and ESC. Participants solder power boards, balance motors, and inspect
@@ -87,49 +90,47 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
-                <h4 className="text-sm font-bold text-[#202124] mb-1">2. Open Firmware & Flight Stacks</h4>
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] hover:bg-white hover:border-[#30343B]/35 transition-all duration-300">
+                <h4 className="text-sm font-bold text-[#202124] mb-1">2. Open Firmware &amp; Flight Stacks</h4>
                 <p className="text-xs text-[#777777] leading-relaxed">
                   Program modern industry standards like PX4, ArduPilot, FreeRTOS, and ROS 2 rather than locked
                   proprietary consumer gadgets.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
-                <h4 className="text-sm font-bold text-[#202124] mb-1">3. Field Calibration & Testing</h4>
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] hover:bg-white hover:border-[#30343B]/35 transition-all duration-300">
+                <h4 className="text-sm font-bold text-[#202124] mb-1">3. Field Calibration &amp; Testing</h4>
                 <p className="text-xs text-[#777777] leading-relaxed">
                   Test your autonomous flight missions and robotics kinematics on designated testing fixtures, tracking
                   PID errors and telemetry drift in real time.
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="lg:col-span-5">
-            <div className="relative rounded-2xl overflow-hidden border border-[#E5E7EB] shadow-md bg-[#F3F4F6] aspect-[4/3]">
+          <Reveal delayMs={120} className="lg:col-span-5">
+            <div className="group relative rounded-2xl overflow-hidden border border-[#E5E7EB] shadow-md hover:shadow-lg transition-shadow duration-300 bg-[#F3F4F6] aspect-[4/3]">
               <SafeImage
                 src="/assets/tech/iot-pcb.jpg"
                 alt="Custom embedded microcontroller and RF hardware testing board on white engineering surface"
                 fallbackTitle="Physical Prototyping Benches"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
               />
-              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-white/95 backdrop-blur-xs border border-[#E5E7EB] text-xs shadow-sm">
+              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-white/95 backdrop-blur-xs border border-[#E5E7EB] text-xs shadow-sm transition-transform duration-300 group-hover:-translate-y-0.5">
                 <span className="font-bold text-[#202124]">Active Testing Bench</span>
                 <p className="text-[#777777] text-[11px] mt-0.5">
                   Real oscilloscopes, logic analyzers, and motor dynamometers.
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
 
         {/* Live Training Programs Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {displayPrograms.map((track) => (
-            <div
-              key={track.id}
-              className="p-6 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/40 transition-colors flex flex-col justify-between shadow-xs hover:shadow-md"
-            >
+          {displayPrograms.map((track, idx) => (
+            <Reveal key={track.id} delayMs={idx * 70} className="h-full">
+              <div className="group h-full p-6 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/45 hover:-translate-y-1 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between shadow-xs hover:shadow-md">
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-xs font-mono">
                   <span className="text-[#30343B] uppercase tracking-wider font-semibold">{track.level}</span>
@@ -187,7 +188,8 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({
                   <span>{track.status === 'Closed' ? 'Batch Full' : 'Register Seat'}</span>
                 </button>
               </div>
-            </div>
+              </div>
+            </Reveal>
           ))}
         </div>
 

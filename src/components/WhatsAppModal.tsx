@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, MessageSquare, CheckCheck, Phone } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '+880 1800-627898';
+const WHATSAPP_NUMBER = '+8801775551987';
+const WA_URL = 'https://wa.me/8801775551987';
+const TEL_URL = 'tel:+8801775551987';
 
 interface WhatsAppModalProps {
   isOpen: boolean;
@@ -81,16 +83,27 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose })
         {/* Header */}
         <div className="bg-[#30343B] px-5 py-4 flex items-center justify-between border-b border-[#E5E7EB]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-white text-[#30343B] flex items-center justify-center shadow-xs">
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Open WhatsApp chat"
+              className="w-10 h-10 rounded-full bg-white text-[#30343B] flex items-center justify-center shadow-xs hover:bg-[#F3F4F6] transition-colors"
+            >
               <MessageSquare className="w-5 h-5" />
-            </div>
+            </a>
             <div>
               <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
                 MARVZ Advisory Line
               </h4>
-              <p className="text-[11px] text-white/80 font-mono">
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[11px] text-white/85 hover:text-white font-mono hover:underline"
+              >
                 {WHATSAPP_NUMBER}
-              </p>
+              </a>
             </div>
           </div>
 
@@ -172,10 +185,22 @@ export const WhatsAppModal: React.FC<WhatsAppModalProps> = ({ isOpen, onClose })
           </button>
         </form>
 
-        {/* Bottom Direct Link Disclaimer */}
-        <div className="px-4 py-2 bg-[#F3F4F6] border-t border-[#E5E7EB] text-center text-[10px] text-[#777777] flex items-center justify-center gap-1.5">
-          <Phone className="w-3 h-3 text-[#30343B]" />
-          <span>Direct Contact: {WHATSAPP_NUMBER}</span>
+        {/* Bottom Direct Clickable Links */}
+        <div className="px-4 py-2 bg-[#F3F4F6] border-t border-[#E5E7EB] text-center text-[10px] text-[#777777] flex items-center justify-center gap-3">
+          <a href={TEL_URL} className="inline-flex items-center gap-1 text-[#202124] hover:underline font-medium">
+            <Phone className="w-3 h-3 text-[#30343B]" />
+            <span>Call: {WHATSAPP_NUMBER}</span>
+          </a>
+          <span aria-hidden="true">·</span>
+          <a
+            href={WA_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-[#202124] hover:underline font-medium"
+          >
+            <MessageSquare className="w-3 h-3 text-[#30343B]" />
+            <span>Open WhatsApp</span>
+          </a>
         </div>
       </div>
     </div>

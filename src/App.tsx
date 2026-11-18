@@ -10,7 +10,10 @@ import { HeroSection } from './components/HeroSection';
 import { CinematicAnimationSection } from './components/CinematicAnimationSection';
 import { AboutSection } from './components/AboutSection';
 import { TechnologiesSection } from './components/TechnologiesSection';
+import { OfficesCollaborationSection } from './components/OfficesCollaborationSection';
+import { EcosystemClientsSection } from './components/EcosystemClientsSection';
 import { WhatWeDoSection } from './components/WhatWeDoSection';
+import { BrandedLoader } from './components/BrandedLoader';
 import { InnovationInActionSection } from './components/InnovationInActionSection';
 import { LearnExperimentSection } from './components/LearnExperimentSection';
 import { ContactCollaborationSection } from './components/ContactCollaborationSection';
@@ -35,9 +38,9 @@ const DEFAULT_LOCATION: LocationConfig = {
     '3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh.',
   landmarkNote: 'Near Dhaka Metro Rail Pillar 304, West Shewrapara',
   cityCountry: 'Dhaka-1216, Bangladesh',
-  contactPhone: '+880 1800-MARVZ (62789)',
-  contactWhatsApp: '+880 1800-627898',
-  contactEmail: 'info@marvztech.com',
+  contactPhone: '+8801775551987',
+  contactWhatsApp: '+8801775551987',
+  contactEmail: 'marvzinnovationtech@gmail.com',
   workingHours: 'Sat – Thu: 9:30 AM – 6:30 PM (BST)',
   mapSearchQuery: 'Aysha Tower, House 756, West Shewrapara, Dhaka 1216, Bangladesh',
   googleMapsUrl:
@@ -240,6 +243,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FFFFFF] text-[#202124] font-sans selection:bg-[#30343B]/15 selection:text-[#202124]">
+      <BrandedLoader />
       {gmpQuotaExceeded && (
         <div
           role="alert"
@@ -278,6 +282,12 @@ export default function App() {
 
         {/* C. Explore Our Technology – Service Cards */}
         <TechnologiesSection services={siteContent.services} onOpenInquiry={handleOpenInquiry} />
+
+        {/* C2. Office Locations, R&D Facility & Institutional Collaborations */}
+        <OfficesCollaborationSection onOpenInquiry={handleOpenInquiry} />
+
+        {/* C3. Confirmed Clients Policy, Institutional Engagements & Industry Ecosystem */}
+        <EcosystemClientsSection onOpenInquiry={handleOpenInquiry} />
 
         {/* D. What We Do – 3 Main Business Pillars */}
         <WhatWeDoSection onOpenInquiry={handleOpenInquiry} />

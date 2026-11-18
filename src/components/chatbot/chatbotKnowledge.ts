@@ -113,9 +113,9 @@ export const KNOWLEDGE_BASE_FAQS: FAQItem[] = [
     category: 'Contact',
     question: 'How can I contact your team?',
     questionBn: 'আপনাদের টিমের সাথে কীভাবে যোগাযোগ করব?',
-    answer: 'You can reach MARVZ & INNOVATION TECH directly through:\n• Headquarters: Innovation Hub, Level 4, Tech Park\n• Official Email: contact@marvztech.com\n• Direct Phone Line: +880 1800-MARVZ-TECH\n• WhatsApp Advisory Line: +880 1711-000000\n• Office Hours: Saturday – Thursday, 9:00 AM – 7:00 PM\n\nYou can also click the "Request Callback" button right in this chat to have an engineer call you back!',
-    answerBn: 'MARVZ & INNOVATION TECH-এর সাথে যোগাযোগের মাধ্যম:\n• ঠিকানা: ইনোভেশন হাব, লেভেল ৪, টেক পার্ক\n• ইমেইল: contact@marvztech.com\n• হটলাইন: +880 1800-MARVZ-TECH\n• হোয়াটসঅ্যাপ: +880 1711-000000\n• অফিস সময়: শনিবার থেকে বৃহস্পতিবার, সকাল ৯:০০ - সন্ধ্যা ৭:০০\n\nআপনি চাইলে এই চ্যাট থেকেই "Request Callback" বাটনে ক্লিক করে সরাসরি কলের অনুরোধ জানাতে পারেন!',
-    tags: ['contact', 'phone', 'email', 'office', 'whatsapp', 'address'],
+    answer: 'You can reach MARVZ & INNOVATION TECH directly through:\n• Operational Office – Banani DOHS: 92/A, Banani DOHS, Dhaka-1213, Bangladesh\n• Operational Office – West Shewrapara: 3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh\n• Official Email: marvzinnovationtech@gmail.com\n• Direct Phone Line: +8801775551987\n• WhatsApp Advisory Line: +8801775551987\n• Office Hours: Saturday – Thursday, 9:30 AM – 6:30 PM\n\nYou can also click the "Request Callback" button right in this chat to have an engineer call you back!',
+    answerBn: 'MARVZ & INNOVATION TECH-এর সাথে যোগাযোগের মাধ্যম:\n• Operational Office – Banani DOHS: 92/A, Banani DOHS, Dhaka-1213, Bangladesh\n• Operational Office – West Shewrapara: ৩য় তলা, বাড়ি নং ৭৫৬, আয়শা টাওয়ার, পশ্চিম শেওড়াপাড়া (মেট্রো পিলার ৩০৪-এর কাছে), ঢাকা-১২১৬\n• ইমেইল: marvzinnovationtech@gmail.com\n• ফোন: +8801775551987\n• হোয়াটসঅ্যাপ: +8801775551987\n• অফিস সময়: শনিবার থেকে বৃহস্পতিবার, সকাল ৯:৩০ - সন্ধ্যা ৬:৩০\n\nআপনি চাইলে এই চ্যাট থেকেই "Request Callback" বাটনে ক্লিক করে সরাসরি কলের অনুরোধ জানাতে পারেন!',
+    tags: ['contact', 'phone', 'email', 'office', 'whatsapp', 'address', 'banani', 'dohs'],
   },
   {
     id: 'faq-6',
@@ -158,8 +158,8 @@ export const KNOWLEDGE_BASE_FAQS: FAQItem[] = [
     category: 'Partnerships',
     question: 'How do you handle business collaboration and enterprise partnerships?',
     questionBn: 'ব্যবসায়িক পার্টনারশিপ ও কোলাবোরেশন কীভাবে করা যায়?',
-    answer: 'We partner with corporations, startups, and academic institutions for custom R&D, pilot proof-of-concepts (PoC), and technical training. To discuss a partnership, share your brief here or connect with our leadership desk on WhatsApp (+880 1711-000000).',
-    answerBn: 'আমরা বিভিন্ন এন্টারপ্রাইজ, স্টার্টআপ ও বিশ্ববিদ্যালয়ের সাথে যৌথ গবেষণা, পাইলট প্রজেক্ট এবং কর্পোরেট ট্রেনিংয়ে অংশীদারিত্ব করে থাকি। বিস্তারিত আলোচনার জন্য সরাসরি হোয়াটসঅ্যাপে (+880 1711-000000) যোগাযোগ করতে পারেন।',
+    answer: 'We partner with corporations, startups, and academic institutions for custom R&D, pilot proof-of-concepts (PoC), and technical training. To discuss a partnership, share your brief here or connect with our leadership desk on WhatsApp (+8801775551987) or email marvzinnovationtech@gmail.com.',
+    answerBn: 'আমরা বিভিন্ন এন্টারপ্রাইজ, স্টার্টআপ ও বিশ্ববিদ্যালয়ের সাথে যৌথ গবেষণা, পাইলট প্রজেক্ট এবং কর্পোরেট ট্রেনিংয়ে অংশীদারিত্ব করে থাকি। বিস্তারিত আলোচনার জন্য সরাসরি হোয়াটসঅ্যাপে (+8801775551987) বা ইমেইলে (marvzinnovationtech@gmail.com) যোগাযোগ করতে পারেন।',
     tags: ['partnership', 'collaboration', 'business', 'enterprise'],
   },
 ];

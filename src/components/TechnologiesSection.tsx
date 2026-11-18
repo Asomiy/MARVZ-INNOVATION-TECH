@@ -5,6 +5,8 @@ import { SafeImage } from './SafeImage';
 import { WebsiteServiceItem } from '../types/admin';
 import { TechBackdrop } from './TechBackdrop';
 import { ServiceTechIllustration } from './ServiceTechIllustration';
+import { Reveal } from './Reveal';
+import { CountUpNumber } from './CountUpNumber';
 
 interface TechnologiesSectionProps {
   services?: WebsiteServiceItem[];
@@ -39,60 +41,62 @@ export const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({ servic
       <TechBackdrop variant="cyber-network" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <div className="max-w-3xl">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
-              02. Core Technology Divisions
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+            <div className="max-w-3xl">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
+                02. <CountUpNumber value={displayedServices.length} /> Core Technology Divisions
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
+                Explore Our Technology
+              </h2>
+              <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
+                We operate as an interconnected technology ecosystem—where aerial drone avionics, industrial robotics,
+                embedded IoT, artificial intelligence, and cybersecurity converge into unified engineering solutions.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
-              Explore Our Technology
-            </h2>
-            <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
-              We operate as an interconnected technology ecosystem—where aerial drone avionics, industrial robotics,
-              embedded IoT, artificial intelligence, and cybersecurity converge into unified engineering solutions.
-            </p>
-          </div>
 
-          <div className="shrink-0">
-            <button
-              onClick={() => onOpenInquiry('Technology Ecosystem Consultation')}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors shadow-xs"
-            >
-              <span>Discuss Technical Specs</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
+            <div className="shrink-0">
+              <button
+                onClick={() => onOpenInquiry('Technology Ecosystem Consultation')}
+                className="group inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl hover:-translate-y-0.5 transition-all duration-300 shadow-xs hover:shadow-md"
+              >
+                <span>Discuss Technical Specs</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+              </button>
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Technology Cards with Unique Architectural Illustrations */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayedServices.map((tech, index) => {
             const hasCustomUpload = Boolean(tech.imageUrl && tech.imageUrl.startsWith('/uploads/'));
             return (
-              <div
-                key={tech.id}
-                className="group rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/40 transition-all duration-200 flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-0.5"
-              >
-                {/* Unique Technology Illustration Header */}
-                <div className="relative aspect-[2/1] overflow-hidden bg-[#FAFAFB] border-b border-[#E5E7EB]">
-                  {hasCustomUpload ? (
-                    <SafeImage
-                      src={tech.imageUrl}
-                      alt={tech.altText}
-                      fallbackTitle={tech.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <ServiceTechIllustration id={tech.id} title={tech.title} />
-                  )}
-                  {/* Clean White Domain Icon Badge */}
-                  <div className="absolute top-3.5 left-3.5 p-2 rounded-xl bg-white/95 border border-[#E5E7EB] shadow-xs">
-                    {getDomainIcon(tech.id)}
+              <Reveal key={tech.id} delayMs={index * 70} className="h-full">
+                <div className="group h-full rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/45 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col overflow-hidden shadow-xs hover:shadow-md hover:-translate-y-1">
+                  {/* Unique Technology Illustration Header */}
+                  <div className="relative aspect-[2/1] overflow-hidden bg-[#FAFAFB] border-b border-[#E5E7EB]">
+                    {hasCustomUpload ? (
+                      <SafeImage
+                        src={tech.imageUrl}
+                        alt={tech.altText}
+                        fallbackTitle={tech.title}
+                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="w-full h-full transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+                        <ServiceTechIllustration id={tech.id} title={tech.title} />
+                      </div>
+                    )}
+                    {/* Clean White Domain Icon Badge */}
+                    <div className="absolute top-3.5 left-3.5 p-2 rounded-xl bg-white/95 border border-[#E5E7EB] shadow-xs transition-transform duration-300 group-hover:scale-110">
+                      {getDomainIcon(tech.id)}
+                    </div>
+                    <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-md bg-white/95 border border-[#E5E7EB] text-[10px] font-mono font-semibold text-[#777777] tracking-wider tabular-nums">
+                      0{index + 1}
+                    </div>
                   </div>
-                  <div className="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-md bg-white/95 border border-[#E5E7EB] text-[10px] font-mono font-semibold text-[#777777] tracking-wider">
-                    0{index + 1}
-                  </div>
-                </div>
 
               {/* Card Content */}
               <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
@@ -138,6 +142,7 @@ export const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({ servic
                 </div>
               </div>
             </div>
+              </Reveal>
             );
           })}
         </div>
@@ -146,7 +151,7 @@ export const TechnologiesSection: React.FC<TechnologiesSectionProps> = ({ servic
       {/* Technology Detail Modal */}
       {selectedTech && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E7EB] shadow-xl p-6 sm:p-8 text-[#202124]">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-[#E5E7EB] shadow-xl p-6 sm:p-8 text-[#202124] animate-marvz-panel-in">
             <button
               onClick={() => setSelectedTech(null)}
               className="absolute top-5 right-5 p-2 rounded-lg text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6] transition-colors"

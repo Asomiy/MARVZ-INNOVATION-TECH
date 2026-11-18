@@ -15,9 +15,9 @@
     "enableHumanEscalation": true,
     "enableQuickReplies": true,
     "enableVoiceInput": true,
-    "contactEmail": "contact@marvztech.com",
-    "contactPhone": "+880 1800-MARVZ-TECH",
-    "contactWhatsApp": "+880 1711-000000",
+    "contactEmail": "marvzinnovationtech@gmail.com",
+    "contactPhone": "+8801775551987",
+    "contactWhatsApp": "+8801775551987",
     "officeLocation": "3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh."
   },
   "locationConfig": {
@@ -25,9 +25,9 @@
     "officeAddress": "3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh.",
     "landmarkNote": "Near Metro Pillar 304, West Shewrapara, Mirpur Corridor",
     "cityCountry": "Dhaka-1216, Bangladesh",
-    "contactPhone": "+880 1800-627898",
-    "contactWhatsApp": "+880 1711-000000",
-    "contactEmail": "hello@marvztech.com",
+    "contactPhone": "+8801775551987",
+    "contactWhatsApp": "+8801775551987",
+    "contactEmail": "marvzinnovationtech@gmail.com",
     "workingHours": "Saturday – Thursday: 09:30 AM – 06:30 PM (BST)",
     "mapSearchQuery": "Aysha Tower, House No. 756, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh",
     "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=Aysha%20Tower%2C%20House%20No.%20756%2C%20West%20Shewrapara%2C%20Near%20Metro%20Pillar%20304%2C%20Dhaka-1216%2C%20Bangladesh",
@@ -629,15 +629,17 @@
       "category": "Contact",
       "question": "How do I visit your Innovation Hub or schedule a consultation?",
       "questionBn": "আপনাদের ইনোভেশন হাব কীভাবে ভিজিট করব বা মিটিং বুক করব?",
-      "answer": "Our Innovation Hub is located at Level 4, Tech Park. You can book an appointment via our chatbot lead form, call +880 1800-MARVZ-TECH, or message our WhatsApp advisor line at +880 1711-000000.",
-      "answerBn": "আমাদের অফিস টেক পার্কের লেভেল ৪-এ অবস্থিত। চ্যাটবটে ফর্ম পূরণ করে বা সরাসরি হোয়াটসঅ্যাপে (+880 1711-000000) যোগাযোগ করে মিটিং বুক করতে পারেন।",
+      "answer": "MARVZ & INNOVATION TECH operates two Dhaka offices: Operational Office – Banani DOHS (92/A, Banani DOHS, Dhaka-1213, Bangladesh) and Operational Office – West Shewrapara (3rd Floor, House No. 756, Aysha Tower, West Shewrapara, Near Metro Pillar 304, Dhaka-1216, Bangladesh). You can book an appointment via our chatbot lead form, email marvzinnovationtech@gmail.com, call +8801775551987, or message our WhatsApp line at +8801775551987.",
+      "answerBn": "আমাদের দুটি অফিস রয়েছে: Operational Office – Banani DOHS (92/A, Banani DOHS, Dhaka-1213) এবং Operational Office – West Shewrapara (৩য় তলা, বাড়ি নং ৭৫৬, আয়শা টাওয়ার, পশ্চিম শেওড়াপাড়া, মেট্রো পিলার ৩০৪-এর কাছে, ঢাকা-১২১৬)। সরাসরি কল (+8801775551987), হোয়াটসঅ্যাপ (+8801775551987) অথবা marvzinnovationtech@gmail.com-এ যোগাযোগ করে মিটিং বুক করতে পারেন।",
       "tags": [
         "contact",
         "office",
         "location",
         "phone",
         "whatsapp",
-        "address"
+        "address",
+        "banani",
+        "dohs"
       ],
       "hitCount": 33,
       "isPublished": true,
@@ -999,5 +1001,5 @@
       ]
     }
   ],
-  "visitorCount": 1435
+  "visitorCount": 1440
 }

@@ -75,6 +75,151 @@
   background-size: 52px 30px;
 }
 
+/* ============================================================
+   MARVZ & INNOVATION TECH — Lightweight Corporate Motion System
+   GPU-composited transform & opacity only; honors reduced-motion
+   ============================================================ */
+
+@keyframes marvz-hero-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes marvz-panel-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.988);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes marvz-float-y {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes marvz-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes marvz-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes marvz-dash-flow {
+  0% {
+    stroke-dashoffset: 180;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes marvz-node-breathe {
+  0%, 100% {
+    opacity: 0.22;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.72;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes marvz-crimson-sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes marvz-loader-bar {
+  0% {
+    transform: scaleX(0.08);
+  }
+  60% {
+    transform: scaleX(0.82);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.animate-marvz-hero-in {
+  animation: marvz-hero-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-marvz-panel-in {
+  animation: marvz-panel-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-marvz-float-y {
+  animation: marvz-float-y 8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-marvz-spin-slow {
+  animation: marvz-spin-slow 42s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-marvz-spin-reverse {
+  animation: marvz-spin-reverse 56s linear infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-marvz-dash-flow {
+  stroke-dasharray: 8 10;
+  animation: marvz-dash-flow 16s linear infinite;
+}
+
+.animate-marvz-node-breathe {
+  animation: marvz-node-breathe 4.6s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.animate-marvz-crimson-line {
+  background: linear-gradient(90deg, #DC2626 0%, #30343B 50%, #DC2626 100%);
+  background-size: 200% 100%;
+  animation: marvz-crimson-sheen 7s ease infinite;
+}
+
+.animate-marvz-loader-bar {
+  transform-origin: left center;
+  animation: marvz-loader-bar 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -82,5 +227,7 @@
   *, *::before, *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
+

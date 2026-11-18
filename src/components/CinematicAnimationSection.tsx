@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Cpu, Shield, Plane, Bot, Cloud, CheckCircle2, ArrowRight } from 'lucide-react';
 import { SafeImage } from './SafeImage';
 import { TechBackdrop } from './TechBackdrop';
+import { Reveal } from './Reveal';
+import { CountUpNumber } from './CountUpNumber';
 
 const ARCHITECTURE_DOMAINS = [
   {
@@ -95,69 +97,74 @@ export const CinematicAnimationSection: React.FC = () => {
       <TechBackdrop variant="architecture" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         {/* Clean Editorial Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div className="max-w-2xl space-y-2">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] font-semibold">
-              Technology Architecture · Core Engineering Stack
+        <Reveal>
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="max-w-2xl space-y-2">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] font-semibold">
+                Technology Architecture · Core Engineering Stack
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#202124]">
+                Integrated Systems Built From Silicon to Cloud
+              </h2>
+              <p className="text-sm sm:text-base text-[#777777] leading-relaxed">
+                Inspect how MARVZ &amp; INNOVATION TECH unifies embedded hardware, autonomous avionics,
+                machine intelligence, and enterprise software into cohesive engineering platforms.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#202124]">
-              Integrated Systems Built From Silicon to Cloud
-            </h2>
-            <p className="text-sm sm:text-base text-[#777777] leading-relaxed">
-              Inspect how MARVZ & INNOVATION TECH unifies embedded hardware, autonomous avionics,
-              machine intelligence, and enterprise software into cohesive engineering platforms.
-            </p>
-          </div>
 
-          <div className="text-xs font-mono text-[#777777] shrink-0">
-            5 Core Engineering Layers
+            <div className="text-xs font-mono text-[#777777] shrink-0">
+              <CountUpNumber value={ARCHITECTURE_DOMAINS.length} className="font-bold text-[#202124]" /> Core Engineering Layers
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Clean Segmented Domain Selector */}
-        <div className="flex flex-wrap items-center gap-2">
-          {ARCHITECTURE_DOMAINS.map((domain) => {
-            const Icon = domain.icon;
-            const isSelected = domain.id === selectedId;
-            return (
-              <button
-                key={domain.id}
-                onClick={() => setSelectedId(domain.id)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-colors duration-150 border ${
-                  isSelected
-                    ? 'bg-[#30343B] text-white border-[#30343B] shadow-xs'
-                    : 'bg-white text-[#777777] border-[#E5E7EB] hover:text-[#202124] hover:bg-white/80'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{domain.label}</span>
-              </button>
-            );
-          })}
-        </div>
+        <Reveal delayMs={70}>
+          <div className="flex flex-wrap items-center gap-2">
+            {ARCHITECTURE_DOMAINS.map((domain) => {
+              const Icon = domain.icon;
+              const isSelected = domain.id === selectedId;
+              return (
+                <button
+                  key={domain.id}
+                  onClick={() => setSelectedId(domain.id)}
+                  className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-250 border ${
+                    isSelected
+                      ? 'bg-[#30343B] text-white border-[#30343B] shadow-xs -translate-y-0.5'
+                      : 'bg-white text-[#777777] border-[#E5E7EB] hover:text-[#202124] hover:border-[#30343B]/35 hover:bg-white'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{domain.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </Reveal>
 
-        {/* Clean White Static Architecture Showcase Panel (Zero Video / Motion Loops) */}
-        <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-sm overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-12">
-            {/* Left Static Visual */}
-            <div className="lg:col-span-6 bg-[#F3F4F6] aspect-[16/10] lg:aspect-auto lg:min-h-[380px] relative border-b lg:border-b-0 lg:border-r border-[#E5E7EB]">
-              <SafeImage
-                src={activeDomain.imageUrl}
-                alt={activeDomain.title}
-                fallbackTitle={activeDomain.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
+        {/* Clean White Architecture Showcase Panel with Smooth Category Transitions */}
+        <Reveal delayMs={120}>
+          <div className="rounded-2xl bg-white border border-[#E5E7EB] shadow-sm overflow-hidden">
+            <div key={activeDomain.id} className="grid grid-cols-1 lg:grid-cols-12 animate-marvz-panel-in">
+              {/* Left Visual */}
+              <div className="group lg:col-span-6 bg-[#F3F4F6] aspect-[16/10] lg:aspect-auto lg:min-h-[380px] relative border-b lg:border-b-0 lg:border-r border-[#E5E7EB] overflow-hidden">
+                <SafeImage
+                  src={activeDomain.imageUrl}
+                  alt={activeDomain.title}
+                  fallbackTitle={activeDomain.title}
+                  className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                />
+              </div>
 
-            {/* Right Technical Specifications */}
-            <div className="lg:col-span-6 p-6 sm:p-10 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2.5 text-xs font-mono uppercase tracking-wider text-[#777777]">
-                  <span className="p-2 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] text-[#30343B]">
-                    <ActiveIcon className="w-4 h-4" />
-                  </span>
-                  <span>{activeDomain.subtitle}</span>
-                </div>
+              {/* Right Technical Specifications */}
+              <div className="lg:col-span-6 p-6 sm:p-10 flex flex-col justify-between space-y-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2.5 text-xs font-mono uppercase tracking-wider text-[#777777]">
+                    <span className="p-2 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] text-[#30343B]">
+                      <ActiveIcon className="w-4 h-4" />
+                    </span>
+                    <span>{activeDomain.subtitle}</span>
+                  </div>
 
                 <h3 className="text-2xl font-bold text-[#202124] leading-snug">
                   {activeDomain.title}
@@ -192,15 +199,16 @@ export const CinematicAnimationSection: React.FC = () => {
                     const el = document.getElementById('technologies');
                     el?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124]"
+                  className="group inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124] transition-colors"
                 >
                   <span>View All Divisions</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
               </div>
             </div>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

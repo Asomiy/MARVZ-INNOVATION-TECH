@@ -340,9 +340,9 @@ const DEFAULT_SETTINGS: ControlCenterSettings = {
   enableHumanEscalation: true,
   enableQuickReplies: true,
   enableVoiceInput: true,
-  contactEmail: 'hello@marvztech.com',
-  contactPhone: '+880 1800-627898',
-  contactWhatsApp: '+880 1711-000000',
+  contactEmail: 'marvzinnovationtech@gmail.com',
+  contactPhone: '+8801775551987',
+  contactWhatsApp: '+8801775551987',
   officeLocation: OFFICIAL_OFFICE_ADDRESS,
 };
 
@@ -351,9 +351,9 @@ const DEFAULT_LOCATION: LocationConfig = {
   officeAddress: OFFICIAL_OFFICE_ADDRESS,
   landmarkNote: 'Near Metro Pillar 304, West Shewrapara, Mirpur Corridor',
   cityCountry: 'Dhaka-1216, Bangladesh',
-  contactPhone: '+880 1800-627898',
-  contactWhatsApp: '+880 1711-000000',
-  contactEmail: 'hello@marvztech.com',
+  contactPhone: '+8801775551987',
+  contactWhatsApp: '+8801775551987',
+  contactEmail: 'marvzinnovationtech@gmail.com',
   workingHours: 'Saturday – Thursday: 09:30 AM – 06:30 PM (BST)',
   mapSearchQuery: OFFICIAL_MAP_QUERY,
   googleMapsUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(OFFICIAL_MAP_QUERY)}`,
@@ -1386,7 +1386,7 @@ function buildDynamicSystemInstruction(): string {
     .join('\n');
 
   cachedSystemInstruction = `You are "${store.settings.chatbotName}", the official AI support & technical advisor for MARVZ & INNOVATION TECH.
-COMPANY: ${store.websiteContent.heroTagline} | Office: ${store.locationConfig.officeAddress} | Maps: ${store.locationConfig.googleMapsUrl} | Hours: ${store.locationConfig.workingHours} | Email: ${store.locationConfig.contactEmail} | Phone: ${store.locationConfig.contactPhone} | WhatsApp: ${store.locationConfig.contactWhatsApp}.
+COMPANY: ${store.websiteContent.heroTagline} | Offices: (1) Operational Office – Banani DOHS: 92/A, Banani DOHS, Dhaka-1213, Bangladesh (Maps: https://www.google.com/maps/search/?api=1&query=92%2FA%2C+Banani+DOHS%2C+Dhaka-1213%2C+Bangladesh) | (2) Operational Office – West Shewrapara: ${store.locationConfig.officeAddress} (Maps: ${store.locationConfig.googleMapsUrl}) | R&D Office: A dedicated facility for AI, Robotics, Drone Technology, Software Development, Cybersecurity, and Technology Research | Institutional Collaborations: Dhaka Cantonment, Bogura Cantonment | Hours: ${store.locationConfig.workingHours} | Email: ${store.locationConfig.contactEmail} | Phone: ${store.locationConfig.contactPhone} | WhatsApp: ${store.locationConfig.contactWhatsApp}.
 PROGRAMS:
 ${programSummary}
 FAQS:
@@ -1468,17 +1468,19 @@ function tryInstantCachedReply(
     return null;
   }
 
-  // Instant dynamic Office Location & Contact cache hit (always matches live LocationConfig)
+  // Instant dynamic Office Location & Contact cache hit (always matches live LocationConfig + Banani DOHS Operational Office)
   if (
     cleanQuery.length <= 85 &&
-    /\b(office|location|address|located|directions|map|shewrapara|metro pillar|where are you|thikana|kotay|kothay)\b|অফিস|ঠিকানা|কোথায়|কোথায়|লোকেশন/i.test(
+    /\b(office|location|address|located|directions|map|banani|dohs|shewrapara|metro pillar|where are you|thikana|kotay|kothay)\b|অফিস|ঠিকানা|কোথায়|কোথায়|লোকেশন|বনানী/i.test(
       qLower
     )
   ) {
+    const bananiMapsUrl =
+      'https://www.google.com/maps/search/?api=1&query=92%2FA%2C+Banani+DOHS%2C+Dhaka-1213%2C+Bangladesh';
     const reply =
       targetLang === 'Bangla'
-        ? `আমাদের অফিসের ঠিকানা:\n• **ঠিকানা:** ${store.locationConfig.officeAddress}\n• **অফিস সময়:** ${store.locationConfig.workingHours}\n• **ফোন:** ${store.locationConfig.contactPhone} | **হোয়াটসঅ্যাপ:** ${store.locationConfig.contactWhatsApp}\n• **Google Maps:** ${store.locationConfig.googleMapsUrl}`
-        : `**MARVZ & INNOVATION TECH — Office Location:**\n• **Address:** ${store.locationConfig.officeAddress}\n• **Hours:** ${store.locationConfig.workingHours}\n• **Phone:** ${store.locationConfig.contactPhone} | **WhatsApp:** ${store.locationConfig.contactWhatsApp}\n• **Google Maps:** ${store.locationConfig.googleMapsUrl}`;
+        ? `আমাদের অফিসের ঠিকানাসমূহ:\n• **Operational Office – Banani DOHS:** 92/A, Banani DOHS, Dhaka-1213, Bangladesh (Google Maps: ${bananiMapsUrl})\n• **Operational Office – West Shewrapara:** ${store.locationConfig.officeAddress} (Google Maps: ${store.locationConfig.googleMapsUrl})\n• **অফিস সময়:** ${store.locationConfig.workingHours}\n• **ফোন:** ${store.locationConfig.contactPhone} | **হোয়াটসঅ্যাপ:** ${store.locationConfig.contactWhatsApp}`
+        : `**MARVZ & INNOVATION TECH — Office Locations:**\n• **Operational Office – Banani DOHS:** 92/A, Banani DOHS, Dhaka-1213, Bangladesh (Google Maps: ${bananiMapsUrl})\n• **Operational Office – West Shewrapara:** ${store.locationConfig.officeAddress} (Google Maps: ${store.locationConfig.googleMapsUrl})\n• **Hours:** ${store.locationConfig.workingHours}\n• **Phone:** ${store.locationConfig.contactPhone} | **WhatsApp:** ${store.locationConfig.contactWhatsApp}`;
     return { reply, source: 'location-instant-cache' };
   }
 

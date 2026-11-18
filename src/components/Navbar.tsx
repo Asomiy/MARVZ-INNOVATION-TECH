@@ -22,6 +22,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'cinematic', label: 'Architecture' },
     { id: 'about', label: 'About' },
     { id: 'technologies', label: 'Technologies' },
+    { id: 'offices-collaboration', label: 'Offices & Collaboration' },
     { id: 'what-we-do', label: 'What We Do' },
     { id: 'projects', label: 'Projects' },
     { id: 'training', label: 'Training' },
@@ -54,23 +55,25 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {/* Desktop Single-Line Navigation */}
-          <nav className="hidden xl:flex items-center gap-1" aria-label="Main Navigation">
+          <nav className="hidden xl:flex items-center gap-0.5 2xl:gap-1" aria-label="Main Navigation">
             {navItems.map((item) => {
               const isActive = activeTab === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`relative px-2.5 py-1.5 text-[13px] font-medium transition-colors duration-150 rounded-md whitespace-nowrap shrink-0 ${
+                  className={`relative px-2 2xl:px-2.5 py-1.5 text-[12px] 2xl:text-[13px] font-medium transition-all duration-200 rounded-md whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B] ${
                     isActive
                       ? 'text-[#202124] bg-[#F3F4F6] font-semibold'
                       : 'text-[#777777] hover:text-[#202124] hover:bg-[#F3F4F6]/60'
                   }`}
                 >
                   {item.label}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-2.5 right-2.5 h-[2px] bg-[#30343B] rounded-full" />
-                  )}
+                  <span
+                    className={`absolute bottom-0 left-2 right-2 h-[2px] bg-[#30343B] rounded-full transition-all duration-250 origin-center ${
+                      isActive ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'
+                    }`}
+                  />
                 </button>
               );
             })}
@@ -81,7 +84,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {onOpenControlCenter && (
               <button
                 onClick={onOpenControlCenter}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg transition-colors duration-150 whitespace-nowrap shrink-0"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B] whitespace-nowrap shrink-0"
                 title="Open MARVZ Admin Panel & AI Control Center"
               >
                 <Shield className="w-3.5 h-3.5 text-[#30343B]" />
@@ -91,10 +94,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => onOpenInquiry('General Collaboration & Inquiry')}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg shadow-xs transition-colors duration-150 whitespace-nowrap shrink-0"
+              className="group flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B] whitespace-nowrap shrink-0"
             >
-              <span>Let's Talk</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>Let&apos;s Talk</span>
+              <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </button>
           </div>
 
@@ -111,7 +114,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
       {/* Mobile Navigation Drawer with Official Logo */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-b border-[#E5E7EB] px-4 pt-3 pb-5 space-y-1.5 shadow-md">
+        <div className="xl:hidden bg-white border-b border-[#E5E7EB] px-4 pt-3 pb-5 space-y-1.5 shadow-md animate-marvz-panel-in">
           <div className="pb-3 mb-2 border-b border-[#E5E7EB] flex items-center justify-between">
             <BrandLogo size="sm" showText={true} showTagline={true} />
           </div>

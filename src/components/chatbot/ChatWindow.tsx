@@ -67,8 +67,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     chatbotName: 'MARVZ AI Assistant',
     welcomeMessage: DEFAULT_WELCOME,
     welcomeMessageBn: 'হ্যালো! MARVZ & INNOVATION TECH-এ আপনাকে স্বাগতম। আজ কীভাবে সাহায্য করতে পারি?',
-    contactWhatsApp: '+880 1711-000000',
-    contactPhone: '+880 1800-MARVZ-TECH',
+    contactWhatsApp: '+8801775551987',
+    contactPhone: '+8801775551987',
     enableQuickReplies: true,
     enableLeadFormPrompt: true,
     enableHumanEscalation: true,
@@ -571,7 +571,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     <div
       ref={windowRef}
       style={{ left: `${windowPos.x}px`, top: `${windowPos.y}px` }}
-      className={`fixed z-[48] w-[min(360px,calc(100vw-24px))] sm:w-[400px] h-[min(520px,calc(100vh-108px))] sm:h-[min(590px,calc(100vh-48px))] bg-white border rounded-2xl shadow-2xl flex flex-col overflow-hidden text-[#202124] ${
+      className={`fixed z-[48] w-[min(360px,calc(100vw-24px))] sm:w-[400px] h-[min(520px,calc(100vh-108px))] sm:h-[min(590px,calc(100vh-48px))] bg-white border rounded-2xl shadow-2xl flex flex-col overflow-hidden text-[#202124] animate-marvz-panel-in ${
         isWindowDragging
           ? 'border-[#30343B] ring-2 ring-[#30343B]/20'
           : 'border-[#E5E7EB]'

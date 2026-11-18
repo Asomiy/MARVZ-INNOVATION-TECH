@@ -21,6 +21,7 @@ import { COLLABORATION_MODELS, FAQS } from '../data/companyData';
 import { LocationConfig } from '../types/admin';
 import { OfficeLocationMap } from './OfficeLocationMap';
 import { TechBackdrop } from './TechBackdrop';
+import { Reveal } from './Reveal';
 
 interface ContactCollaborationSectionProps {
   location: LocationConfig;
@@ -35,6 +36,12 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
   onOpenInquiry,
   onOpenInternshipModal,
 }) => {
+  const contactEmail = location.contactEmail || 'marvzinnovationtech@gmail.com';
+  const contactPhone = location.contactPhone || '+8801775551987';
+  const contactWhatsApp = location.contactWhatsApp || '+8801775551987';
+  const telHref = `tel:${contactPhone.replace(/[^+\d]/g, '')}`;
+  const waHref = `https://wa.me/${contactWhatsApp.replace(/[^\d]/g, '')}`;
+
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -93,25 +100,28 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
       <TechBackdrop variant="cloud-relay" />
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="max-w-3xl mb-14">
-          <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
-            06. Connect & Visit Us
+        <Reveal>
+          <div className="max-w-3xl mb-14">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
+              06. Connect & Visit Us
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
+              Let's Build Something Innovative
+            </h2>
+            <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
+              Whether you are an aspiring engineer wanting to master physical hardware, an educational institution looking to
+              launch cutting-edge tech labs, or a company seeking exploratory prototypes—visit our Dhaka headquarters or
+              reach out below.
+            </p>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
-            Let's Build Something Innovative
-          </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#777777] leading-relaxed">
-            Whether you are an aspiring engineer wanting to master physical hardware, an educational institution looking to
-            launch cutting-edge tech labs, or a company seeking exploratory prototypes—visit our Dhaka headquarters or
-            reach out below.
-          </p>
-        </div>
+        </Reveal>
 
         {/* Dedicated Find Our Office / Google Maps Location Showcase */}
-        <div
-          id="find-our-office"
-          className="mb-16 p-6 sm:p-8 rounded-3xl bg-white border border-[#E5E7EB] shadow-sm"
-        >
+        <Reveal delayMs={60}>
+          <div
+            id="find-our-office"
+            className="mb-16 p-6 sm:p-8 rounded-3xl bg-white border border-[#E5E7EB] shadow-sm hover:shadow-md transition-shadow duration-300"
+          >
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Office Address & Directions Info */}
             <div className="lg:col-span-5 space-y-5">
@@ -129,7 +139,7 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                   <MapPin className="w-5 h-5 text-[#30343B] shrink-0 mt-0.5" />
                   <div>
                     <div className="text-xs font-bold uppercase tracking-wider text-[#777777]">
-                      Official Office Address
+                      Operational Office – West Shewrapara
                     </div>
                     <p className="text-sm font-semibold text-[#202124] leading-relaxed mt-1">
                       {location.officeAddress}
@@ -137,17 +147,34 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-2 border-t border-[#E5E7EB] text-xs text-[#202124]">
+                <a
+                  href={telHref}
+                  className="flex items-center gap-3 pt-2 border-t border-[#E5E7EB] text-xs text-[#202124] hover:underline"
+                  aria-label={`Call ${contactPhone}`}
+                >
                   <Phone className="w-4 h-4 text-[#30343B] shrink-0" />
-                  <span>{location.contactPhone}</span>
-                </div>
+                  <span>{contactPhone}</span>
+                </a>
 
-                <div className="flex items-center gap-3 text-xs text-[#202124]">
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="flex items-center gap-3 text-xs text-[#202124] hover:underline"
+                  aria-label={`Email ${contactEmail}`}
+                >
                   <Mail className="w-4 h-4 text-[#30343B] shrink-0" />
-                  <a href={`mailto:${location.contactEmail}`} className="hover:underline">
-                    {location.contactEmail}
-                  </a>
-                </div>
+                  <span className="break-all">{contactEmail}</span>
+                </a>
+
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-xs text-[#202124] hover:underline"
+                  aria-label={`Chat on WhatsApp ${contactWhatsApp}`}
+                >
+                  <MessageSquare className="w-4 h-4 text-[#30343B] shrink-0" />
+                  <span>WhatsApp: {contactWhatsApp}</span>
+                </a>
 
                 <div className="flex items-center gap-3 text-xs text-[#777777]">
                   <Clock className="w-4 h-4 text-[#30343B] shrink-0" />
@@ -176,6 +203,44 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                   <ExternalLink className="w-3.5 h-3.5 text-[#30343B]" />
                 </a>
               </div>
+
+              {/* Operational Office – Banani DOHS */}
+              <div className="p-4 rounded-2xl bg-[#FAFAFB] border border-[#E5E7EB] space-y-2.5">
+                <div className="flex items-start gap-3">
+                  <Building2 className="w-4 h-4 text-[#30343B] shrink-0 mt-0.5" />
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-[#777777]">
+                      Operational Office – Banani DOHS
+                    </div>
+                    <p className="text-sm font-semibold text-[#202124] leading-relaxed mt-1">
+                      92/A, Banani DOHS, Dhaka-1213, Bangladesh.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-3 pl-7">
+                  <a
+                    href="https://www.google.com/maps/search/?api=1&query=92%2FA%2C+Banani+DOHS%2C+Dhaka-1213%2C+Bangladesh"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124] underline"
+                  >
+                    <span>Open Google Maps</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <span className="text-[#E5E7EB]" aria-hidden="true">
+                    |
+                  </span>
+                  <a
+                    href="https://www.google.com/maps/dir/?api=1&destination=92%2FA%2C+Banani+DOHS%2C+Dhaka-1213%2C+Bangladesh"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124] underline"
+                  >
+                    <Navigation className="w-3 h-3" />
+                    <span>Get Directions</span>
+                  </a>
+                </div>
+              </div>
             </div>
 
             {/* Right Interactive Google Maps Canvas */}
@@ -184,39 +249,40 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
             </div>
           </div>
         </div>
+        </Reveal>
 
         {/* 4 Collaboration Pathways */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {COLLABORATION_MODELS.map((model, idx) => (
-            <div
-              key={idx}
-              className="p-6 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/40 transition-colors flex flex-col justify-between shadow-xs"
-            >
-              <div>
-                <div className="text-[11px] font-mono text-[#777777] uppercase tracking-wider mb-2">
-                  {model.tag}
+            <Reveal key={idx} delayMs={idx * 75} className="h-full">
+              <div className="group h-full p-6 rounded-2xl bg-white border border-[#E5E7EB] hover:border-[#30343B]/45 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col justify-between shadow-xs hover:shadow-md hover:-translate-y-1">
+                <div>
+                  <div className="text-[11px] font-mono text-[#777777] uppercase tracking-wider mb-2">
+                    {model.tag}
+                  </div>
+                  <h4 className="text-base font-bold text-[#202124] mb-2">
+                    {model.title}
+                  </h4>
+                  <p className="text-xs text-[#777777] leading-relaxed">{model.desc}</p>
                 </div>
-                <h4 className="text-base font-bold text-[#202124] mb-2">
-                  {model.title}
-                </h4>
-                <p className="text-xs text-[#777777] leading-relaxed">{model.desc}</p>
-              </div>
 
-              <div className="pt-4 mt-4 border-t border-[#E5E7EB]">
-                <button
-                  onClick={() => onOpenInquiry(`Collaboration: ${model.title}`)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124] transition-colors"
-                >
-                  <span>Select Pathway</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                <div className="pt-4 mt-4 border-t border-[#E5E7EB]">
+                  <button
+                    onClick={() => onOpenInquiry(`Collaboration: ${model.title}`)}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#30343B] hover:text-[#202124] transition-colors"
+                  >
+                    <span>Select Pathway</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                  </button>
+                </div>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
 
         {/* 2-Column Split: Form + Direct Channels & WhatsApp Desk */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
+        <Reveal>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
           {/* Left: Interactive Contact Form Connected to Backend */}
           <div className="lg:col-span-7 p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm">
             {submitted ? (
@@ -248,13 +314,15 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                   >
                     Send Another Note
                   </button>
-                  <button
-                    onClick={onOpenWhatsApp}
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg"
                   >
                     <MessageSquare className="w-4 h-4" />
                     <span>Chat on WhatsApp</span>
-                  </button>
+                  </a>
                 </div>
               </div>
             ) : (
@@ -385,53 +453,126 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
           <div className="lg:col-span-5 space-y-6">
             <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-xs">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB] text-[#30343B] flex items-center justify-center">
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open WhatsApp chat"
+                  className="w-10 h-10 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-[#30343B] flex items-center justify-center transition-colors shrink-0"
+                >
                   <MessageSquare className="w-5 h-5" />
-                </div>
+                </a>
                 <div>
                   <h4 className="text-base font-bold text-[#202124]">WhatsApp Advisory Line</h4>
-                  <p className="text-xs text-[#777777] font-mono">Immediate Contact · {location.contactWhatsApp}</p>
+                  <a
+                    href={waHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-[#777777] hover:text-[#202124] font-mono hover:underline"
+                  >
+                    Immediate Contact · {contactWhatsApp}
+                  </a>
                 </div>
               </div>
               <p className="text-xs text-[#777777] leading-relaxed mb-4">
                 Have questions about workshop seat dates, drone flight test ranges, or partnership terms? Connect
                 instantly with our startup desk.
               </p>
-              <button
-                onClick={onOpenWhatsApp}
-                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors"
-              >
-                <span>Launch WhatsApp Chat</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl transition-colors"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  <span>Chat on WhatsApp</span>
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+                <button
+                  type="button"
+                  onClick={onOpenWhatsApp}
+                  className="px-3.5 py-2.5 text-xs font-semibold text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl transition-colors"
+                >
+                  Quick Desk
+                </button>
+              </div>
             </div>
 
             <div className="p-6 rounded-2xl bg-white border border-[#E5E7EB] space-y-4 shadow-xs">
               <h4 className="text-xs font-bold text-[#202124] uppercase tracking-wider">Direct Communications</h4>
 
               <div className="space-y-3 text-xs text-[#777777]">
-                <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-[#30343B] shrink-0" />
-                  <div>
-                    <span>Startup Inquiries: </span>
-                    <a href={`mailto:${location.contactEmail}`} className="text-[#202124] font-medium hover:underline">
-                      {location.contactEmail}
-                    </a>
+                <a
+                  href={`mailto:${contactEmail}`}
+                  className="flex items-center gap-3 group hover:text-[#202124]"
+                >
+                  <span className="p-1.5 rounded-lg bg-[#F3F4F6] group-hover:bg-[#E5E7EB] border border-[#E5E7EB] transition-colors shrink-0">
+                    <Mail className="w-3.5 h-3.5 text-[#30343B]" />
+                  </span>
+                  <div className="min-w-0">
+                    <span>Email: </span>
+                    <span className="text-[#202124] font-medium group-hover:underline break-all">
+                      {contactEmail}
+                    </span>
                   </div>
-                </div>
+                </a>
 
-                <div className="flex items-center gap-3">
-                  <Phone className="w-4 h-4 text-[#30343B] shrink-0" />
+                <a
+                  href={telHref}
+                  className="flex items-center gap-3 group hover:text-[#202124]"
+                >
+                  <span className="p-1.5 rounded-lg bg-[#F3F4F6] group-hover:bg-[#E5E7EB] border border-[#E5E7EB] transition-colors shrink-0">
+                    <Phone className="w-3.5 h-3.5 text-[#30343B]" />
+                  </span>
                   <div>
-                    <span>Direct Desk: </span>
-                    <span className="text-[#202124] font-medium">{location.contactPhone}</span>
+                    <span>Phone: </span>
+                    <span className="text-[#202124] font-medium group-hover:underline">{contactPhone}</span>
+                  </div>
+                </a>
+
+                <a
+                  href={waHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 group hover:text-[#202124]"
+                >
+                  <span className="p-1.5 rounded-lg bg-[#F3F4F6] group-hover:bg-[#E5E7EB] border border-[#E5E7EB] transition-colors shrink-0">
+                    <MessageSquare className="w-3.5 h-3.5 text-[#30343B]" />
+                  </span>
+                  <div>
+                    <span>WhatsApp: </span>
+                    <span className="text-[#202124] font-medium group-hover:underline">{contactWhatsApp}</span>
+                  </div>
+                </a>
+
+                <div className="flex items-start gap-3 pt-2 border-t border-[#E5E7EB]">
+                  <Building2 className="w-4 h-4 text-[#30343B] shrink-0 mt-0.5" />
+                  <div>
+                    <span className="text-[#202124] font-semibold">
+                      Operational Office – Banani DOHS
+                    </span>
+                    <p className="text-[#777777] mt-0.5 leading-relaxed">
+                      92/A, Banani DOHS, Dhaka-1213, Bangladesh.
+                    </p>
+                    <a
+                      href="https://www.google.com/maps/search/?api=1&query=92%2FA%2C+Banani+DOHS%2C+Dhaka-1213%2C+Bangladesh"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[#30343B] hover:text-[#202124] font-semibold mt-1 underline"
+                    >
+                      <span>View on Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
 
                 <div className="flex items-start gap-3 pt-2 border-t border-[#E5E7EB]">
                   <MapPin className="w-4 h-4 text-[#30343B] shrink-0 mt-0.5" />
                   <div>
-                    <span className="text-[#202124] font-semibold">Dhaka Headquarters</span>
+                    <span className="text-[#202124] font-semibold">
+                      Operational Office – West Shewrapara
+                    </span>
                     <p className="text-[#777777] mt-0.5 leading-relaxed">{location.officeAddress}</p>
                     <a
                       href={location.googleMapsUrl}
@@ -467,21 +608,23 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
             )}
           </div>
         </div>
+        </Reveal>
 
         {/* Startup FAQ Accordion */}
-        <div className="pt-16 border-t border-[#E5E7EB]">
-          <div className="max-w-3xl mx-auto mb-10 text-center">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 flex items-center justify-center gap-1.5">
-              <HelpCircle className="w-3.5 h-3.5 text-[#30343B]" />
-              <span>Clarity & Questions</span>
+        <Reveal>
+          <div className="pt-16 border-t border-[#E5E7EB]">
+            <div className="max-w-3xl mx-auto mb-10 text-center">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 flex items-center justify-center gap-1.5">
+                <HelpCircle className="w-3.5 h-3.5 text-[#30343B]" />
+                <span>Clarity & Questions</span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-[#202124]">Frequently Asked Questions</h3>
+              <p className="text-xs sm:text-sm text-[#777777] mt-2">
+                Everything you need to know about our technology startup and how to get involved.
+              </p>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-bold text-[#202124]">Frequently Asked Questions</h3>
-            <p className="text-xs sm:text-sm text-[#777777] mt-2">
-              Everything you need to know about our technology startup and how to get involved.
-            </p>
-          </div>
 
-          <div className="max-w-3xl mx-auto space-y-3">
+            <div className="max-w-3xl mx-auto space-y-3">
             {FAQS.map((faq, idx) => {
               const isOpen = openFaqIndex === idx;
               return (
@@ -511,38 +654,41 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
             })}
           </div>
         </div>
+        </Reveal>
 
         {/* Final Bold Call to Action Banner */}
-        <div className="mt-20 p-8 sm:p-12 rounded-2xl bg-white border border-[#E5E7EB] text-center shadow-sm">
-          <div className="max-w-2xl mx-auto space-y-4">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#777777]">
-              Think Beyond. Build Tomorrow.
-            </span>
-            <h3 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight">
-              Ready to Build the Future with Us?
-            </h3>
-            <p className="text-sm sm:text-base text-[#777777] leading-relaxed">
-              Join MARVZ & INNOVATION TECH at our West Shewrapara Innovation Hub in Dhaka.
-            </p>
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button
-                onClick={() => onOpenInquiry('General Collaboration Discussion')}
-                className="w-full sm:w-auto px-8 py-3.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl shadow-xs transition-colors"
-              >
-                Let's Collaborate
-              </button>
-              <a
-                href={location.directionsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl transition-colors flex items-center justify-center gap-2"
-              >
-                <Navigation className="w-4 h-4 text-[#30343B]" />
-                <span>Directions to Office</span>
-              </a>
+        <Reveal delayMs={80}>
+          <div className="mt-20 p-8 sm:p-12 rounded-2xl bg-white border border-[#E5E7EB] text-center shadow-sm hover:shadow-md transition-shadow duration-300">
+            <div className="max-w-2xl mx-auto space-y-4">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#777777]">
+                Think Beyond. Build Tomorrow.
+              </span>
+              <h3 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight">
+                Ready to Build the Future with Us?
+              </h3>
+              <p className="text-sm sm:text-base text-[#777777] leading-relaxed">
+                Join MARVZ & INNOVATION TECH at our West Shewrapara Innovation Hub in Dhaka.
+              </p>
+              <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <button
+                  onClick={() => onOpenInquiry('General Collaboration Discussion')}
+                  className="w-full sm:w-auto px-8 py-3.5 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+                >
+                  Let's Collaborate
+                </button>
+                <a
+                  href={location.directionsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-xl hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <Navigation className="w-4 h-4 text-[#30343B]" />
+                  <span>Directions to Office</span>
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

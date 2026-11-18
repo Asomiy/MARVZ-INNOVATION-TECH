@@ -82,10 +82,10 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
             <g stroke="#CBD5E1" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
               <path d="M90 78 H330 L375 123 H615 L665 173 H875" />
               <path d="M140 112 H305 L345 152 H555 L595 192 H840" />
-              <path d="M430 20 V95 L465 130 H690" strokeDasharray="5 5" />
-              <path d="M510 560 H730 L775 515 H890" />
+              <path d="M430 20 V95 L465 130 H690" className="animate-marvz-dash-flow" stroke="#94A3B8" strokeOpacity="0.45" />
+              <path d="M510 560 H730 L775 515 H890" className="animate-marvz-dash-flow" stroke="#94A3B8" strokeOpacity="0.4" />
             </g>
-            {/* Subtle Charcoal Circuit Vias */}
+            {/* Subtle Charcoal Circuit Vias & Soft Red Tech Accents */}
             <g stroke="#30343B" strokeOpacity="0.24" strokeWidth="1.4">
               <circle cx="330" cy="78" r="4.5" fill="#FFFFFF" />
               <circle cx="615" cy="123" r="4.5" fill="#FFFFFF" />
@@ -93,17 +93,26 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
               <circle cx="690" cy="130" r="4" fill="#FFFFFF" />
               <circle cx="730" cy="560" r="4.5" fill="#FFFFFF" />
             </g>
+            {/* Soft Subtle Red Network Pulse Nodes */}
+            <g className="animate-marvz-node-breathe">
+              <circle cx="330" cy="78" r="8" fill="#DC2626" fillOpacity="0.09" />
+              <circle cx="330" cy="78" r="2.5" fill="#DC2626" fillOpacity="0.48" />
+            </g>
+            <g className="animate-marvz-node-breathe" style={{ animationDelay: '1.8s' }}>
+              <circle cx="615" cy="123" r="8" fill="#DC2626" fillOpacity="0.09" />
+              <circle cx="615" cy="123" r="2.5" fill="#DC2626" fillOpacity="0.48" />
+            </g>
 
             {/* AI Neural Network Pattern & Connected Nodes */}
             <g stroke="#30343B" strokeOpacity="0.16" strokeWidth="1.25">
               <line x1="455" y1="220" x2="585" y2="165" />
-              <line x1="455" y1="220" x2="600" y2="265" />
+              <line x1="455" y1="220" x2="600" y2="265" className="animate-marvz-dash-flow" />
               <line x1="455" y1="315" x2="585" y2="165" />
               <line x1="455" y1="315" x2="600" y2="265" />
               <line x1="455" y1="315" x2="585" y2="375" />
               <line x1="455" y1="415" x2="600" y2="265" />
               <line x1="455" y1="415" x2="585" y2="375" />
-              <line x1="585" y1="165" x2="745" y2="215" />
+              <line x1="585" y1="165" x2="745" y2="215" className="animate-marvz-dash-flow" />
               <line x1="600" y1="265" x2="745" y2="215" />
               <line x1="600" y1="265" x2="755" y2="335" />
               <line x1="585" y1="375" x2="755" y2="335" />
@@ -128,20 +137,27 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
                   strokeOpacity="0.22"
                   strokeWidth="1.3"
                 />
-                <circle cx={cx} cy={cy} r="3.5" fill="#30343B" fillOpacity="0.26" />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r="3.5"
+                  fill={idx === 4 ? '#DC2626' : '#30343B'}
+                  fillOpacity={idx === 4 ? 0.36 : 0.26}
+                  className={idx % 3 === 1 ? 'animate-marvz-node-breathe' : undefined}
+                />
               </g>
             ))}
 
-            {/* Minimal Autonomous Quad-Rotor Drone Line-Art (Clearly Recognizable) */}
-            <g transform="translate(360 190)" stroke="#30343B" strokeOpacity="0.21" strokeWidth="1.45">
+            {/* Minimal Autonomous Quad-Rotor Drone Line-Art (Slow Ambient Drift) */}
+            <g transform="translate(360 190)" stroke="#30343B" strokeOpacity="0.21" strokeWidth="1.45" className="animate-marvz-float-y">
               <line x1="-42" y1="-42" x2="42" y2="42" strokeLinecap="round" />
               <line x1="-42" y1="42" x2="42" y2="-42" strokeLinecap="round" />
               <rect x="-12" y="-18" width="24" height="36" rx="7" fill="#FFFFFF" />
               <circle cx="0" cy="-3" r="5" />
-              <circle cx="-42" cy="-42" r="22" strokeDasharray="4 3" />
-              <circle cx="42" cy="-42" r="22" strokeDasharray="4 3" />
-              <circle cx="-42" cy="42" r="22" strokeDasharray="4 3" />
-              <circle cx="42" cy="42" r="22" strokeDasharray="4 3" />
+              <circle cx="-42" cy="-42" r="22" strokeDasharray="4 3" className="animate-marvz-spin-slow" />
+              <circle cx="42" cy="-42" r="22" strokeDasharray="4 3" className="animate-marvz-spin-reverse" />
+              <circle cx="-42" cy="42" r="22" strokeDasharray="4 3" className="animate-marvz-spin-reverse" />
+              <circle cx="42" cy="42" r="22" strokeDasharray="4 3" className="animate-marvz-spin-slow" />
               <circle cx="-42" cy="-42" r="3.5" fill="#30343B" fillOpacity="0.24" />
               <circle cx="42" cy="-42" r="3.5" fill="#30343B" fillOpacity="0.24" />
               <circle cx="-42" cy="42" r="3.5" fill="#30343B" fillOpacity="0.24" />
@@ -224,8 +240,9 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
 
             {/* Continuous Horizontal PCB Bus at Bottom */}
             <path d="M310 625 H620 L660 585 H960 L1000 625 H1200" stroke="#CBD5E1" strokeWidth="1.35" />
+            <path d="M310 625 H620 L660 585 H960 L1000 625 H1200" stroke="#30343B" strokeOpacity="0.16" strokeWidth="1.35" className="animate-marvz-dash-flow" />
             <circle cx="620" cy="625" r="4" fill="#FFFFFF" stroke="#30343B" strokeOpacity="0.22" strokeWidth="1.3" />
-            <circle cx="960" cy="585" r="4" fill="#FFFFFF" stroke="#30343B" strokeOpacity="0.22" strokeWidth="1.3" />
+            <circle cx="960" cy="585" r="4" fill="#DC2626" fillOpacity="0.35" className="animate-marvz-node-breathe" />
           </svg>
         </>
       )}
@@ -240,8 +257,8 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
           >
             {/* Soft Ash Kinematic Discs */}
             <circle cx="480" cy="275" r="195" fill="#F3F4F6" fillOpacity="0.78" />
-            <circle cx="480" cy="275" r="245" stroke="#CBD5E1" strokeWidth="1.2" strokeDasharray="6 6" />
-            <circle cx="480" cy="275" r="145" stroke="#E5E7EB" strokeWidth="1.2" />
+            <circle cx="480" cy="275" r="245" stroke="#CBD5E1" strokeWidth="1.2" strokeDasharray="6 6" className="animate-marvz-spin-slow" />
+            <circle cx="480" cy="275" r="145" stroke="#E5E7EB" strokeWidth="1.2" strokeDasharray="10 6" className="animate-marvz-spin-reverse" />
 
             {/* Robotic Manipulator Line-Art */}
             <g stroke="#30343B" strokeOpacity="0.22" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round">
@@ -259,7 +276,7 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
               <circle cx="345" cy="472" r="13" fill="#FFFFFF" />
               <circle cx="455" cy="295" r="15" fill="#FFFFFF" />
               <circle cx="605" cy="215" r="10" fill="#FFFFFF" />
-              <circle cx="455" cy="295" r="4.5" fill="#30343B" fillOpacity="0.25" />
+              <circle cx="455" cy="295" r="4.5" fill="#DC2626" fillOpacity="0.34" className="animate-marvz-node-breathe" />
             </g>
 
             {/* Coordinate Drafting Ticks */}
@@ -274,10 +291,10 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
             className="absolute -left-10 bottom-12 w-[220px] h-[220px]"
           >
             <circle cx="90" cy="140" r="66" fill="#F3F4F6" fillOpacity="0.7" />
-            <circle cx="90" cy="140" r="42" stroke="#30343B" strokeOpacity="0.18" strokeWidth="1.5" strokeDasharray="8 6" />
+            <circle cx="90" cy="140" r="42" stroke="#30343B" strokeOpacity="0.18" strokeWidth="1.5" strokeDasharray="8 6" className="animate-marvz-spin-slow" />
             <circle cx="90" cy="140" r="18" fill="#FFFFFF" stroke="#30343B" strokeOpacity="0.2" strokeWidth="1.4" />
-            <path d="M132 140 H230" stroke="#CBD5E1" strokeWidth="1.3" />
-            <circle cx="230" cy="140" r="3.5" fill="#FFFFFF" stroke="#30343B" strokeOpacity="0.22" />
+            <path d="M132 140 H230" stroke="#CBD5E1" strokeWidth="1.3" className="animate-marvz-dash-flow" />
+            <circle cx="230" cy="140" r="3.5" fill="#DC2626" fillOpacity="0.38" className="animate-marvz-node-breathe" />
           </svg>
         </>
       )}
@@ -322,11 +339,11 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
             {/* Left Connected Digital Network Mesh */}
             <g stroke="#30343B" strokeOpacity="0.17" strokeWidth="1.25">
               <line x1="48" y1="215" x2="155" y2="170" />
-              <line x1="155" y1="170" x2="230" y2="275" />
+              <line x1="155" y1="170" x2="230" y2="275" className="animate-marvz-dash-flow" />
               <line x1="48" y1="215" x2="130" y2="345" />
               <line x1="130" y1="345" x2="230" y2="275" />
               <line x1="130" y1="345" x2="82" y2="495" />
-              <line x1="82" y1="495" x2="205" y2="565" />
+              <line x1="82" y1="495" x2="205" y2="565" className="animate-marvz-dash-flow" />
               <line x1="205" y1="565" x2="285" y2="450" />
               <line x1="130" y1="345" x2="285" y2="450" />
             </g>
@@ -349,7 +366,14 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
                   strokeOpacity="0.22"
                   strokeWidth="1.3"
                 />
-                <circle cx={cx} cy={cy} r="2.5" fill="#30343B" fillOpacity="0.25" />
+                <circle
+                  cx={cx}
+                  cy={cy}
+                  r="2.5"
+                  fill={idx === 3 ? '#DC2626' : '#30343B'}
+                  fillOpacity={idx === 3 ? 0.42 : 0.25}
+                  className={idx % 2 === 1 ? 'animate-marvz-node-breathe' : undefined}
+                />
               </g>
             ))}
           </svg>
@@ -426,9 +450,9 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
             <path
               d="M-30 500 C210 425 360 155 670 175 C900 190 1020 90 1230 115"
               stroke="#30343B"
-              strokeOpacity="0.18"
+              strokeOpacity="0.2"
               strokeWidth="1.5"
-              strokeDasharray="6 6"
+              className="animate-marvz-dash-flow"
             />
             {[
               [225, 392],
@@ -436,7 +460,7 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
               [995, 130],
             ].map(([cx, cy], idx) => (
               <g key={idx}>
-                <circle cx={cx} cy={cy} r="16" stroke="#CBD5E1" strokeWidth="1.2" />
+                <circle cx={cx} cy={cy} r="16" stroke="#CBD5E1" strokeWidth="1.2" className="animate-marvz-node-breathe" />
                 <circle
                   cx={cx}
                   cy={cy}
@@ -450,7 +474,7 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
             ))}
 
             {/* Minimal Drone Top-Down Silhouette on Flight Path */}
-            <g transform="translate(670 175) rotate(-12)" stroke="#30343B" strokeOpacity="0.24" strokeWidth="1.4">
+            <g transform="translate(670 175) rotate(-12)" stroke="#30343B" strokeOpacity="0.24" strokeWidth="1.4" className="animate-marvz-float-y">
               <line x1="-26" y1="-26" x2="26" y2="26" />
               <line x1="-26" y1="26" x2="26" y2="-26" />
               <rect x="-8" y="-12" width="16" height="24" rx="5" fill="#FFFFFF" />
@@ -462,8 +486,8 @@ export const TechBackdrop: React.FC<TechBackdropProps> = ({ variant }) => {
 
             {/* Bottom-Right LiDAR / Optical Range Crosshair */}
             <g transform="translate(1010 520)" stroke="#30343B" strokeOpacity="0.2" strokeWidth="1.25">
-              <circle cx="0" cy="0" r="120" strokeDasharray="4 5" />
-              <circle cx="0" cy="0" r="76" />
+              <circle cx="0" cy="0" r="120" strokeDasharray="4 5" className="animate-marvz-spin-slow" />
+              <circle cx="0" cy="0" r="76" strokeDasharray="10 6" className="animate-marvz-spin-reverse" />
               <circle cx="0" cy="0" r="30" />
               <line x1="-140" y1="0" x2="140" y2="0" stroke="#CBD5E1" />
               <line x1="0" y1="-140" x2="0" y2="140" stroke="#CBD5E1" />
