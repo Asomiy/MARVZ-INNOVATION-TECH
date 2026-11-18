@@ -8,7 +8,6 @@ import {
   BookOpen,
   Headphones,
   RotateCcw,
-  Shield,
   MessageCircle,
   FileCheck2,
   ChevronDown,
@@ -39,7 +38,6 @@ interface ChatWindowProps {
   launcherPos?: Position;
   onClose: () => void;
   onOpenKnowledgeBase: () => void;
-  onOpenAdmin: () => void;
   onOpenLeadModal: (category?: string) => void;
 }
 
@@ -50,7 +48,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   launcherPos,
   onClose,
   onOpenKnowledgeBase,
-  onOpenAdmin,
   onOpenLeadModal,
 }) => {
   const [conversationId, setConversationId] = useState<string>('');
@@ -643,15 +640,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               aria-label="Browse Knowledge Base"
             >
               <BookOpen className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={onOpenAdmin}
-              className="p-1.5 rounded-lg hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-              title="Open MARVZ AI Control Center Dashboard"
-              aria-label="Open AI Control Center"
-            >
-              <Shield className="w-4 h-4" />
             </button>
 
             <button

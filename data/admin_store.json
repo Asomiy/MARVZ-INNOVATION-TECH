@@ -388,6 +388,110 @@
   ],
   "activities": [
     {
+      "id": "act-1794998096670-189",
+      "type": "auth",
+      "title": "Initial Admin Password Configured",
+      "description": "HR & Training Desk (coordinator@marvztech.com) completed first-time password setup.",
+      "actor": "HR & Training Desk",
+      "timestamp": "2026-11-18T10:34:56.670Z"
+    },
+    {
+      "id": "act-1794998096233-41",
+      "type": "auth",
+      "title": "Initial Admin Password Configured",
+      "description": "Admissions & Content Lead (editor@marvztech.com) completed first-time password setup.",
+      "actor": "Admissions & Content Lead",
+      "timestamp": "2026-11-18T10:34:56.233Z"
+    },
+    {
+      "id": "act-1794998095775-944",
+      "type": "auth",
+      "title": "Initial Admin Password Configured",
+      "description": "Support Desk Dispatch (support@marvztech.com) completed first-time password setup.",
+      "actor": "Support Desk Dispatch",
+      "timestamp": "2026-11-18T10:34:55.775Z"
+    },
+    {
+      "id": "act-1794998095310-811",
+      "type": "auth",
+      "title": "Admin Password Reset",
+      "description": "admin@marvztech.com completed verified password reset.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:34:55.310Z"
+    },
+    {
+      "id": "act-1794998094841-76",
+      "type": "auth",
+      "title": "Admin Sign-In",
+      "description": "Engr. Zamil Rahman (Super Admin) signed into Admin Dashboard.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:34:54.841Z"
+    },
+    {
+      "id": "act-1794998093834-942",
+      "type": "auth",
+      "title": "Admin Password Changed",
+      "description": "admin@marvztech.com updated account password.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:34:53.834Z"
+    },
+    {
+      "id": "act-1794998092924-928",
+      "type": "auth",
+      "title": "Admin Profile Updated",
+      "description": "Engr. Zamil Rahman updated profile details.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:34:52.924Z"
+    },
+    {
+      "id": "act-1794998092831-119",
+      "type": "auth",
+      "title": "Initial Admin Password Configured",
+      "description": "Engr. Zamil Rahman (admin@marvztech.com) completed first-time password setup.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:34:52.831Z"
+    },
+    {
+      "id": "act-1794996712233-118",
+      "type": "inquiry",
+      "title": "Contact Message Deleted",
+      "description": "Deleted inquiry from Tariq Mahmud (tariq.mahmud@example.edu.bd).",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:11:52.233Z"
+    },
+    {
+      "id": "act-1794996712223-519",
+      "type": "inquiry",
+      "title": "Reply Logged for Contact Inquiry",
+      "description": "Replied to Tariq Mahmud (tariq.mahmud@example.edu.bd).",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:11:52.223Z"
+    },
+    {
+      "id": "act-1794996712212-375",
+      "type": "inquiry",
+      "title": "Contact Status Updated",
+      "description": "Inquiry from Tariq Mahmud set to Read.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:11:52.212Z"
+    },
+    {
+      "id": "act-1794996712183-608",
+      "type": "auth",
+      "title": "Admin Sign-In",
+      "description": "Engr. Zamil Rahman (Super Admin) signed into Admin Dashboard.",
+      "actor": "Engr. Zamil Rahman",
+      "timestamp": "2026-11-18T10:11:52.183Z"
+    },
+    {
+      "id": "act-1794996712090-765",
+      "type": "inquiry",
+      "title": "New Contact Message Received",
+      "description": "Tariq Mahmud submitted an inquiry regarding Drone Technology & UAV Engineering.",
+      "actor": "Tariq Mahmud",
+      "timestamp": "2026-11-18T10:11:52.090Z"
+    },
+    {
       "id": "act-1794641447860-503",
       "type": "auth",
       "title": "Admin Sign-In",
@@ -426,66 +530,6 @@
       "description": "Mehedi Hasan Rony registered for Applied Computer Vision & Edge AI Deployment.",
       "actor": "Training Portal",
       "timestamp": "2026-11-14T01:30:42.297Z"
-    }
-  ],
-  "adminAccounts": [
-    {
-      "id": "adm-001",
-      "name": "Engr. Zamil Rahman",
-      "email": "admin@marvztech.com",
-      "role": "Super Admin",
-      "phone": "+880 1800-627898",
-      "department": "Executive & Engineering Governance",
-      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
-      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
-      "isActive": true,
-      "lastLogin": "2026-11-14T07:30:47.860Z"
-    },
-    {
-      "id": "adm-002",
-      "name": "Admissions & Content Lead",
-      "email": "editor@marvztech.com",
-      "role": "Content Manager",
-      "phone": "+880 1711-000001",
-      "department": "Website Content & Knowledge Base",
-      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
-      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
-      "isActive": true,
-      "lastLogin": "2026-11-13T07:30:42.489Z"
-    },
-    {
-      "id": "adm-003",
-      "name": "HR & Training Desk",
-      "email": "coordinator@marvztech.com",
-      "role": "HR & Training Coordinator",
-      "phone": "+880 1711-000002",
-      "department": "Internships & Bootcamps",
-      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
-      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
-      "isActive": true,
-      "lastLogin": "2026-11-12T07:30:42.489Z"
-    },
-    {
-      "id": "adm-004",
-      "name": "Support Desk Dispatch",
-      "email": "support@marvztech.com",
-      "role": "Support Agent",
-      "phone": "+880 1711-000003",
-      "department": "Live Chat & Client Inquiries",
-      "passwordHash": "2bdba4f4d73df860b256d689f96f5a26b5d42261a6fec2038f007a0dc8de6c097d2a04d5bfa51a5e94a404c0cf77f5fc9b2800cc179d076ece9d59e703894e6e",
-      "passwordSalt": "acd89438a27c6ad1e8cb8790abf9a46e",
-      "isActive": true,
-      "lastLogin": "2026-11-11T07:30:42.489Z"
-    }
-  ],
-  "sessions": [
-    {
-      "token": "marvz-sess-38f87edc0a5c5198621d320ca5fd33fd744ee5121c50d1c2",
-      "userId": "adm-001",
-      "email": "admin@marvztech.com",
-      "role": "Super Admin",
-      "createdAt": "2026-11-14T07:30:47.860Z",
-      "expiresAt": "2026-11-21T07:30:47.860Z"
     }
   ],
   "faqs": [
@@ -728,6 +772,17 @@
     }
   ],
   "leads": [
+    {
+      "id": "lead-1794996712089",
+      "name": "Tariq Mahmud",
+      "email": "tariq.mahmud@example.edu.bd",
+      "phone": "+8801711223344",
+      "category": "Services",
+      "requirements": "[Drone Technology & UAV Engineering] We want to collaborate on a hands-on autonomous UAV avionics workshop this semester.",
+      "timestamp": "2026-11-18T10:11:52.088Z",
+      "status": "New",
+      "source": "Direct Form"
+    },
     {
       "id": "lead-101",
       "name": "Rahim Chowdhury",
@@ -1001,5 +1056,5 @@
       ]
     }
   ],
-  "visitorCount": 1440
+  "visitorCount": 1446
 }

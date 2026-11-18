@@ -8,7 +8,7 @@ import { CountUpNumber } from './CountUpNumber';
 const ARCHITECTURE_DOMAINS = [
   {
     id: 'ai',
-    label: 'Neural AI',
+    label: 'Edge AI',
     title: 'Edge AI & Computer Vision Inference Pipelines',
     subtitle: 'Applied Machine Intelligence',
     description:

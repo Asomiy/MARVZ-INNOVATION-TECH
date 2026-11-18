@@ -155,10 +155,36 @@ export const KnowledgeBaseModal: React.FC<KnowledgeBaseModalProps> = ({
                   </button>
                 </div>
                 <div className="mt-3 pt-3 border-t border-[#E5E7EB] text-xs text-[#202124] leading-relaxed">
-                  <p>{faq.answer}</p>
+                  <p>
+                    {faq.answer.split(/(marvzinnovationtech@gmail\.com)/g).map((part, i) =>
+                      part === 'marvzinnovationtech@gmail.com' ? (
+                        <a
+                          key={i}
+                          href="mailto:marvzinnovationtech@gmail.com"
+                          className="underline hover:text-[#30343B]"
+                        >
+                          {part}
+                        </a>
+                      ) : (
+                        part
+                      )
+                    )}
+                  </p>
                   {faq.answerBn && (
                     <p className="mt-2 pt-2 border-t border-[#E5E7EB] text-[#777777]">
-                      {faq.answerBn}
+                      {faq.answerBn.split(/(marvzinnovationtech@gmail\.com)/g).map((part, i) =>
+                        part === 'marvzinnovationtech@gmail.com' ? (
+                          <a
+                            key={i}
+                            href="mailto:marvzinnovationtech@gmail.com"
+                            className="underline hover:text-[#202124]"
+                          >
+                            {part}
+                          </a>
+                        ) : (
+                          part
+                        )
+                      )}
                     </p>
                   )}
                 </div>

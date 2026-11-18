@@ -24,6 +24,11 @@ import { MarvzChatbot } from './components/chatbot/MarvzChatbot';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { AdminLoginView } from './components/admin/AdminLoginView';
 import {
+  clearAdminAuthSession,
+  getAdminToken,
+  setInMemoryCsrfToken,
+} from './utils/adminApi';
+import {
   AdminUser,
   LocationConfig,
   TrainingProgram,
@@ -69,9 +74,17 @@ const DEFAULT_CONTENT: WebsiteContentConfig = {
   updatedAt: new Date().toISOString(),
 };
 
+const isAdminPath = (pathname: string) =>
+  pathname === '/admin' || pathname.startsWith('/admin/');
+
 export default function App() {
-  const [viewMode, setViewMode] = useState<'website' | 'admin'>('website');
+  const [viewMode, setViewMode] = useState<'website' | 'admin'>(() =>
+    isAdminPath(window.location.pathname) ? 'admin' : 'website'
+  );
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
+  const [checkingSession, setCheckingSession] = useState<boolean>(() =>
+    isAdminPath(window.location.pathname)
+  );
 
   const [siteContent, setSiteContent] = useState<WebsiteContentConfig>(DEFAULT_CONTENT);
   const [siteLocation, setSiteLocation] = useState<LocationConfig>(DEFAULT_LOCATION);
@@ -107,6 +120,35 @@ export default function App() {
     }
   }, []);
 
+  const verifyAdminSession = useCallback(async () => {
+    setCheckingSession(true);
+    try {
+      const token = getAdminToken();
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/admin/auth/me', {
+        credentials: 'include',
+        headers,
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.user) {
+          setAdminUser(data.user);
+          if (data.csrfToken) setInMemoryCsrfToken(data.csrfToken);
+          return;
+        }
+      }
+      clearAdminAuthSession();
+      setAdminUser(null);
+    } catch {
+      clearAdminAuthSession();
+      setAdminUser(null);
+    } finally {
+      setCheckingSession(false);
+    }
+  }, []);
+
   useEffect(() => {
     refreshSiteData();
     // Dynamically align canonical & og:url tags for SEO
@@ -122,37 +164,24 @@ export default function App() {
     ogUrl.setAttribute('content', currentUrl);
   }, [refreshSiteData]);
 
-  // Check initial path, stored admin session, unauthorized events & GMP quota event
+  // Verify initial /admin route, active server-side session, unauthorized events & GMP quota event
   useEffect(() => {
-    if (window.location.pathname === '/admin') {
+    if (isAdminPath(window.location.pathname)) {
       setViewMode('admin');
-    }
-
-    const storedUser = localStorage.getItem('marvz_admin_user');
-    const storedToken = localStorage.getItem('marvz_admin_token');
-    if (storedUser && storedToken) {
-      try {
-        setAdminUser(JSON.parse(storedUser));
-      } catch {
-        localStorage.removeItem('marvz_admin_user');
-        localStorage.removeItem('marvz_admin_token');
-      }
-    } else {
-      localStorage.removeItem('marvz_admin_user');
-      localStorage.removeItem('marvz_admin_token');
+      verifyAdminSession();
     }
 
     const handlePopState = () => {
-      if (window.location.pathname === '/admin') {
+      if (isAdminPath(window.location.pathname)) {
         setViewMode('admin');
+        verifyAdminSession();
       } else {
         setViewMode('website');
       }
     };
 
     const handleUnauthorized = () => {
-      localStorage.removeItem('marvz_admin_token');
-      localStorage.removeItem('marvz_admin_user');
+      clearAdminAuthSession();
       setAdminUser(null);
     };
 
@@ -167,7 +196,19 @@ export default function App() {
       window.removeEventListener('marvz-admin-unauthorized', handleUnauthorized);
       window.removeEventListener('gmp-quota-exceeded', handleQuotaExceeded);
     };
-  }, []);
+  }, [verifyAdminSession]);
+
+  // Redirect unauthenticated visitors on /admin/* subpaths strictly to /admin login
+  useEffect(() => {
+    if (
+      viewMode === 'admin' &&
+      !checkingSession &&
+      !adminUser &&
+      window.location.pathname !== '/admin'
+    ) {
+      window.history.replaceState(null, '', '/admin');
+    }
+  }, [viewMode, checkingSession, adminUser]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -177,12 +218,6 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleOpenControlCenter = () => {
-    setViewMode('admin');
-    window.history.pushState(null, '', '/admin');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleBackToWebsite = () => {
     setViewMode('website');
     window.history.pushState(null, '', '/');
@@ -191,8 +226,7 @@ export default function App() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('marvz_admin_token');
-    localStorage.removeItem('marvz_admin_user');
+    clearAdminAuthSession();
     setAdminUser(null);
   };
 
@@ -222,6 +256,14 @@ export default function App() {
   };
 
   if (viewMode === 'admin') {
+    if (checkingSession) {
+      return (
+        <div className="min-h-screen bg-[#F3F4F6] flex flex-col items-center justify-center p-4">
+          <div className="w-8 h-8 border-2 border-[#30343B] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="text-xs font-mono text-[#6B7280]">Verifying Admin Session...</p>
+        </div>
+      );
+    }
     if (!adminUser) {
       return (
         <AdminLoginView
@@ -261,7 +303,6 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenInquiry={handleOpenInquiry}
-        onOpenControlCenter={handleOpenControlCenter}
       />
 
       {/* Main Content Area */}
@@ -336,7 +377,7 @@ export default function App() {
       </div>
 
       {/* MARVZ AI Assistant Autonomous Customer Support Chatbot Widget */}
-      <MarvzChatbot onOpenControlCenter={handleOpenControlCenter} />
+      <MarvzChatbot />
 
       {/* Corporate Footer */}
       <Footer
@@ -344,7 +385,6 @@ export default function App() {
         setActiveTab={setActiveTab}
         onOpenInquiry={handleOpenInquiry}
         onOpenWhatsApp={() => setIsWhatsAppOpen(true)}
-        onOpenControlCenter={handleOpenControlCenter}
       />
 
       {/* Reusable Modals */}

@@ -15,17 +15,20 @@ import {
   MapPin,
   Globe,
 } from 'lucide-react';
-import { AdminOverviewStats } from '../../types/admin';
+import { AdminOverviewStats, AdminRole } from '../../types/admin';
+import { canRoleAccessTab } from '../../utils/adminApi';
 
 interface AdminDashboardViewProps {
   stats: AdminOverviewStats | null;
   loading: boolean;
+  userRole?: AdminRole;
   onNavigate: (tab: string) => void;
 }
 
 export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   stats,
   loading,
+  userRole = 'Super Admin',
   onNavigate,
 }) => {
   if (loading || !stats) {
@@ -45,6 +48,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       value: stats.totalVisitors.toLocaleString(),
       change: 'Live tracked sessions',
       icon: Users,
+      visible: true,
     },
     {
       title: 'Total Inquiries & Leads',
@@ -53,6 +57,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       icon: FileCheck2,
       action: 'Open Leads CRM',
       onAction: () => onNavigate('leads'),
+      visible: canRoleAccessTab(userRole, 'leads'),
     },
     {
       title: 'Internship Applications',
@@ -62,6 +67,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       badge: stats.pendingInternshipsCount > 0 ? `${stats.pendingInternshipsCount} Pending` : undefined,
       action: 'Review Applicants',
       onAction: () => onNavigate('internships'),
+      visible: canRoleAccessTab(userRole, 'internships'),
     },
     {
       title: 'Training Registrations',
@@ -70,6 +76,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       icon: GraduationCap,
       action: 'Manage Courses & Fees',
       onAction: () => onNavigate('programs'),
+      visible: canRoleAccessTab(userRole, 'programs'),
     },
     {
       title: 'Contact Messages',
@@ -78,16 +85,23 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
       icon: Mail,
       action: 'Open Contact Inbox',
       onAction: () => onNavigate('contacts'),
+      visible: canRoleAccessTab(userRole, 'contacts'),
     },
     {
       title: 'AI Chats & Unanswered',
       value: `${stats.totalConversations}`,
       change: `${stats.activeConversations} active • ${stats.unansweredQuestionsCount} unanswered`,
       icon: MessageSquare,
-      action: 'Live Chat Monitor',
-      onAction: () => onNavigate('livechat'),
+      action: canRoleAccessTab(userRole, 'livechat')
+        ? 'Live Chat Monitor'
+        : canRoleAccessTab(userRole, 'training')
+        ? 'AI Training Center'
+        : undefined,
+      onAction: () =>
+        onNavigate(canRoleAccessTab(userRole, 'livechat') ? 'livechat' : 'training'),
+      visible: canRoleAccessTab(userRole, 'livechat') || canRoleAccessTab(userRole, 'training'),
     },
-  ];
+  ].filter((kpi) => kpi.visible);
 
   const maxMonthlyVal = Math.max(
     10,
@@ -97,7 +111,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
   return (
     <div className="space-y-6">
       {/* Unanswered Alert Banner */}
-      {stats.unansweredQuestionsCount > 0 && (
+      {stats.unansweredQuestionsCount > 0 && canRoleAccessTab(userRole, 'training') && (
         <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-white border border-amber-200 flex items-center justify-center text-amber-700 shrink-0">
@@ -269,12 +283,14 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
                 <Sparkles className="w-4 h-4 text-[#30343B]" />
                 Top Visitor Questions
               </h3>
-              <button
-                onClick={() => onNavigate('kb')}
-                className="text-xs text-[#30343B] hover:text-[#202124] font-semibold underline"
-              >
-                Manage FAQs
-              </button>
+              {canRoleAccessTab(userRole, 'kb') && (
+                <button
+                  onClick={() => onNavigate('kb')}
+                  className="text-xs text-[#30343B] hover:text-[#202124] font-semibold underline"
+                >
+                  Manage FAQs
+                </button>
+              )}
             </div>
 
             <div className="space-y-2.5">
@@ -301,45 +317,77 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
               Quick Control Actions
             </h4>
 
-            <button
-              onClick={() => onNavigate('content')}
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <Globe className="w-3.5 h-3.5 text-[#30343B]" /> Edit Website & Services
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-[#777777]" />
-            </button>
+            {canRoleAccessTab(userRole, 'content') && (
+              <button
+                onClick={() => onNavigate('content')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-[#30343B]" /> Edit Website & Services
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
 
-            <button
-              onClick={() => onNavigate('internships')}
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-[#30343B]" /> Approve Internships
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-[#777777]" />
-            </button>
+            {canRoleAccessTab(userRole, 'internships') && (
+              <button
+                onClick={() => onNavigate('internships')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Briefcase className="w-3.5 h-3.5 text-[#30343B]" /> Approve Internships
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
 
-            <button
-              onClick={() => onNavigate('programs')}
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <GraduationCap className="w-3.5 h-3.5 text-[#30343B]" /> Training Fees & Seats
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-[#777777]" />
-            </button>
+            {canRoleAccessTab(userRole, 'programs') && (
+              <button
+                onClick={() => onNavigate('programs')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <GraduationCap className="w-3.5 h-3.5 text-[#30343B]" /> Training Fees & Seats
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
 
-            <button
-              onClick={() => onNavigate('location')}
-              className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#30343B]" /> Dhaka HQ Map & Address
-              </span>
-              <ArrowUpRight className="w-4 h-4 text-[#777777]" />
-            </button>
+            {canRoleAccessTab(userRole, 'location') && (
+              <button
+                onClick={() => onNavigate('location')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-[#30343B]" /> Dhaka HQ Map & Address
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
+
+            {canRoleAccessTab(userRole, 'contacts') && (
+              <button
+                onClick={() => onNavigate('contacts')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-[#30343B]" /> Open Contact Inbox
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
+
+            {canRoleAccessTab(userRole, 'kb') && (
+              <button
+                onClick={() => onNavigate('kb')}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] text-xs font-semibold text-[#202124] transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#30343B]" /> AI Knowledge Base
+                </span>
+                <ArrowUpRight className="w-4 h-4 text-[#777777]" />
+              </button>
+            )}
           </div>
         </div>
       </div>

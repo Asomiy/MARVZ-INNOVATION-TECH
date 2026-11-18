@@ -36,13 +36,13 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
   onOpenInquiry,
   onOpenInternshipModal,
 }) => {
-  const contactEmail = location.contactEmail || 'marvzinnovationtech@gmail.com';
+  const contactEmail = (location.contactEmail || 'marvzinnovationtech@gmail.com').trim();
   const contactPhone = location.contactPhone || '+8801775551987';
   const contactWhatsApp = location.contactWhatsApp || '+8801775551987';
   const telHref = `tel:${contactPhone.replace(/[^+\d]/g, '')}`;
   const waHref = `https://wa.me/${contactWhatsApp.replace(/[^\d]/g, '')}`;
 
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     fullName: '',
     email: '',
     phone: '',
@@ -50,27 +50,38 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
     technologyDomain: 'Drone Technology & UAV Engineering',
     subject: 'General Project & Collaboration Inquiry',
     message: '',
-  });
+    website: '', // invisible honeypot spam protection
+  };
 
-  const [submitted, setSubmitted] = useState(false);
+  const [formData, setFormData] = useState(initialFormState);
+  const [submittedInfo, setSubmittedInfo] = useState<{
+    fullName: string;
+    email: string;
+    referenceId?: string;
+  } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setErrorMsg('');
 
-    if (!formData.fullName.trim()) {
-      setErrorMsg('Please enter your full name.');
+    const trimmedName = formData.fullName.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedMessage = formData.message.trim();
+
+    if (trimmedName.length < 2) {
+      setErrorMsg('Please enter your full name (at least 2 characters).');
       return;
     }
-    if (!formData.email.trim() || !formData.email.includes('@')) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmedEmail)) {
       setErrorMsg('Please enter a valid email address.');
       return;
     }
-    if (!formData.message.trim()) {
-      setErrorMsg('Please write a short note about your goals or project.');
+    if (trimmedMessage.length < 5) {
+      setErrorMsg('Please enter your project, goal, or workshop inquiry (at least 5 characters).');
       return;
     }
 
@@ -82,10 +93,19 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to transmit message.');
-      setSubmitted(true);
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to submit message. Please try again.');
+      }
+
+      setSubmittedInfo({
+        fullName: trimmedName,
+        email: trimmedEmail,
+        referenceId: data.contactMessage?.id,
+      });
+      // Reset form only after verified successful submission
+      setFormData(initialFormState);
     } catch (err: any) {
-      setErrorMsg(err.message || 'Could not send message. Please try again.');
+      setErrorMsg(err.message || 'Could not send message. Please check your connection and try again.');
     } finally {
       setSubmitting(false);
     }
@@ -160,6 +180,7 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                   href={`mailto:${contactEmail}`}
                   className="flex items-center gap-3 text-xs text-[#202124] hover:underline"
                   aria-label={`Email ${contactEmail}`}
+                  title={`Email ${contactEmail}`}
                 >
                   <Mail className="w-4 h-4 text-[#30343B] shrink-0" />
                   <span className="break-all">{contactEmail}</span>
@@ -285,32 +306,29 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-20">
           {/* Left: Interactive Contact Form Connected to Backend */}
           <div className="lg:col-span-7 p-8 rounded-2xl bg-white border border-[#E5E7EB] shadow-sm">
-            {submitted ? (
+            {submittedInfo ? (
               <div className="py-12 text-center space-y-4">
                 <div className="w-14 h-14 rounded-full bg-[#F3F4F6] border border-[#E5E7EB] flex items-center justify-center text-[#30343B] mx-auto">
-                  <CheckCircle2 className="w-8 h-8" />
+                  <CheckCircle2 className="w-8 h-8 text-emerald-700" />
                 </div>
-                <h3 className="text-2xl font-bold text-[#202124]">Message Transmitted</h3>
-                <p className="text-sm text-[#777777] max-w-md mx-auto leading-relaxed">
-                  Thank you, <span className="text-[#202124] font-semibold">{formData.fullName}</span>. Our Dhaka HQ
-                  engineering and advisory desk has received your message and will reply via{' '}
-                  <span className="text-[#202124] font-medium">{formData.email}</span> promptly.
+                <h3 className="text-2xl font-bold text-[#202124]">Message Submitted</h3>
+                <p className="text-sm text-[#202124] font-medium max-w-lg mx-auto leading-relaxed">
+                  Thank you for contacting MARVZ &amp; INNOVATION TECH! Your message has been submitted successfully. Our
+                  team will get back to you soon.
+                </p>
+                <p className="text-xs text-[#777777] max-w-md mx-auto">
+                  Submitted as <span className="text-[#202124] font-semibold">{submittedInfo.fullName}</span> (
+                  <span className="text-[#202124]">{submittedInfo.email}</span>)
+                  {submittedInfo.referenceId ? ` · Ref: ${submittedInfo.referenceId}` : ''}
                 </p>
                 <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
+                    type="button"
                     onClick={() => {
-                      setSubmitted(false);
-                      setFormData({
-                        fullName: '',
-                        email: '',
-                        phone: '',
-                        collaboratorType: 'Student / Independent Builder',
-                        technologyDomain: 'Drone Technology & UAV Engineering',
-                        subject: 'General Project & Collaboration Inquiry',
-                        message: '',
-                      });
+                      setSubmittedInfo(null);
+                      setErrorMsg('');
                     }}
-                    className="px-4 py-2 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg"
+                    className="px-4 py-2 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg transition-colors"
                   >
                     Send Another Note
                   </button>
@@ -318,7 +336,7 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                     href={waHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg"
+                    className="inline-flex items-center gap-2 px-5 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />
                     <span>Chat on WhatsApp</span>
@@ -326,7 +344,19 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                {/* Invisible anti-spam honeypot field */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  value={formData.website}
+                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  className="hidden"
+                />
+
                 <div className="border-b border-[#E5E7EB] pb-3 mb-2">
                   <h3 className="text-lg font-bold text-[#202124]">Start a Conversation</h3>
                   <p className="text-xs text-[#777777] mt-1">
@@ -335,7 +365,7 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                 </div>
 
                 {errorMsg && (
-                  <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                  <div role="alert" className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
                     {errorMsg}
                   </div>
                 )}
@@ -506,6 +536,8 @@ export const ContactCollaborationSection: React.FC<ContactCollaborationSectionPr
                 <a
                   href={`mailto:${contactEmail}`}
                   className="flex items-center gap-3 group hover:text-[#202124]"
+                  aria-label={`Email ${contactEmail}`}
+                  title={`Email ${contactEmail}`}
                 >
                   <span className="p-1.5 rounded-lg bg-[#F3F4F6] group-hover:bg-[#E5E7EB] border border-[#E5E7EB] transition-colors shrink-0">
                     <Mail className="w-3.5 h-3.5 text-[#30343B]" />

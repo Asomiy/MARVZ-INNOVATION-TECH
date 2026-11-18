@@ -5,6 +5,57 @@ import fs from 'fs';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI, ThinkingLevel } from '@google/genai';
+import {
+  addContactMessageReply,
+  computeSubmissionHash,
+  deleteContactMessage,
+  findRecentDuplicateSubmission,
+  getContactMessageById,
+  getContactMessageStats,
+  insertContactMessage,
+  listContactMessages,
+  migrateLegacyContactMessages,
+  updateContactEmailDeliveryStatus,
+  updateContactMessageStatus,
+  type ContactMessageStatus as DbContactMessageStatus,
+} from './server/contactDb.js';
+import {
+  getSmtpStatus,
+  isSmtpConfigured,
+  sendAdminReplyEmail,
+  sendContactNotificationEmails,
+  sendPasswordResetEmail,
+} from './server/emailService.js';
+import {
+  type AdminRole,
+  type AdminUserRecord,
+  type LegacyAdminAccountInput,
+  VALID_ADMIN_ROLES,
+  consumePasswordResetToken,
+  countActiveSuperAdmins,
+  createAdminSession,
+  createAdminUser,
+  createPasswordResetToken,
+  deleteAdminUser,
+  getAdminUserByEmail,
+  getAdminUserById,
+  initializeAdminUsers,
+  listAdminUsers,
+  listRecentAuthAuditLogs,
+  logAuthAudit,
+  normalizeEmail,
+  recordAdminLoginTimestamp,
+  revokeAllUserSessions,
+  revokeSessionByToken,
+  setAdminUserPassword,
+  toSafeAdminUser,
+  updateAdminUserGovernance,
+  updateAdminUserProfile,
+  upgradePasswordHashDirect,
+  validatePasswordStrength,
+  verifyAdminSessionToken,
+  verifyUserPassword,
+} from './server/adminAuthDb.js';
 
 dotenv.config();
 
@@ -13,9 +64,31 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.set('trust proxy', 1);
 
 // Allow JSON payloads up to 15MB for document & image uploads
 app.use(express.json({ limit: '15mb' }));
+
+// Block direct HTTP access to internal databases, JSON stores, server modules, or env files
+app.use((req, res, next) => {
+  const reqPath = req.path.toLowerCase();
+  if (
+    reqPath === '/data' ||
+    reqPath.startsWith('/data/') ||
+    reqPath === '/database' ||
+    reqPath.startsWith('/database/') ||
+    reqPath === '/server' ||
+    reqPath.startsWith('/server/') ||
+    reqPath === '/backups' ||
+    reqPath.startsWith('/backups/') ||
+    reqPath.startsWith('/.env') ||
+    reqPath.startsWith('/.git') ||
+    reqPath === '/server.ts'
+  ) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+  next();
+});
 
 // Ensure data & uploads directories exist
 const DATA_DIR = path.join(__dirname, 'data');
@@ -29,33 +102,10 @@ if (!fs.existsSync(UPLOADS_DIR)) {
 app.use('/uploads', express.static(UPLOADS_DIR));
 
 const DB_FILE = path.join(DATA_DIR, 'admin_store.json');
-
-// --- Security Helpers (Salted Scrypt Password Hashing) ---
-function hashPassword(password: string, salt?: string): { hash: string; salt: string } {
-  const usedSalt = salt || crypto.randomBytes(16).toString('hex');
-  const derived = crypto.scryptSync(password, usedSalt, 64).toString('hex');
-  return { hash: derived, salt: usedSalt };
-}
-
-function verifyPassword(password: string, storedHash: string, salt: string): boolean {
-  try {
-    const derived = crypto.scryptSync(password, salt, 64);
-    const storedBuf = Buffer.from(storedHash, 'hex');
-    if (derived.length !== storedBuf.length) return false;
-    return crypto.timingSafeEqual(derived, storedBuf);
-  } catch {
-    return false;
-  }
-}
+const ADMIN_COOKIE_NAME = 'marvz_admin_session';
 
 // --- Domain Types ---
 type LeadStatus = 'New' | 'Contacted' | 'Interested' | 'Converted';
-type AdminRole =
-  | 'Super Admin'
-  | 'Content Manager'
-  | 'HR & Training Coordinator'
-  | 'Knowledge Editor'
-  | 'Support Agent';
 
 interface Lead {
   id: string;
@@ -162,28 +212,6 @@ interface ControlCenterSettings {
   contactPhone: string;
   contactWhatsApp: string;
   officeLocation: string;
-}
-
-interface AdminAccount {
-  id: string;
-  name: string;
-  email: string;
-  role: AdminRole;
-  phone?: string;
-  department?: string;
-  passwordHash: string;
-  passwordSalt: string;
-  isActive: boolean;
-  lastLogin: string;
-}
-
-interface AdminSession {
-  token: string;
-  userId: string;
-  email: string;
-  role: AdminRole;
-  createdAt: string;
-  expiresAt: string;
 }
 
 interface WebsiteServiceItem {
@@ -771,60 +799,6 @@ const DEFAULT_ACTIVITIES: ActivityLogItem[] = [
   },
 ];
 
-function createDefaultAdminAccounts(): AdminAccount[] {
-  const { hash, salt } = hashPassword('marvz2026');
-  return [
-    {
-      id: 'adm-001',
-      name: 'Engr. Zamil Rahman',
-      email: 'admin@marvztech.com',
-      role: 'Super Admin',
-      phone: '+880 1800-627898',
-      department: 'Executive & Engineering Governance',
-      passwordHash: hash,
-      passwordSalt: salt,
-      isActive: true,
-      lastLogin: new Date().toISOString(),
-    },
-    {
-      id: 'adm-002',
-      name: 'Admissions & Content Lead',
-      email: 'editor@marvztech.com',
-      role: 'Content Manager',
-      phone: '+880 1711-000001',
-      department: 'Website Content & Knowledge Base',
-      passwordHash: hash,
-      passwordSalt: salt,
-      isActive: true,
-      lastLogin: new Date(Date.now() - 86400000).toISOString(),
-    },
-    {
-      id: 'adm-003',
-      name: 'HR & Training Desk',
-      email: 'coordinator@marvztech.com',
-      role: 'HR & Training Coordinator',
-      phone: '+880 1711-000002',
-      department: 'Internships & Bootcamps',
-      passwordHash: hash,
-      passwordSalt: salt,
-      isActive: true,
-      lastLogin: new Date(Date.now() - 86400000 * 2).toISOString(),
-    },
-    {
-      id: 'adm-004',
-      name: 'Support Desk Dispatch',
-      email: 'support@marvztech.com',
-      role: 'Support Agent',
-      phone: '+880 1711-000003',
-      department: 'Live Chat & Client Inquiries',
-      passwordHash: hash,
-      passwordSalt: salt,
-      isActive: true,
-      lastLogin: new Date(Date.now() - 86400000 * 3).toISOString(),
-    },
-  ];
-}
-
 const DEFAULT_FAQS: FAQItem[] = [
   {
     id: 'faq-1',
@@ -1096,8 +1070,6 @@ interface StoreSchema {
   internships: InternshipApplication[];
   contactMessages: ContactMessage[];
   activities: ActivityLogItem[];
-  adminAccounts: AdminAccount[];
-  sessions: AdminSession[];
   faqs: FAQItem[];
   unansweredQuestions: UnansweredQuestion[];
   documents: IngestedDocument[];
@@ -1115,8 +1087,6 @@ let store: StoreSchema = {
   internships: DEFAULT_INTERNSHIPS,
   contactMessages: DEFAULT_CONTACT_MESSAGES,
   activities: DEFAULT_ACTIVITIES,
-  adminAccounts: createDefaultAdminAccounts(),
-  sessions: [],
   faqs: DEFAULT_FAQS,
   unansweredQuestions: DEFAULT_UNANSWERED,
   documents: DEFAULT_DOCUMENTS,
@@ -1125,11 +1095,16 @@ let store: StoreSchema = {
   visitorCount: 1428,
 };
 
+let legacyAdminAccountsFromJson: LegacyAdminAccountInput[] = [];
+
 // Load existing data safely while hydrating any newly added modules
 try {
   if (fs.existsSync(DB_FILE)) {
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed.adminAccounts)) {
+      legacyAdminAccountsFromJson = parsed.adminAccounts;
+    }
     store = {
       settings: {
         ...DEFAULT_SETTINGS,
@@ -1159,10 +1134,6 @@ try {
         ? parsed.contactMessages
         : DEFAULT_CONTACT_MESSAGES,
       activities: parsed.activities?.length ? parsed.activities : DEFAULT_ACTIVITIES,
-      adminAccounts: parsed.adminAccounts?.length
-        ? parsed.adminAccounts
-        : createDefaultAdminAccounts(),
-      sessions: Array.isArray(parsed.sessions) ? parsed.sessions : [],
       faqs: parsed.faqs?.length ? parsed.faqs : DEFAULT_FAQS,
       unansweredQuestions: parsed.unansweredQuestions?.length
         ? parsed.unansweredQuestions
@@ -1184,6 +1155,20 @@ try {
   fs.writeFileSync(DB_FILE, JSON.stringify(store, null, 2), 'utf-8');
 } catch (err) {
   console.warn('Could not read existing db file, using defaults:', err);
+}
+
+// Initialize SQLite-backed Admin Accounts, Sessions & Reset Tokens cleanly
+try {
+  initializeAdminUsers(legacyAdminAccountsFromJson);
+} catch (err) {
+  console.error('Failed to initialize SQLite admin users:', err);
+}
+
+// Migrate any legacy contact messages from JSON store into persistent SQLite database
+try {
+  migrateLegacyContactMessages(store.contactMessages);
+} catch (err) {
+  console.error('Failed to migrate legacy contact messages to SQLite:', err);
 }
 
 // O(1) lookup index for live conversations
@@ -1252,41 +1237,203 @@ app.use((req, _res, next) => {
   next();
 });
 
-// --- Auth Middleware ---
+// --- In-Memory Sliding-Window Rate Limiter & Input Sanitization ---
+const rateLimitBuckets = new Map<string, number[]>();
+
+function getClientIp(req: Request): string {
+  const fwd = req.headers['x-forwarded-for'];
+  if (typeof fwd === 'string' && fwd.trim()) {
+    return fwd.split(',')[0].trim();
+  }
+  return req.socket?.remoteAddress || req.ip || 'unknown';
+}
+
+function checkRateLimit(bucketKey: string, maxRequests: number, windowMs: number): boolean {
+  const now = Date.now();
+  const existing = (rateLimitBuckets.get(bucketKey) || []).filter((ts) => now - ts < windowMs);
+  if (existing.length >= maxRequests) {
+    rateLimitBuckets.set(bucketKey, existing);
+    return false;
+  }
+  existing.push(now);
+  rateLimitBuckets.set(bucketKey, existing);
+  if (rateLimitBuckets.size > 5000) {
+    // Prune oldest buckets to prevent unbounded growth
+    const firstKey = rateLimitBuckets.keys().next().value;
+    if (firstKey) rateLimitBuckets.delete(firstKey);
+  }
+  return true;
+}
+
+function sanitizeInputText(val: unknown, maxLen: number): string {
+  return String(val ?? '')
+    .replace(/\0/g, '')
+    .replace(/\r\n/g, '\n')
+    .trim()
+    .slice(0, maxLen);
+}
+
+// --- Auth, Cookie, CSRF & RBAC Middleware ---
 interface AuthedRequest extends Request {
-  adminUser?: AdminAccount;
+  adminUser?: AdminUserRecord;
   sessionToken?: string;
+  sessionId?: string;
+  csrfToken?: string;
+  authMethod?: 'cookie' | 'bearer';
+}
+
+function parseCookies(cookieHeader: string | undefined): Record<string, string> {
+  const parsed: Record<string, string> = {};
+  if (!cookieHeader) return parsed;
+  for (const part of cookieHeader.split(';')) {
+    const idx = part.indexOf('=');
+    if (idx <= 0) continue;
+    const key = part.slice(0, idx).trim();
+    const val = part.slice(idx + 1).trim();
+    try {
+      parsed[key] = decodeURIComponent(val);
+    } catch {
+      parsed[key] = val;
+    }
+  }
+  return parsed;
+}
+
+function isHttpsRequest(req: Request): boolean {
+  const fwdProto = String(req.headers['x-forwarded-proto'] || '').toLowerCase();
+  return req.secure || fwdProto.includes('https') || process.env.COOKIE_SECURE === 'true';
+}
+
+function setAdminSessionCookie(
+  req: Request,
+  res: Response,
+  rawToken: string,
+  rememberMe: boolean,
+  ttlMs: number
+) {
+  const parts = [
+    `${ADMIN_COOKIE_NAME}=${encodeURIComponent(rawToken)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+  ];
+  if (rememberMe) {
+    parts.push(`Max-Age=${Math.floor(ttlMs / 1000)}`);
+  }
+  if (isHttpsRequest(req)) {
+    parts.push('Secure');
+  }
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+function clearAdminSessionCookie(req: Request, res: Response) {
+  const parts = [
+    `${ADMIN_COOKIE_NAME}=`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    'Max-Age=0',
+  ];
+  if (isHttpsRequest(req)) {
+    parts.push('Secure');
+  }
+  res.setHeader('Set-Cookie', parts.join('; '));
+}
+
+function getAppBaseUrl(req: Request): string {
+  const envUrl = (process.env.APP_URL || '').trim().replace(/\/+$/, '');
+  if (envUrl && !envUrl.includes('MY_APP_URL')) {
+    return envUrl;
+  }
+  const proto = isHttpsRequest(req) ? 'https' : 'http';
+  const host = req.get('host') || `localhost:${PORT}`;
+  return `${proto}://${host}`;
 }
 
 function requireAdminAuth(req: AuthedRequest, res: Response, next: NextFunction) {
+  const cookies = parseCookies(req.headers.cookie);
+  const cookieToken = cookies[ADMIN_COOKIE_NAME] || '';
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Authentication required. Please sign in to the Admin Panel.' });
+  const bearerToken =
+    authHeader && authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
+
+  const token = cookieToken || bearerToken;
+  const authMethod: 'cookie' | 'bearer' = cookieToken ? 'cookie' : 'bearer';
+
+  if (!token) {
+    return res
+      .status(401)
+      .json({ error: 'Authentication required. Please sign in to the Admin Panel.' });
   }
 
-  const token = authHeader.slice(7).trim();
-  const session = store.sessions.find((s) => s.token === token);
-  if (!session || new Date(session.expiresAt).getTime() < Date.now()) {
-    if (session) {
-      store.sessions = store.sessions.filter((s) => s.token !== token);
-      persistStore();
+  const verified = verifyAdminSessionToken(token);
+  if (!verified) {
+    if (cookieToken) {
+      clearAdminSessionCookie(req, res);
     }
     return res.status(401).json({ error: 'Session expired or invalid. Please log in again.' });
   }
 
-  const account = store.adminAccounts.find((a) => a.id === session.userId && a.isActive);
-  if (!account) {
-    return res.status(401).json({ error: 'Admin account disabled or removed.' });
+  // CSRF defense on state-changing cookie-authenticated requests
+  const isMutation = !['GET', 'HEAD', 'OPTIONS'].includes(req.method.toUpperCase());
+  if (isMutation && authMethod === 'cookie') {
+    const headerCsrf = String(req.headers['x-csrf-token'] || '');
+    const expectedCsrf = verified.session.csrfToken;
+    const bearerMatches = Boolean(bearerToken && bearerToken === token);
+    const csrfMatches =
+      headerCsrf.length === expectedCsrf.length &&
+      headerCsrf.length > 0 &&
+      crypto.timingSafeEqual(Buffer.from(headerCsrf), Buffer.from(expectedCsrf));
+
+    if (!csrfMatches && !bearerMatches) {
+      return res
+        .status(403)
+        .json({ error: 'Security validation failed (CSRF token missing or invalid).' });
+    }
+
+    const originHeader = req.headers.origin;
+    if (originHeader) {
+      try {
+        const originHost = new URL(originHeader).host;
+        const reqHost = req.get('host');
+        if (reqHost && originHost !== reqHost) {
+          return res.status(403).json({ error: 'Cross-origin mutation rejected.' });
+        }
+      } catch {
+        return res.status(403).json({ error: 'Invalid request origin.' });
+      }
+    }
   }
 
-  req.adminUser = account;
+  req.adminUser = verified.user;
   req.sessionToken = token;
+  req.sessionId = verified.session.id;
+  req.csrfToken = verified.session.csrfToken;
+  req.authMethod = authMethod;
   next();
 }
 
-function sanitizeAccount(acc: AdminAccount) {
-  const { passwordHash: _ph, passwordSalt: _ps, ...safe } = acc;
-  return safe;
+function requireRoles(...allowedRoles: AdminRole[]) {
+  return (req: AuthedRequest, res: Response, next: NextFunction) => {
+    if (!req.adminUser) {
+      return res.status(401).json({ error: 'Authentication required.' });
+    }
+    if (req.adminUser.role === 'Super Admin' || allowedRoles.includes(req.adminUser.role)) {
+      return next();
+    }
+    logAuthAudit({
+      eventType: 'ACCESS_DENIED',
+      email: req.adminUser.email,
+      userId: req.adminUser.id,
+      success: false,
+      ipAddress: getClientIp(req),
+      userAgent: String(req.headers['user-agent'] || ''),
+      details: `Role "${req.adminUser.role}" denied ${req.method} ${req.originalUrl}`,
+    });
+    return res.status(403).json({
+      error: `Access denied. Your role (${req.adminUser.role}) does not have permission for this module.`,
+    });
+  };
 }
 
 // --- Gemini AI Initialization ---
@@ -1650,68 +1797,121 @@ app.get('/api/public/geocode-office', async (req, res) => {
   });
 });
 
-// Public Contact Form Submission
-app.post('/api/public/contact', (req, res) => {
+// Public Contact Form Submission (Validated, Spam-Protected, Persistent SQLite + SMTP Email)
+app.post('/api/public/contact', async (req, res) => {
   try {
-    const {
-      fullName,
-      email,
-      phone = '',
-      collaboratorType = 'General Visitor',
-      technologyDomain = 'General Inquiry',
-      subject = 'Website Contact Message',
-      message,
-    } = req.body;
-
-    if (!fullName?.trim() || !email?.trim() || !message?.trim()) {
-      return res.status(400).json({ error: 'Full name, email, and message are required.' });
+    const clientIp = getClientIp(req);
+    if (!checkRateLimit(`contact:${clientIp}`, 6, 15 * 60 * 1000)) {
+      return res.status(429).json({
+        error: 'Too many submissions from your network. Please wait a few minutes before trying again.',
+      });
     }
 
-    const newMsg: ContactMessage = {
-      id: `msg-${Date.now()}`,
-      fullName: String(fullName).trim(),
-      email: String(email).trim(),
-      phone: String(phone).trim(),
-      collaboratorType: String(collaboratorType).trim(),
-      technologyDomain: String(technologyDomain).trim(),
-      subject: String(subject).trim(),
-      message: String(message).trim(),
-      status: 'New',
-      replies: [],
-      createdAt: new Date().toISOString(),
-    };
+    const body = req.body || {};
 
-    store.contactMessages.unshift(newMsg);
+    // Honeypot anti-spam trap (legitimate users leave this empty)
+    if (
+      (typeof body.website === 'string' && body.website.trim().length > 0) ||
+      (typeof body._gotcha === 'string' && body._gotcha.trim().length > 0)
+    ) {
+      return res.status(400).json({ error: 'Spam protection triggered. Submission rejected.' });
+    }
+
+    const fullName = sanitizeInputText(body.fullName, 120);
+    const email = sanitizeInputText(body.email, 160).toLowerCase();
+    const phone = sanitizeInputText(body.phone, 40);
+    const collaboratorType =
+      sanitizeInputText(body.collaboratorType, 100) || 'Student / Independent Builder';
+    const technologyDomain =
+      sanitizeInputText(body.technologyDomain, 120) || 'Drone Technology & UAV Engineering';
+    const subject = sanitizeInputText(body.subject, 200) || 'General Project & Collaboration Inquiry';
+    const message = sanitizeInputText(body.message, 5000);
+
+    if (fullName.length < 2) {
+      return res.status(400).json({ error: 'Please enter your full name (at least 2 characters).' });
+    }
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!emailPattern.test(email)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
+    if (message.length < 5) {
+      return res.status(400).json({
+        error: 'Please enter your project, goal, or workshop inquiry (at least 5 characters).',
+      });
+    }
+
+    const submissionHash = computeSubmissionHash(email, subject, message);
+    const recentDuplicate = findRecentDuplicateSubmission(submissionHash, 10);
+    if (recentDuplicate) {
+      return res.status(409).json({
+        error: 'A duplicate of this message was already submitted recently. Our team has received it and will respond soon.',
+      });
+    }
+
+    const savedMsg = insertContactMessage({
+      fullName,
+      email,
+      phone,
+      collaboratorType,
+      technologyDomain,
+      subject,
+      message,
+      ipAddress: clientIp,
+      userAgent: sanitizeInputText(req.headers['user-agent'], 250),
+      submissionHash,
+    });
 
     // Also mirror into CRM leads for unified pipeline visibility
     store.leads.unshift({
       id: `lead-${Date.now()}`,
-      name: newMsg.fullName,
-      email: newMsg.email,
-      phone: newMsg.phone,
+      name: savedMsg.fullName,
+      email: savedMsg.email,
+      phone: savedMsg.phone,
       category: 'Services',
-      requirements: `[${newMsg.technologyDomain}] ${newMsg.message}`,
-      timestamp: newMsg.createdAt,
+      requirements: `[${savedMsg.technologyDomain}] ${savedMsg.message}`,
+      timestamp: savedMsg.createdAt,
       status: 'New',
       source: 'Direct Form',
     });
 
+    const emailDispatch = await sendContactNotificationEmails(
+      savedMsg,
+      store.locationConfig.contactEmail
+    );
+
+    const updatedMsg = updateContactEmailDeliveryStatus(
+      savedMsg.id,
+      emailDispatch.companyEmailStatus,
+      emailDispatch.visitorEmailStatus,
+      emailDispatch.error || ''
+    );
+
+    if (emailDispatch.error) {
+      console.warn(`Contact email dispatch notice for ${savedMsg.id}:`, emailDispatch.error);
+    }
+
     logActivity(
       'inquiry',
       'New Contact Message Received',
-      `${newMsg.fullName} submitted an inquiry regarding ${newMsg.technologyDomain}.`,
-      newMsg.fullName
+      `${savedMsg.fullName} submitted an inquiry regarding ${savedMsg.technologyDomain}.`,
+      savedMsg.fullName
     );
     persistStore();
 
     return res.status(201).json({
       success: true,
-      message: 'Message received! Our Dhaka HQ advisory desk will contact you shortly.',
-      contactMessage: newMsg,
+      message:
+        'Thank you for contacting MARVZ & INNOVATION TECH! Your message has been submitted successfully. Our team will get back to you soon.',
+      contactMessage: updatedMsg || savedMsg,
+      emailDelivery: {
+        configured: emailDispatch.configured,
+        companyEmailStatus: emailDispatch.companyEmailStatus,
+        visitorEmailStatus: emailDispatch.visitorEmailStatus,
+      },
     });
   } catch (err) {
     console.error('Contact form error:', err);
-    return res.status(500).json({ error: 'Failed to submit message.' });
+    return res.status(500).json({ error: 'Failed to submit message. Please try again shortly.' });
   }
 });
 
@@ -2336,162 +2536,631 @@ app.post('/api/leads', (req, res) => {
 });
 
 // ====================================================
-// AUTHENTICATION & ADMIN ACCOUNT ENDPOINTS
+// AUTHENTICATION, FIRST-TIME SETUP, RECOVERY & RBAC
 // ====================================================
 
-app.post('/api/admin/auth/login', (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Email and password are required.' });
+app.post('/api/admin/auth/account-status', (req, res) => {
+  const clientIp = getClientIp(req);
+  if (!checkRateLimit(`admin-acct-status:${clientIp}`, 30, 15 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Too many requests. Please wait a few minutes.' });
+  }
+  const email = normalizeEmail(req.body?.email || '');
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required.' });
+  }
+  const account = getAdminUserByEmail(email);
+  if (!account) {
+    return res.json({ exists: false, isActive: false, needsPasswordSetup: false });
+  }
+  return res.json({
+    exists: true,
+    isActive: account.isActive,
+    needsPasswordSetup: account.isActive && account.needsPasswordSetup,
+  });
+});
+
+app.post('/api/admin/auth/setup-password', async (req, res) => {
+  const clientIp = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || '');
+  if (!checkRateLimit(`admin-setup-pw:${clientIp}`, 12, 15 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Too many setup attempts. Please try again later.' });
   }
 
-  const normalizedEmail = String(email).trim().toLowerCase();
-  const account = store.adminAccounts.find((a) => a.email.toLowerCase() === normalizedEmail);
+  const email = normalizeEmail(req.body?.email || '');
+  const newPassword = String(req.body?.newPassword || '');
+  const confirmPassword = String(req.body?.confirmPassword || '');
+  const rememberMe = Boolean(req.body?.rememberMe);
 
-  if (!account || !account.isActive) {
-    return res.status(401).json({ error: 'Invalid credentials or inactive admin account.' });
+  if (!email || !newPassword || !confirmPassword) {
+    return res.status(400).json({ error: 'Email, new password, and confirmation are required.' });
   }
 
-  if (!verifyPassword(String(password), account.passwordHash, account.passwordSalt)) {
-    return res.status(401).json({ error: 'Incorrect email or password.' });
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'New password and confirmation do not match.' });
   }
 
-  const token = `marvz-sess-${crypto.randomBytes(24).toString('hex')}`;
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(); // 7 days
+  const strength = validatePasswordStrength(newPassword);
+  if (!strength.valid) {
+    return res.status(400).json({
+      error: `Password does not meet security requirements: ${strength.errors.join(', ')}.`,
+      requirements: strength.errors,
+    });
+  }
 
-  store.sessions = store.sessions.filter((s) => new Date(s.expiresAt).getTime() > Date.now());
-  store.sessions.push({
-    token,
-    userId: account.id,
-    email: account.email,
-    role: account.role,
-    createdAt: new Date().toISOString(),
-    expiresAt,
+  const account = getAdminUserByEmail(email);
+  if (!account) {
+    logAuthAudit({
+      eventType: 'FIRST_PASSWORD_SETUP',
+      email,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Setup attempted for unknown email.',
+    });
+    return res.status(404).json({ error: 'No authorized administrator account found for this email.' });
+  }
+
+  if (!account.isActive) {
+    logAuthAudit({
+      eventType: 'FIRST_PASSWORD_SETUP',
+      email,
+      userId: account.id,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Account inactive.',
+    });
+    return res.status(403).json({ error: 'This administrator account is currently inactive.' });
+  }
+
+  if (!account.needsPasswordSetup && account.passwordHash) {
+    logAuthAudit({
+      eventType: 'FIRST_PASSWORD_SETUP',
+      email,
+      userId: account.id,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Setup rejected because password is already configured.',
+    });
+    return res.status(403).json({
+      error:
+        'A password is already configured for this account. Please sign in or use Forgot Password.',
+    });
+  }
+
+  const updated = await setAdminUserPassword(account.id, newPassword);
+  if (!updated) {
+    return res.status(500).json({ error: 'Failed to save administrator password.' });
+  }
+
+  recordAdminLoginTimestamp(updated.id);
+  const refreshed = getAdminUserById(updated.id) || updated;
+  const session = createAdminSession({
+    user: refreshed,
+    rememberMe,
+    ipAddress: clientIp,
+    userAgent,
   });
 
-  account.lastLogin = new Date().toISOString();
-  logActivity('auth', 'Admin Sign-In', `${account.name} (${account.role}) signed into Admin Dashboard.`, account.name);
+  setAdminSessionCookie(req, res, session.rawToken, rememberMe, session.ttlMs);
+  logAuthAudit({
+    eventType: 'FIRST_PASSWORD_SETUP',
+    email: refreshed.email,
+    userId: refreshed.id,
+    success: true,
+    ipAddress: clientIp,
+    userAgent,
+    details: 'Initial admin password configured with bcrypt.',
+  });
+  logActivity(
+    'auth',
+    'Initial Admin Password Configured',
+    `${refreshed.name} (${refreshed.email}) completed first-time password setup.`,
+    refreshed.name
+  );
   persistStore();
 
   return res.json({
     success: true,
-    token,
-    user: sanitizeAccount(account),
+    token: session.rawToken,
+    csrfToken: session.csrfToken,
+    expiresAt: session.expiresAt,
+    user: toSafeAdminUser(refreshed),
   });
 });
 
-// Protect ALL subsequent /api/admin/* routes
+app.post('/api/admin/auth/login', async (req, res) => {
+  const clientIp = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || '');
+  const email = normalizeEmail(req.body?.email || '');
+  const password = String(req.body?.password || '');
+  const rememberMe = Boolean(req.body?.rememberMe);
+
+  if (
+    !checkRateLimit(`admin-login-ip:${clientIp}`, 15, 15 * 60 * 1000) ||
+    (email && !checkRateLimit(`admin-login-email:${email}`, 8, 15 * 60 * 1000))
+  ) {
+    return res
+      .status(429)
+      .json({ error: 'Too many login attempts. Please try again in 15 minutes.' });
+  }
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email address is required.' });
+  }
+
+  const account = getAdminUserByEmail(email);
+  if (!account) {
+    logAuthAudit({
+      eventType: 'LOGIN_FAILED',
+      email,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Account not found.',
+    });
+    return res.status(401).json({ error: 'Invalid credentials or inactive admin account.' });
+  }
+
+  if (!account.isActive) {
+    logAuthAudit({
+      eventType: 'LOGIN_FAILED',
+      email,
+      userId: account.id,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Account deactivated.',
+    });
+    return res.status(403).json({
+      error: 'This administrator account is currently deactivated. Contact a Super Admin.',
+    });
+  }
+
+  if (account.needsPasswordSetup || !account.passwordHash) {
+    return res.status(403).json({
+      code: 'PASSWORD_SETUP_REQUIRED',
+      needsPasswordSetup: true,
+      error:
+        'No password has been configured for this admin account yet. Complete "Set Your Password" to continue.',
+    });
+  }
+
+  if (!password) {
+    return res.status(400).json({ error: 'Password is required.' });
+  }
+
+  const check = await verifyUserPassword(account, password);
+  if (!check.valid) {
+    logAuthAudit({
+      eventType: 'LOGIN_FAILED',
+      email,
+      userId: account.id,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Incorrect password.',
+    });
+    return res.status(401).json({ error: 'Incorrect email or password.' });
+  }
+
+  if (check.upgradedBcryptHash) {
+    upgradePasswordHashDirect(account.id, check.upgradedBcryptHash);
+  }
+
+  recordAdminLoginTimestamp(account.id);
+  const refreshed = getAdminUserById(account.id) || account;
+  const session = createAdminSession({
+    user: refreshed,
+    rememberMe,
+    ipAddress: clientIp,
+    userAgent,
+  });
+
+  setAdminSessionCookie(req, res, session.rawToken, rememberMe, session.ttlMs);
+  logAuthAudit({
+    eventType: 'LOGIN_SUCCESS',
+    email: refreshed.email,
+    userId: refreshed.id,
+    success: true,
+    ipAddress: clientIp,
+    userAgent,
+    details: rememberMe ? 'Persistent session (Remember Me)' : 'Standard session',
+  });
+  logActivity(
+    'auth',
+    'Admin Sign-In',
+    `${refreshed.name} (${refreshed.role}) signed into Admin Dashboard.`,
+    refreshed.name
+  );
+  persistStore();
+
+  return res.json({
+    success: true,
+    token: session.rawToken,
+    csrfToken: session.csrfToken,
+    expiresAt: session.expiresAt,
+    user: toSafeAdminUser(refreshed),
+  });
+});
+
+app.post('/api/admin/auth/forgot-password', async (req, res) => {
+  const clientIp = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || '');
+  const email = normalizeEmail(req.body?.email || '');
+
+  if (
+    !checkRateLimit(`admin-forgot-ip:${clientIp}`, 6, 15 * 60 * 1000) ||
+    (email && !checkRateLimit(`admin-forgot-email:${email}`, 4, 15 * 60 * 1000))
+  ) {
+    return res
+      .status(429)
+      .json({ error: 'Too many password reset requests. Please wait 15 minutes.' });
+  }
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'Please enter a valid administrator email address.' });
+  }
+
+  if (!isSmtpConfigured()) {
+    return res.status(503).json({
+      error:
+        'Password reset email service is not configured on this server (SMTP_HOST, SMTP_USER, SMTP_PASS required). Please configure SMTP environment variables or contact your Super Admin.',
+    });
+  }
+
+  const account = getAdminUserByEmail(email);
+  if (account && account.isActive) {
+    const { resetToken, verificationCode, expiresMinutes } = createPasswordResetToken(account);
+    const resetUrl = `${getAppBaseUrl(req)}/admin?mode=reset&email=${encodeURIComponent(
+      account.email
+    )}&token=${encodeURIComponent(resetToken)}`;
+
+    const mailRes = await sendPasswordResetEmail({
+      email: account.email,
+      name: account.name,
+      resetUrl,
+      verificationCode,
+      expiresMinutes,
+      officialSupportEmail: store.locationConfig.contactEmail,
+    });
+
+    logAuthAudit({
+      eventType: 'PASSWORD_RESET_REQUESTED',
+      email: account.email,
+      userId: account.id,
+      success: mailRes.sent,
+      ipAddress: clientIp,
+      userAgent,
+      details: mailRes.sent ? 'Reset email dispatched' : `SMTP error: ${mailRes.error}`,
+    });
+
+    if (!mailRes.sent) {
+      return res.status(502).json({
+        error: `Failed to deliver password reset email: ${mailRes.error || 'SMTP error'}`,
+      });
+    }
+  } else {
+    logAuthAudit({
+      eventType: 'PASSWORD_RESET_REQUESTED',
+      email,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Reset requested for non-existent or inactive account.',
+    });
+  }
+
+  return res.json({
+    success: true,
+    emailSent: true,
+    message:
+      'If an active administrator account exists for this email, a verification code and reset link have been sent.',
+  });
+});
+
+app.post('/api/admin/auth/reset-password', async (req, res) => {
+  const clientIp = getClientIp(req);
+  const userAgent = String(req.headers['user-agent'] || '');
+  if (!checkRateLimit(`admin-reset-ip:${clientIp}`, 10, 15 * 60 * 1000)) {
+    return res.status(429).json({ error: 'Too many reset attempts. Please try again later.' });
+  }
+
+  const email = normalizeEmail(req.body?.email || '');
+  const tokenOrCode = String(req.body?.tokenOrCode || req.body?.token || '').trim();
+  const newPassword = String(req.body?.newPassword || '');
+  const confirmPassword = String(req.body?.confirmPassword || '');
+
+  if (!email || !tokenOrCode || !newPassword || !confirmPassword) {
+    return res
+      .status(400)
+      .json({ error: 'Email, verification code/token, and new password are required.' });
+  }
+
+  if (newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'New password and confirmation do not match.' });
+  }
+
+  const strength = validatePasswordStrength(newPassword);
+  if (!strength.valid) {
+    return res.status(400).json({
+      error: `Password does not meet security requirements: ${strength.errors.join(', ')}.`,
+      requirements: strength.errors,
+    });
+  }
+
+  const verifiedUser = consumePasswordResetToken({ email, tokenOrCode });
+  if (!verifiedUser) {
+    logAuthAudit({
+      eventType: 'PASSWORD_RESET_COMPLETED',
+      email,
+      success: false,
+      ipAddress: clientIp,
+      userAgent,
+      details: 'Invalid or expired reset token/code.',
+    });
+    return res.status(400).json({
+      error: 'Invalid or expired reset verification code/token. Please request a new reset email.',
+    });
+  }
+
+  await setAdminUserPassword(verifiedUser.id, newPassword);
+  revokeAllUserSessions(verifiedUser.id);
+  logAuthAudit({
+    eventType: 'PASSWORD_RESET_COMPLETED',
+    email: verifiedUser.email,
+    userId: verifiedUser.id,
+    success: true,
+    ipAddress: clientIp,
+    userAgent,
+    details: 'Password reset completed and prior sessions revoked.',
+  });
+  logActivity(
+    'auth',
+    'Admin Password Reset',
+    `${verifiedUser.email} completed verified password reset.`,
+    verifiedUser.name
+  );
+  persistStore();
+
+  return res.json({
+    success: true,
+    message: 'Your password has been reset securely. Please sign in with your new password.',
+  });
+});
+
+// Protect ALL subsequent /api/admin/* routes with SQLite session + CSRF checks
 app.use('/api/admin', requireAdminAuth);
 
 app.post('/api/admin/auth/logout', (req: AuthedRequest, res) => {
   if (req.sessionToken) {
-    store.sessions = store.sessions.filter((s) => s.token !== req.sessionToken);
-    persistStore();
+    revokeSessionByToken(req.sessionToken);
+  }
+  clearAdminSessionCookie(req, res);
+  if (req.adminUser) {
+    logAuthAudit({
+      eventType: 'LOGOUT',
+      email: req.adminUser.email,
+      userId: req.adminUser.id,
+      success: true,
+      ipAddress: getClientIp(req),
+      userAgent: String(req.headers['user-agent'] || ''),
+      details: 'Admin signed out.',
+    });
   }
   res.json({ success: true });
 });
 
 app.get('/api/admin/auth/me', (req: AuthedRequest, res) => {
   if (!req.adminUser) return res.status(401).json({ error: 'Unauthorized' });
-  res.json({ user: sanitizeAccount(req.adminUser) });
+  res.json({
+    user: toSafeAdminUser(req.adminUser),
+    csrfToken: req.csrfToken,
+  });
 });
 
 app.put('/api/admin/auth/profile', (req: AuthedRequest, res) => {
   if (!req.adminUser) return res.status(401).json({ error: 'Unauthorized' });
-  const { name, phone, department } = req.body;
-  if (name && String(name).trim()) req.adminUser.name = String(name).trim();
-  if (phone !== undefined) req.adminUser.phone = String(phone).trim();
-  if (department !== undefined) req.adminUser.department = String(department).trim();
+  const { name, phone, department } = req.body || {};
+  const updated = updateAdminUserProfile(req.adminUser.id, { name, phone, department });
+  if (!updated) return res.status(404).json({ error: 'Admin account not found.' });
 
-  logActivity('auth', 'Admin Profile Updated', `${req.adminUser.name} updated profile details.`, req.adminUser.name);
+  logActivity('auth', 'Admin Profile Updated', `${updated.name} updated profile details.`, updated.name);
   persistStore();
-  res.json({ success: true, user: sanitizeAccount(req.adminUser) });
+  res.json({ success: true, user: updated });
 });
 
-app.post('/api/admin/auth/change-password', (req: AuthedRequest, res) => {
+app.post('/api/admin/auth/change-password', async (req: AuthedRequest, res) => {
   if (!req.adminUser) return res.status(401).json({ error: 'Unauthorized' });
-  const { currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword, confirmPassword } = req.body || {};
 
-  if (!currentPassword || !newPassword || String(newPassword).length < 6) {
-    return res.status(400).json({ error: 'Current password and new password (min 6 chars) are required.' });
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: 'Current password and new password are required.' });
+  }
+  if (confirmPassword !== undefined && newPassword !== confirmPassword) {
+    return res.status(400).json({ error: 'New password and confirmation do not match.' });
   }
 
-  if (!verifyPassword(String(currentPassword), req.adminUser.passwordHash, req.adminUser.passwordSalt)) {
+  const strength = validatePasswordStrength(String(newPassword));
+  if (!strength.valid) {
+    return res.status(400).json({
+      error: `New password does not meet security requirements: ${strength.errors.join(', ')}.`,
+      requirements: strength.errors,
+    });
+  }
+
+  const check = await verifyUserPassword(req.adminUser, String(currentPassword));
+  if (!check.valid) {
+    logAuthAudit({
+      eventType: 'PASSWORD_CHANGED',
+      email: req.adminUser.email,
+      userId: req.adminUser.id,
+      success: false,
+      ipAddress: getClientIp(req),
+      userAgent: String(req.headers['user-agent'] || ''),
+      details: 'Current password mismatch.',
+    });
     return res.status(400).json({ error: 'Current password is incorrect.' });
   }
 
-  const { hash, salt } = hashPassword(String(newPassword));
-  req.adminUser.passwordHash = hash;
-  req.adminUser.passwordSalt = salt;
+  await setAdminUserPassword(req.adminUser.id, String(newPassword));
+  // Revoke other active sessions for this user while keeping current session active
+  revokeAllUserSessions(req.adminUser.id, req.sessionId);
 
+  logAuthAudit({
+    eventType: 'PASSWORD_CHANGED',
+    email: req.adminUser.email,
+    userId: req.adminUser.id,
+    success: true,
+    ipAddress: getClientIp(req),
+    userAgent: String(req.headers['user-agent'] || ''),
+    details: 'Password updated cleanly with bcrypt; other sessions revoked.',
+  });
   logActivity('auth', 'Admin Password Changed', `${req.adminUser.email} updated account password.`, req.adminUser.name);
   persistStore();
   res.json({ success: true, message: 'Password updated successfully.' });
 });
 
-// Admin Team RBAC Users
-app.get('/api/admin/users', (_req, res) => {
-  res.json({ users: store.adminAccounts.map(sanitizeAccount) });
+app.get('/api/admin/auth/audit-logs', requireRoles('Super Admin'), (req: AuthedRequest, res) => {
+  const limit = Number(req.query.limit) || 40;
+  res.json({ logs: listRecentAuthAuditLogs(limit) });
 });
 
-app.post('/api/admin/users', (req: AuthedRequest, res) => {
-  if (req.adminUser?.role !== 'Super Admin') {
-    return res.status(403).json({ error: 'Only Super Admin can create new admin accounts.' });
-  }
-  const { name, email, role, password, department = 'Operations', phone = '' } = req.body;
-  if (!name?.trim() || !email?.trim() || !password || String(password).length < 6) {
-    return res.status(400).json({ error: 'Name, email, and password (min 6 chars) are required.' });
-  }
-  if (store.adminAccounts.some((a) => a.email.toLowerCase() === String(email).trim().toLowerCase())) {
-    return res.status(400).json({ error: 'An admin account with this email already exists.' });
-  }
-
-  const { hash, salt } = hashPassword(String(password));
-  const created: AdminAccount = {
-    id: `adm-${Date.now()}`,
-    name: String(name).trim(),
-    email: String(email).trim().toLowerCase(),
-    role: role || 'Support Agent',
-    department: String(department).trim(),
-    phone: String(phone).trim(),
-    passwordHash: hash,
-    passwordSalt: salt,
-    isActive: true,
-    lastLogin: new Date().toISOString(),
-  };
-
-  store.adminAccounts.push(created);
-  logActivity('auth', 'New Admin Added', `Created ${created.role} account for ${created.email}.`, req.adminUser.name);
-  persistStore();
-  res.status(201).json({ success: true, user: sanitizeAccount(created) });
+// Admin Team RBAC Users (Strictly Super Admin Governed)
+app.get('/api/admin/users', requireRoles('Super Admin'), (_req, res) => {
+  res.json({ users: listAdminUsers() });
 });
 
-app.patch('/api/admin/users/:id', (req: AuthedRequest, res) => {
-  if (req.adminUser?.role !== 'Super Admin') {
-    return res.status(403).json({ error: 'Only Super Admin can update admin roles or access.' });
+app.post('/api/admin/users', requireRoles('Super Admin'), async (req: AuthedRequest, res) => {
+  try {
+    const {
+      name,
+      email,
+      role = 'Support Agent',
+      password = '',
+      requireFirstTimeSetup = false,
+      department = 'Operations',
+      phone = '',
+    } = req.body || {};
+
+    const normalized = normalizeEmail(email);
+    if (!name?.trim() || !normalized || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
+      return res.status(400).json({ error: 'Valid full name and work email are required.' });
+    }
+    if (!VALID_ADMIN_ROLES.includes(role)) {
+      return res.status(400).json({ error: 'Invalid admin role specified.' });
+    }
+    if (getAdminUserByEmail(normalized)) {
+      return res.status(400).json({ error: 'An admin account with this email already exists.' });
+    }
+
+    if (!requireFirstTimeSetup) {
+      const strength = validatePasswordStrength(String(password));
+      if (!strength.valid) {
+        return res.status(400).json({
+          error: `Initial password must meet security rules: ${strength.errors.join(', ')}.`,
+        });
+      }
+    }
+
+    const created = await createAdminUser({
+      name: String(name).trim(),
+      email: normalized,
+      role,
+      department,
+      phone,
+      password: String(password),
+      requireFirstTimeSetup: Boolean(requireFirstTimeSetup),
+    });
+
+    logAuthAudit({
+      eventType: 'USER_CREATED',
+      email: created.email,
+      userId: created.id,
+      success: true,
+      ipAddress: getClientIp(req),
+      userAgent: String(req.headers['user-agent'] || ''),
+      details: `Created ${created.role} by ${req.adminUser?.email}`,
+    });
+    logActivity(
+      'auth',
+      'New Admin Added',
+      `Created ${created.role} account for ${created.email}.`,
+      req.adminUser?.name || 'Super Admin'
+    );
+    persistStore();
+    res.status(201).json({ success: true, user: created });
+  } catch (err) {
+    console.error('Create admin user failed:', err);
+    res.status(500).json({ error: 'Failed to create admin account.' });
   }
-  const target = store.adminAccounts.find((a) => a.id === req.params.id);
+});
+
+app.patch('/api/admin/users/:id', requireRoles('Super Admin'), (req: AuthedRequest, res) => {
+  const target = getAdminUserById(req.params.id);
   if (!target) return res.status(404).json({ error: 'Admin user not found.' });
 
-  const { role, isActive, department } = req.body;
-  if (role) target.role = role;
-  if (typeof isActive === 'boolean') target.isActive = isActive;
-  if (department !== undefined) target.department = String(department);
+  const { role, isActive, department } = req.body || {};
+  if (role && !VALID_ADMIN_ROLES.includes(role)) {
+    return res.status(400).json({ error: 'Invalid role specified.' });
+  }
 
-  logActivity('auth', 'Admin Role Updated', `Updated permissions for ${target.email} (${target.role}).`, req.adminUser.name);
+  if (target.id === req.adminUser?.id && (role && role !== 'Super Admin' || isActive === false)) {
+    return res.status(400).json({ error: 'You cannot demote or deactivate your own active session.' });
+  }
+
+  if (
+    target.role === 'Super Admin' &&
+    ((role && role !== 'Super Admin') || isActive === false) &&
+    countActiveSuperAdmins(target.id) === 0
+  ) {
+    return res.status(400).json({ error: 'At least one active Super Admin must remain.' });
+  }
+
+  const updated = updateAdminUserGovernance(target.id, { role, isActive, department });
+  if (!updated) return res.status(404).json({ error: 'Admin user not found.' });
+
+  logAuthAudit({
+    eventType: 'USER_UPDATED',
+    email: updated.email,
+    userId: updated.id,
+    success: true,
+    ipAddress: getClientIp(req),
+    userAgent: String(req.headers['user-agent'] || ''),
+    details: `Role=${updated.role}, active=${updated.isActive} updated by ${req.adminUser?.email}`,
+  });
+  logActivity(
+    'auth',
+    'Admin Role Updated',
+    `Updated permissions for ${updated.email} (${updated.role}).`,
+    req.adminUser?.name || 'Super Admin'
+  );
   persistStore();
-  res.json({ success: true, user: sanitizeAccount(target) });
+  res.json({ success: true, user: updated });
 });
 
-app.delete('/api/admin/users/:id', (req: AuthedRequest, res) => {
-  if (req.adminUser?.role !== 'Super Admin') {
-    return res.status(403).json({ error: 'Only Super Admin can remove admin accounts.' });
-  }
-  if (req.params.id === req.adminUser.id) {
+app.delete('/api/admin/users/:id', requireRoles('Super Admin'), (req: AuthedRequest, res) => {
+  const target = getAdminUserById(req.params.id);
+  if (!target) return res.status(404).json({ error: 'Admin user not found.' });
+  if (req.params.id === req.adminUser?.id) {
     return res.status(400).json({ error: 'You cannot delete your own active account.' });
   }
-  store.adminAccounts = store.adminAccounts.filter((a) => a.id !== req.params.id);
-  store.sessions = store.sessions.filter((s) => s.userId !== req.params.id);
+  if (target.role === 'Super Admin' && countActiveSuperAdmins(target.id) === 0) {
+    return res.status(400).json({ error: 'Cannot delete the last remaining active Super Admin.' });
+  }
+
+  deleteAdminUser(target.id);
+  logAuthAudit({
+    eventType: 'USER_DELETED',
+    email: target.email,
+    userId: target.id,
+    success: true,
+    ipAddress: getClientIp(req),
+    userAgent: String(req.headers['user-agent'] || ''),
+    details: `Deleted by ${req.adminUser?.email}`,
+  });
+  logActivity('auth', 'Admin Account Removed', `Removed ${target.email}.`, req.adminUser?.name || 'Super Admin');
   persistStore();
   res.json({ success: true });
 });
@@ -2499,81 +3168,134 @@ app.delete('/api/admin/users/:id', (req: AuthedRequest, res) => {
 // ====================================================
 // 1. ADMIN OVERVIEW DASHBOARD ANALYTICS
 // ====================================================
-app.get('/api/admin/overview', (_req, res) => {
+app.get('/api/admin/overview', (req: AuthedRequest, res) => {
   try {
-    const totalLeads = store.leads.length;
-    const leadsByStatus = store.leads.reduce(
-      (acc, curr) => {
-        acc[curr.status] = (acc[curr.status] || 0) + 1;
-        return acc;
-      },
-      { New: 0, Contacted: 0, Interested: 0, Converted: 0 } as Record<LeadStatus, number>
-    );
+    const role = req.adminUser?.role || 'Support Agent';
+    const canViewSupport = role === 'Super Admin' || role === 'Support Agent';
+    const canViewHrTraining = role === 'Super Admin' || role === 'HR & Training Coordinator';
+    const canViewKnowledge =
+      role === 'Super Admin' || role === 'Content Manager' || role === 'Knowledge Editor';
 
-    const leadsByCategory = store.leads.reduce((acc, curr) => {
-      acc[curr.category] = (acc[curr.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const totalLeads = canViewSupport ? store.leads.length : 0;
+    const leadsByStatus = canViewSupport
+      ? store.leads.reduce(
+          (acc, curr) => {
+            acc[curr.status] = (acc[curr.status] || 0) + 1;
+            return acc;
+          },
+          { New: 0, Contacted: 0, Interested: 0, Converted: 0 } as Record<LeadStatus, number>
+        )
+      : { New: 0, Contacted: 0, Interested: 0, Converted: 0 };
 
-    const activeConversations = store.conversations.filter(
-      (c) => c.status === 'Needs Human Support' || c.status === 'Human Joined' || c.status === 'Bot Handling'
-    ).length;
+    const leadsByCategory = canViewSupport
+      ? store.leads.reduce((acc, curr) => {
+          acc[curr.category] = (acc[curr.category] || 0) + 1;
+          return acc;
+        }, {} as Record<string, number>)
+      : {};
+
+    const activeConversations = canViewSupport
+      ? store.conversations.filter(
+          (c) => c.status === 'Needs Human Support' || c.status === 'Human Joined' || c.status === 'Bot Handling'
+        ).length
+      : 0;
 
     const conversionRate =
-      totalLeads > 0 ? `${Math.round(((leadsByStatus['Converted'] || 0) / totalLeads) * 100)}%` : '0%';
+      canViewSupport && totalLeads > 0
+        ? `${Math.round(((leadsByStatus['Converted'] || 0) / totalLeads) * 100)}%`
+        : '0%';
 
-    const faqHitList = [...store.faqs]
-      .sort((a, b) => b.hitCount - a.hitCount)
-      .slice(0, 5)
-      .map((f) => ({
-        question: f.question,
-        category: f.category,
-        count: f.hitCount,
-      }));
+    const faqHitList =
+      canViewKnowledge || canViewSupport
+        ? [...store.faqs]
+            .sort((a, b) => b.hitCount - a.hitCount)
+            .slice(0, 5)
+            .map((f) => ({
+              question: f.question,
+              category: f.category,
+              count: f.hitCount,
+            }))
+        : [];
 
-    const paidTrainingRegs = store.trainingRegistrations.filter((r) => r.paymentStatus === 'Paid');
-    const trainingRevenueBDT = paidTrainingRegs.reduce((sum, r) => sum + (Number(r.feeAmount) || 0), 0);
+    const paidTrainingRegs = canViewHrTraining
+      ? store.trainingRegistrations.filter((r) => r.paymentStatus === 'Paid')
+      : [];
+    const trainingRevenueBDT = canViewHrTraining
+      ? paidTrainingRegs.reduce((sum, r) => sum + (Number(r.feeAmount) || 0), 0)
+      : 0;
+    const contactStats = canViewSupport ? getContactMessageStats() : { total: 0, unread: 0, new: 0, read: 0, replied: 0, archived: 0 };
+
+    const allowedActivityTypes = new Set<string>();
+    if (role === 'Super Admin') {
+      ['inquiry', 'internship', 'training', 'content', 'location', 'chatbot', 'auth'].forEach((t) =>
+        allowedActivityTypes.add(t)
+      );
+    } else {
+      if (canViewSupport) allowedActivityTypes.add('inquiry');
+      if (canViewHrTraining) {
+        allowedActivityTypes.add('internship');
+        allowedActivityTypes.add('training');
+      }
+      if (role === 'Content Manager') {
+        allowedActivityTypes.add('content');
+        allowedActivityTypes.add('location');
+        allowedActivityTypes.add('chatbot');
+      }
+      if (role === 'Knowledge Editor') {
+        allowedActivityTypes.add('chatbot');
+      }
+    }
+
+    const recentActivities = store.activities
+      .filter((a) => allowedActivityTypes.has(a.type))
+      .slice(0, 12);
 
     res.json({
       totalVisitors: store.visitorCount,
-      totalConversations: store.conversations.length,
+      totalConversations: canViewSupport ? store.conversations.length : 0,
       activeConversations,
-      totalInquiries: totalLeads + store.contactMessages.length,
-      unansweredQuestionsCount: store.unansweredQuestions.filter((u) => u.status === 'Pending Review').length,
+      totalInquiries: canViewSupport ? totalLeads + contactStats.total : 0,
+      unansweredQuestionsCount: canViewKnowledge
+        ? store.unansweredQuestions.filter((u) => u.status === 'Pending Review').length
+        : 0,
       leadConversionRate: conversionRate,
-      internshipApplicationsCount: store.internships.length,
-      pendingInternshipsCount: store.internships.filter((i) => i.status === 'Pending' || i.status === 'Under Review').length,
-      trainingRegistrationsCount: store.trainingRegistrations.length,
+      internshipApplicationsCount: canViewHrTraining ? store.internships.length : 0,
+      pendingInternshipsCount: canViewHrTraining
+        ? store.internships.filter((i) => i.status === 'Pending' || i.status === 'Under Review').length
+        : 0,
+      trainingRegistrationsCount: canViewHrTraining ? store.trainingRegistrations.length : 0,
       paidTrainingCount: paidTrainingRegs.length,
       trainingRevenueBDT,
-      contactMessagesCount: store.contactMessages.length,
-      unreadContactMessagesCount: store.contactMessages.filter((m) => m.status === 'New').length,
+      contactMessagesCount: contactStats.total,
+      unreadContactMessagesCount: contactStats.unread,
       faqHitList,
       leadsByStatus,
       leadsByCategory,
-      conversationTrends: [
-        { date: 'Mon', botOnly: 24, humanAssisted: 4 },
-        { date: 'Tue', botOnly: 38, humanAssisted: 7 },
-        { date: 'Wed', botOnly: 45, humanAssisted: 5 },
-        { date: 'Thu', botOnly: 52, humanAssisted: 9 },
-        { date: 'Fri', botOnly: 60, humanAssisted: 12 },
-        { date: 'Sat', botOnly: 48, humanAssisted: 6 },
-        { date: 'Sun', botOnly: 35, humanAssisted: 4 },
-      ],
+      conversationTrends: canViewSupport
+        ? [
+            { date: 'Mon', botOnly: 24, humanAssisted: 4 },
+            { date: 'Tue', botOnly: 38, humanAssisted: 7 },
+            { date: 'Wed', botOnly: 45, humanAssisted: 5 },
+            { date: 'Thu', botOnly: 52, humanAssisted: 9 },
+            { date: 'Fri', botOnly: 60, humanAssisted: 12 },
+            { date: 'Sat', botOnly: 48, humanAssisted: 6 },
+            { date: 'Sun', botOnly: 35, humanAssisted: 4 },
+          ]
+        : [],
       monthlyMetrics: [
-        { label: 'Jan', inquiries: 18, trainings: 14, internships: 9 },
-        { label: 'Feb', inquiries: 24, trainings: 19, internships: 12 },
-        { label: 'Mar', inquiries: 31, trainings: 22, internships: 15 },
-        { label: 'Apr', inquiries: 28, trainings: 27, internships: 19 },
-        { label: 'May', inquiries: 39, trainings: 31, internships: 23 },
+        { label: 'Jan', inquiries: canViewSupport ? 18 : 0, trainings: canViewHrTraining ? 14 : 0, internships: canViewHrTraining ? 9 : 0 },
+        { label: 'Feb', inquiries: canViewSupport ? 24 : 0, trainings: canViewHrTraining ? 19 : 0, internships: canViewHrTraining ? 12 : 0 },
+        { label: 'Mar', inquiries: canViewSupport ? 31 : 0, trainings: canViewHrTraining ? 22 : 0, internships: canViewHrTraining ? 15 : 0 },
+        { label: 'Apr', inquiries: canViewSupport ? 28 : 0, trainings: canViewHrTraining ? 27 : 0, internships: canViewHrTraining ? 19 : 0 },
+        { label: 'May', inquiries: canViewSupport ? 39 : 0, trainings: canViewHrTraining ? 31 : 0, internships: canViewHrTraining ? 23 : 0 },
         {
           label: 'Now',
-          inquiries: store.contactMessages.length + store.leads.length,
-          trainings: store.trainingRegistrations.length,
-          internships: store.internships.length,
+          inquiries: canViewSupport ? contactStats.total + store.leads.length : 0,
+          trainings: canViewHrTraining ? store.trainingRegistrations.length : 0,
+          internships: canViewHrTraining ? store.internships.length : 0,
         },
       ],
-      recentActivities: store.activities.slice(0, 12),
+      recentActivities,
     });
   } catch (error) {
     res.status(500).json({ error: 'Failed to generate overview analytics.' });
@@ -2583,11 +3305,11 @@ app.get('/api/admin/overview', (_req, res) => {
 // ====================================================
 // 2. WEBSITE CONTENT MANAGEMENT & SECURE FILE UPLOADS
 // ====================================================
-app.get('/api/admin/content', (_req, res) => {
+app.get('/api/admin/content', requireRoles('Super Admin', 'Content Manager'), (_req, res) => {
   res.json({ content: store.websiteContent });
 });
 
-app.put('/api/admin/content', (req: AuthedRequest, res) => {
+app.put('/api/admin/content', requireRoles('Super Admin', 'Content Manager'), (req: AuthedRequest, res) => {
   try {
     const incoming = req.body;
     store.websiteContent = {
@@ -2613,7 +3335,7 @@ app.put('/api/admin/content', (req: AuthedRequest, res) => {
   }
 });
 
-app.post('/api/admin/upload', (req: AuthedRequest, res) => {
+app.post('/api/admin/upload', requireRoles('Super Admin', 'Content Manager'), (req: AuthedRequest, res) => {
   try {
     const { fileName, mimeType = 'image/jpeg', base64Data } = req.body;
     if (!fileName || !base64Data) {
@@ -2666,11 +3388,11 @@ app.post('/api/admin/upload', (req: AuthedRequest, res) => {
 // ====================================================
 // 3. INTERNSHIP MANAGEMENT
 // ====================================================
-app.get('/api/admin/internships', (_req, res) => {
+app.get('/api/admin/internships', requireRoles('Super Admin', 'HR & Training Coordinator'), (_req, res) => {
   res.json({ internships: store.internships });
 });
 
-app.patch('/api/admin/internships/:id', (req: AuthedRequest, res) => {
+app.patch('/api/admin/internships/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const item = store.internships.find((i) => i.id === req.params.id);
   if (!item) return res.status(404).json({ error: 'Internship application not found.' });
 
@@ -2692,7 +3414,7 @@ app.patch('/api/admin/internships/:id', (req: AuthedRequest, res) => {
   res.json({ success: true, application: item });
 });
 
-app.delete('/api/admin/internships/:id', (req: AuthedRequest, res) => {
+app.delete('/api/admin/internships/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const target = store.internships.find((i) => i.id === req.params.id);
   if (!target) return res.status(404).json({ error: 'Application not found.' });
   store.internships = store.internships.filter((i) => i.id !== req.params.id);
@@ -2704,11 +3426,11 @@ app.delete('/api/admin/internships/:id', (req: AuthedRequest, res) => {
 // ====================================================
 // 4. TRAINING MANAGEMENT (PROGRAMS & PAID REGISTRATIONS)
 // ====================================================
-app.get('/api/admin/trainings', (_req, res) => {
+app.get('/api/admin/trainings', requireRoles('Super Admin', 'HR & Training Coordinator'), (_req, res) => {
   res.json({ programs: store.trainingPrograms });
 });
 
-app.post('/api/admin/trainings', (req: AuthedRequest, res) => {
+app.post('/api/admin/trainings', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   try {
     const {
       title,
@@ -2758,7 +3480,7 @@ app.post('/api/admin/trainings', (req: AuthedRequest, res) => {
   }
 });
 
-app.put('/api/admin/trainings/:id', (req: AuthedRequest, res) => {
+app.put('/api/admin/trainings/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const prog = store.trainingPrograms.find((p) => p.id === req.params.id);
   if (!prog) return res.status(404).json({ error: 'Training program not found.' });
 
@@ -2781,7 +3503,7 @@ app.put('/api/admin/trainings/:id', (req: AuthedRequest, res) => {
   res.json({ success: true, program: prog });
 });
 
-app.delete('/api/admin/trainings/:id', (req: AuthedRequest, res) => {
+app.delete('/api/admin/trainings/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const target = store.trainingPrograms.find((p) => p.id === req.params.id);
   store.trainingPrograms = store.trainingPrograms.filter((p) => p.id !== req.params.id);
   if (target) {
@@ -2792,11 +3514,11 @@ app.delete('/api/admin/trainings/:id', (req: AuthedRequest, res) => {
   res.json({ success: true });
 });
 
-app.get('/api/admin/training-registrations', (_req, res) => {
+app.get('/api/admin/training-registrations', requireRoles('Super Admin', 'HR & Training Coordinator'), (_req, res) => {
   res.json({ registrations: store.trainingRegistrations });
 });
 
-app.post('/api/admin/training-registrations', (req: AuthedRequest, res) => {
+app.post('/api/admin/training-registrations', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const {
     programId,
     studentName,
@@ -2839,7 +3561,7 @@ app.post('/api/admin/training-registrations', (req: AuthedRequest, res) => {
   res.status(201).json({ success: true, registration: reg });
 });
 
-app.patch('/api/admin/training-registrations/:id', (req: AuthedRequest, res) => {
+app.patch('/api/admin/training-registrations/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req: AuthedRequest, res) => {
   const reg = store.trainingRegistrations.find((r) => r.id === req.params.id);
   if (!reg) return res.status(404).json({ error: 'Registration record not found.' });
 
@@ -2854,69 +3576,128 @@ app.patch('/api/admin/training-registrations/:id', (req: AuthedRequest, res) => 
   res.json({ success: true, registration: reg });
 });
 
-app.delete('/api/admin/training-registrations/:id', (req, res) => {
+app.delete('/api/admin/training-registrations/:id', requireRoles('Super Admin', 'HR & Training Coordinator'), (req, res) => {
   store.trainingRegistrations = store.trainingRegistrations.filter((r) => r.id !== req.params.id);
   persistStore();
   res.json({ success: true });
 });
 
 // ====================================================
-// 5. CONTACT & INQUIRY MANAGEMENT
+// 5. CONTACT MESSAGES / INQUIRY MANAGEMENT (SQLite + SMTP)
 // ====================================================
-app.get('/api/admin/contacts', (_req, res) => {
-  res.json({ messages: store.contactMessages });
+app.get('/api/admin/contacts', requireRoles('Super Admin', 'Support Agent'), (_req, res) => {
+  res.json({
+    messages: listContactMessages(),
+    counts: getContactMessageStats(),
+    emailConfig: getSmtpStatus(store.locationConfig.contactEmail),
+  });
 });
 
-app.patch('/api/admin/contacts/:id', (req: AuthedRequest, res) => {
-  const msg = store.contactMessages.find((m) => m.id === req.params.id);
-  if (!msg) return res.status(404).json({ error: 'Contact message not found.' });
-
-  const { status } = req.body;
-  if (status && ['New', 'In Progress', 'Replied', 'Resolved'].includes(status)) {
-    msg.status = status;
-    logActivity('inquiry', 'Contact Status Updated', `Inquiry from ${msg.fullName} set to ${status}.`, req.adminUser?.name || 'Admin');
-    persistStore();
+app.patch('/api/admin/contacts/:id', requireRoles('Super Admin', 'Support Agent'), (req: AuthedRequest, res) => {
+  const { status } = req.body || {};
+  const validStatuses: DbContactMessageStatus[] = ['New', 'Read', 'Replied', 'Archived'];
+  if (!status || !validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Valid status required: New, Read, Replied, or Archived.' });
   }
-  res.json({ success: true, contactMessage: msg });
+
+  const updated = updateContactMessageStatus(req.params.id, status);
+  if (!updated) return res.status(404).json({ error: 'Contact message not found.' });
+
+  logActivity(
+    'inquiry',
+    'Contact Status Updated',
+    `Inquiry from ${updated.fullName} set to ${status}.`,
+    req.adminUser?.name || 'Admin'
+  );
+  persistStore();
+  res.json({ success: true, contactMessage: updated, counts: getContactMessageStats() });
 });
 
-app.post('/api/admin/contacts/:id/reply', (req: AuthedRequest, res) => {
-  const msg = store.contactMessages.find((m) => m.id === req.params.id);
-  if (!msg) return res.status(404).json({ error: 'Contact message not found.' });
+app.post('/api/admin/contacts/:id/reply', requireRoles('Super Admin', 'Support Agent'), async (req: AuthedRequest, res) => {
+  const existing = getContactMessageById(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Contact message not found.' });
 
-  const { message } = req.body;
-  if (!message || !String(message).trim()) {
+  const replyText = sanitizeInputText(req.body?.message, 5000);
+  if (!replyText) {
     return res.status(400).json({ error: 'Reply message cannot be empty.' });
   }
 
-  const replyObj = {
-    id: `rep-${Date.now()}`,
-    senderName: req.adminUser?.name || 'MARVZ Advisory Team',
-    message: String(message).trim(),
-    sentAt: new Date().toISOString(),
-  };
+  const senderName = req.adminUser?.name || 'MARVZ Advisory Team';
+  const emailRes = await sendAdminReplyEmail({
+    visitorName: existing.fullName,
+    visitorEmail: existing.email,
+    originalSubject: existing.subject,
+    replyBody: replyText,
+    senderName,
+    officialEmail: store.locationConfig.contactEmail,
+  });
 
-  msg.replies.push(replyObj);
-  msg.status = 'Replied';
-  logActivity('inquiry', 'Reply Logged for Contact Inquiry', `Replied to ${msg.fullName} (${msg.email}).`, req.adminUser?.name || 'Admin');
+  const updated = addContactMessageReply(existing.id, senderName, replyText, emailRes.sent);
+  logActivity(
+    'inquiry',
+    emailRes.sent ? 'Official Email Reply Sent' : 'Reply Logged for Contact Inquiry',
+    `Replied to ${existing.fullName} (${existing.email}).`,
+    senderName
+  );
   persistStore();
-  res.status(201).json({ success: true, contactMessage: msg });
+  res.status(201).json({
+    success: true,
+    contactMessage: updated,
+    emailSent: emailRes.sent,
+    emailError: emailRes.error,
+    counts: getContactMessageStats(),
+  });
 });
 
-app.delete('/api/admin/contacts/:id', (req, res) => {
-  store.contactMessages = store.contactMessages.filter((m) => m.id !== req.params.id);
+app.post('/api/admin/contacts/:id/resend-email', requireRoles('Super Admin', 'Support Agent'), async (req: AuthedRequest, res) => {
+  const existing = getContactMessageById(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Contact message not found.' });
+
+  const dispatch = await sendContactNotificationEmails(existing, store.locationConfig.contactEmail);
+  const updated = updateContactEmailDeliveryStatus(
+    existing.id,
+    dispatch.companyEmailStatus,
+    dispatch.visitorEmailStatus,
+    dispatch.error || ''
+  );
+
+  logActivity(
+    'inquiry',
+    'Contact Email Notification Re-dispatched',
+    `Triggered email delivery check for ${existing.fullName} (${dispatch.companyEmailStatus}).`,
+    req.adminUser?.name || 'Admin'
+  );
   persistStore();
-  res.json({ success: true });
+  res.json({
+    success: dispatch.companyEmailStatus === 'sent',
+    contactMessage: updated,
+    emailDelivery: dispatch,
+  });
+});
+
+app.delete('/api/admin/contacts/:id', requireRoles('Super Admin', 'Support Agent'), (req: AuthedRequest, res) => {
+  const existing = getContactMessageById(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Contact message not found.' });
+
+  deleteContactMessage(req.params.id);
+  logActivity(
+    'inquiry',
+    'Contact Message Deleted',
+    `Deleted inquiry from ${existing.fullName} (${existing.email}).`,
+    req.adminUser?.name || 'Admin'
+  );
+  persistStore();
+  res.json({ success: true, counts: getContactMessageStats() });
 });
 
 // ====================================================
 // 6. LOCATION MANAGEMENT
 // ====================================================
-app.get('/api/admin/location', (_req, res) => {
+app.get('/api/admin/location', requireRoles('Super Admin', 'Content Manager'), (_req, res) => {
   res.json({ location: store.locationConfig });
 });
 
-app.put('/api/admin/location', (req: AuthedRequest, res) => {
+app.put('/api/admin/location', requireRoles('Super Admin', 'Content Manager'), (req: AuthedRequest, res) => {
   try {
     const incoming = req.body;
     const nextAddress = String(incoming.officeAddress ?? store.locationConfig.officeAddress).trim();
@@ -2968,11 +3749,11 @@ app.put('/api/admin/location', (req: AuthedRequest, res) => {
 // EXISTING AI KNOWLEDGE BASE, TRAINING CENTER, DOCS, CHAT & CRM ROUTES
 // ====================================================
 
-app.get('/api/admin/kb', (_req, res) => {
+app.get('/api/admin/kb', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (_req, res) => {
   res.json({ faqs: store.faqs });
 });
 
-app.post('/api/admin/kb', (req: AuthedRequest, res) => {
+app.post('/api/admin/kb', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req: AuthedRequest, res) => {
   try {
     const { question, questionBn, answer, answerBn, category = 'Custom', tags = [], isPublished = true } = req.body;
     if (!question || !answer) {
@@ -3008,7 +3789,7 @@ app.post('/api/admin/kb', (req: AuthedRequest, res) => {
   }
 });
 
-app.put('/api/admin/kb/:id', (req, res) => {
+app.put('/api/admin/kb/:id', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req, res) => {
   try {
     const faq = store.faqs.find((f) => f.id === req.params.id);
     if (!faq) return res.status(404).json({ error: 'FAQ not found.' });
@@ -3022,18 +3803,18 @@ app.put('/api/admin/kb/:id', (req, res) => {
   }
 });
 
-app.delete('/api/admin/kb/:id', (req, res) => {
+app.delete('/api/admin/kb/:id', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req, res) => {
   store.faqs = store.faqs.filter((f) => f.id !== req.params.id);
   invalidateChatbotCache();
   persistStore();
   res.json({ success: true });
 });
 
-app.get('/api/admin/unanswered', (_req, res) => {
+app.get('/api/admin/unanswered', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (_req, res) => {
   res.json({ questions: store.unansweredQuestions });
 });
 
-app.post('/api/admin/unanswered/:id/answer', (req: AuthedRequest, res) => {
+app.post('/api/admin/unanswered/:id/answer', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req: AuthedRequest, res) => {
   try {
     const { answer, answerBn, category = 'Custom', publishToKb = true } = req.body;
     const item = store.unansweredQuestions.find((q) => q.id === req.params.id);
@@ -3067,17 +3848,17 @@ app.post('/api/admin/unanswered/:id/answer', (req: AuthedRequest, res) => {
   }
 });
 
-app.delete('/api/admin/unanswered/:id', (req, res) => {
+app.delete('/api/admin/unanswered/:id', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req, res) => {
   store.unansweredQuestions = store.unansweredQuestions.filter((q) => q.id !== req.params.id);
   persistStore();
   res.json({ success: true });
 });
 
-app.get('/api/admin/documents', (_req, res) => {
+app.get('/api/admin/documents', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (_req, res) => {
   res.json({ documents: store.documents });
 });
 
-app.post('/api/admin/documents', (req: AuthedRequest, res) => {
+app.post('/api/admin/documents', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req: AuthedRequest, res) => {
   try {
     const { name, fileType, fileSize, rawContent, category = 'General' } = req.body;
     if (!name || !rawContent) {
@@ -3112,24 +3893,24 @@ app.post('/api/admin/documents', (req: AuthedRequest, res) => {
   }
 });
 
-app.delete('/api/admin/documents/:id', (req, res) => {
+app.delete('/api/admin/documents/:id', requireRoles('Super Admin', 'Content Manager', 'Knowledge Editor'), (req, res) => {
   store.documents = store.documents.filter((d) => d.id !== req.params.id);
   invalidateChatbotCache();
   persistStore();
   res.json({ success: true });
 });
 
-app.get('/api/admin/conversations', (_req, res) => {
+app.get('/api/admin/conversations', requireRoles('Super Admin', 'Support Agent'), (_req, res) => {
   res.json({ conversations: store.conversations });
 });
 
-app.get('/api/admin/conversations/:id', (req, res) => {
+app.get('/api/admin/conversations/:id', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   const conv = conversationIndex.get(req.params.id);
   if (!conv) return res.status(404).json({ error: 'Conversation not found.' });
   res.json({ conversation: conv });
 });
 
-app.post('/api/admin/conversations/:id/reply', (req, res) => {
+app.post('/api/admin/conversations/:id/reply', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   try {
     const { text, agentName = 'MARVZ Engineering Lead' } = req.body;
     const conv = conversationIndex.get(req.params.id);
@@ -3156,7 +3937,7 @@ app.post('/api/admin/conversations/:id/reply', (req, res) => {
   }
 });
 
-app.patch('/api/admin/conversations/:id/status', (req, res) => {
+app.patch('/api/admin/conversations/:id/status', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   const { status } = req.body;
   const conv = conversationIndex.get(req.params.id);
   if (!conv) return res.status(404).json({ error: 'Conversation not found.' });
@@ -3168,11 +3949,11 @@ app.patch('/api/admin/conversations/:id/status', (req, res) => {
   res.json({ success: true, conversation: conv });
 });
 
-app.get('/api/admin/leads', (_req, res) => {
+app.get('/api/admin/leads', requireRoles('Super Admin', 'Support Agent'), (_req, res) => {
   res.json({ leads: store.leads });
 });
 
-app.post('/api/admin/leads', (req, res) => {
+app.post('/api/admin/leads', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   try {
     const { name, email, phone, category = 'Services', requirements, status = 'New', adminNotes, estimatedValue } = req.body;
     if (!name) return res.status(400).json({ error: 'Lead name is required.' });
@@ -3199,7 +3980,7 @@ app.post('/api/admin/leads', (req, res) => {
   }
 });
 
-app.patch('/api/admin/leads/:id', (req, res) => {
+app.patch('/api/admin/leads/:id', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   const lead = store.leads.find((l) => l.id === req.params.id);
   if (!lead) return res.status(404).json({ error: 'Lead not found.' });
 
@@ -3208,17 +3989,17 @@ app.patch('/api/admin/leads/:id', (req, res) => {
   res.json({ success: true, lead });
 });
 
-app.delete('/api/admin/leads/:id', (req, res) => {
+app.delete('/api/admin/leads/:id', requireRoles('Super Admin', 'Support Agent'), (req, res) => {
   store.leads = store.leads.filter((l) => l.id !== req.params.id);
   persistStore();
   res.json({ success: true });
 });
 
-app.get('/api/admin/settings', (_req, res) => {
+app.get('/api/admin/settings', requireRoles('Super Admin'), (_req, res) => {
   res.json({ settings: store.settings });
 });
 
-app.put('/api/admin/settings', (req, res) => {
+app.put('/api/admin/settings', requireRoles('Super Admin'), (req, res) => {
   try {
     store.settings = { ...store.settings, ...req.body };
     invalidateChatbotCache();

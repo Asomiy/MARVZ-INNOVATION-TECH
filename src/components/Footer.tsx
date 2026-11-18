@@ -10,7 +10,6 @@ interface FooterProps {
   setActiveTab: (tab: string) => void;
   onOpenInquiry: (initialSubject?: string) => void;
   onOpenWhatsApp: () => void;
-  onOpenControlCenter?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -18,10 +17,9 @@ export const Footer: React.FC<FooterProps> = ({
   setActiveTab,
   onOpenInquiry,
   onOpenWhatsApp,
-  onOpenControlCenter,
 }) => {
   const currentYear = new Date().getFullYear();
-  const contactEmail = location.contactEmail || 'marvzinnovationtech@gmail.com';
+  const contactEmail = (location.contactEmail || 'marvzinnovationtech@gmail.com').trim();
   const contactPhone = location.contactPhone || '+8801775551987';
   const contactWhatsApp = location.contactWhatsApp || '+8801775551987';
   const telHref = `tel:${contactPhone.replace(/[^+\d]/g, '')}`;
@@ -178,6 +176,8 @@ export const Footer: React.FC<FooterProps> = ({
               <li>
                 <a
                   href={`mailto:${contactEmail}`}
+                  aria-label={`Email ${contactEmail}`}
+                  title={`Email ${contactEmail}`}
                   className="inline-flex items-center gap-2.5 text-xs text-[#202124] hover:underline"
                 >
                   <Mail className="w-4 h-4 text-[#30343B] shrink-0" />
@@ -288,17 +288,6 @@ export const Footer: React.FC<FooterProps> = ({
             <button onClick={() => handleNav('find-our-office')} className="hover:text-[#202124] transition-colors">
               Office Map
             </button>
-            {onOpenControlCenter && (
-              <>
-                <span aria-hidden="true">·</span>
-                <button
-                  onClick={onOpenControlCenter}
-                  className="text-[#30343B] hover:text-[#202124] font-semibold transition-colors"
-                >
-                  Admin Panel
-                </button>
-              </>
-            )}
           </div>
         </div>
       </div>

@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowUpRight, Shield } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import { BrandLogo } from './BrandLogo';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   onOpenInquiry: (initialSubject?: string) => void;
-  onOpenControlCenter?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onOpenInquiry,
-  onOpenControlCenter,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -79,19 +77,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             })}
           </nav>
 
-          {/* Right CTA & Admin Actions */}
+          {/* Right Primary CTA */}
           <div className="hidden xl:flex items-center gap-2 shrink-0">
-            {onOpenControlCenter && (
-              <button
-                onClick={onOpenControlCenter}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#202124] bg-[#F3F4F6] hover:bg-[#E5E7EB] border border-[#E5E7EB] rounded-lg transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B] whitespace-nowrap shrink-0"
-                title="Open MARVZ Admin Panel & AI Control Center"
-              >
-                <Shield className="w-3.5 h-3.5 text-[#30343B]" />
-                <span>Admin Panel</span>
-              </button>
-            )}
-
             <button
               onClick={() => onOpenInquiry('General Collaboration & Inquiry')}
               className="group flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-[#30343B] hover:bg-[#202124] rounded-lg shadow-xs hover:shadow-sm hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#30343B] whitespace-nowrap shrink-0"
@@ -137,19 +124,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
 
           <div className="pt-3 flex flex-col gap-2 border-t border-[#E5E7EB] mt-3">
-            {onOpenControlCenter && (
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenControlCenter();
-                }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 text-sm font-medium text-[#202124] bg-[#F3F4F6] border border-[#E5E7EB] rounded-lg"
-              >
-                <Shield className="w-4 h-4 text-[#30343B]" />
-                <span>Admin Panel</span>
-              </button>
-            )}
-
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

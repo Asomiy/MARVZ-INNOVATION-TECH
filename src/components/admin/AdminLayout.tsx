@@ -16,9 +16,10 @@ import {
   ExternalLink,
   Menu,
   RefreshCw,
+  ShieldCheck,
 } from 'lucide-react';
 import { AdminUser, AdminOverviewStats } from '../../types/admin';
-import { adminFetch } from '../../utils/adminApi';
+import { adminFetch, canRoleAccessTab } from '../../utils/adminApi';
 import { AdminDashboardView } from './AdminDashboardView';
 import { WebsiteContentView } from './WebsiteContentView';
 import { InternshipManagementView } from './InternshipManagementView';
@@ -72,6 +73,20 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (!canRoleAccessTab(user.role, activeTab)) {
+      setActiveTab('dashboard');
+    }
+  }, [user.role, activeTab]);
+
+  const handleNavigate = (nextTab: string) => {
+    if (canRoleAccessTab(user.role, nextTab)) {
+      setActiveTab(nextTab);
+    } else {
+      setActiveTab('dashboard');
+    }
+  };
+
   const handleSignOutClick = async () => {
     try {
       await adminFetch('/api/admin/auth/logout', { method: 'POST' });
@@ -107,10 +122,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     },
     {
       id: 'contacts',
-      label: 'Contact Inbox',
+      label: 'Contact Messages',
       icon: Mail,
-      badge: stats?.unreadContactMessagesCount ? `${stats.unreadContactMessagesCount} new` : undefined,
-      badgeColor: 'bg-amber-50 text-amber-800 border-amber-200',
+      badge: stats?.unreadContactMessagesCount ? `${stats.unreadContactMessagesCount} unread` : undefined,
+      badgeColor: 'bg-red-50 text-[#DC2626] border-red-200',
     },
     {
       id: 'leads',
@@ -125,10 +140,10 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     },
     {
       id: 'settings',
-      label: 'Admin Settings',
+      label: user.role === 'Super Admin' ? 'Admin Settings' : 'Account & Security',
       icon: Settings,
     },
-  ];
+  ].filter((item) => canRoleAccessTab(user.role, item.id));
 
   const aiNavItems = [
     {
@@ -155,49 +170,52 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       label: 'Document Ingestion',
       icon: FileText,
     },
-  ];
+  ].filter((item) => canRoleAccessTab(user.role, item.id));
 
-  const renderNavGroup = (items: typeof coreNavItems, groupTitle: string) => (
-    <div className="space-y-1">
-      <div className="px-3 pt-2 pb-1 text-[10px] font-mono uppercase tracking-widest text-[#777777]">
-        {groupTitle}
+  const renderNavGroup = (items: typeof coreNavItems, groupTitle: string) => {
+    if (items.length === 0) return null;
+    return (
+      <div className="space-y-1">
+        <div className="px-3 pt-2 pb-1 text-[10px] font-mono uppercase tracking-widest text-[#777777]">
+          {groupTitle}
+        </div>
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => {
+                handleNavigate(item.id);
+                setSidebarOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-colors group ${
+                isActive
+                  ? 'bg-[#F3F4F6] text-[#202124] font-semibold border border-[#E5E7EB]'
+                  : 'text-[#777777] font-medium hover:text-[#202124] hover:bg-[#F3F4F6]/70 border border-transparent'
+              }`}
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#202124]' : 'text-[#777777] group-hover:text-[#202124]'}`} />
+                <span className="truncate">{item.label}</span>
+              </div>
+              {item.badge && (
+                <span
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded-md border shrink-0 ${
+                    isActive
+                      ? 'bg-white text-[#202124] border-[#E5E7EB]'
+                      : (item as any).badgeColor || 'bg-[#F3F4F6] text-[#777777] border-[#E5E7EB]'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
-      {items.map((item) => {
-        const Icon = item.icon;
-        const isActive = activeTab === item.id;
-        return (
-          <button
-            key={item.id}
-            onClick={() => {
-              setActiveTab(item.id);
-              setSidebarOpen(false);
-            }}
-            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-colors group ${
-              isActive
-                ? 'bg-[#F3F4F6] text-[#202124] font-semibold border border-[#E5E7EB]'
-                : 'text-[#777777] font-medium hover:text-[#202124] hover:bg-[#F3F4F6]/70 border border-transparent'
-            }`}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#202124]' : 'text-[#777777] group-hover:text-[#202124]'}`} />
-              <span className="truncate">{item.label}</span>
-            </div>
-            {item.badge && (
-              <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded-md border shrink-0 ${
-                  isActive
-                    ? 'bg-white text-[#202124] border-[#E5E7EB]'
-                    : (item as any).badgeColor || 'bg-[#F3F4F6] text-[#777777] border-[#E5E7EB]'
-                }`}
-              >
-                {item.badge}
-              </span>
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#F3F4F6] text-[#202124] flex overflow-hidden font-sans">
@@ -245,7 +263,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           <div className="pt-4 border-t border-[#E5E7EB] space-y-2.5">
             <button
               onClick={onBackToWebsite}
-              className="w-full flex items-center justify-center gap-2 p-2 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] text-xs font-semibold border border-[#E5E7EB] transition-colors"
+              className="w-full flex items-center justify-center gap-2 p-2 rounded-xl bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#202124] text-xs font-semibold border border-[#E5E7EB] transition-colors whitespace-nowrap"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>View Public Website</span>
@@ -277,7 +295,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="h-16 px-6 bg-white border-b border-[#E5E7EB] flex items-center justify-between gap-4 shrink-0">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setSidebarOpen(true)}
               className="p-2 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] text-[#202124] lg:hidden"
@@ -285,18 +303,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <Menu className="w-5 h-5" />
             </button>
 
-            <div className="hidden sm:flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-600" />
-              <span className="text-xs font-mono text-[#202124] uppercase tracking-wider font-medium">
-                MARVZ Dhaka HQ Operations Live
+            <div className="hidden sm:flex items-center gap-2 min-w-0">
+              <ShieldCheck className="w-4 h-4 text-[#DC2626] shrink-0" />
+              <span className="text-xs font-mono text-[#202124] uppercase tracking-wider font-medium truncate">
+                MARVZ Dhaka HQ Operations · {user.role}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 shrink-0">
             <button
               onClick={fetchStats}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] hover:bg-[#E5E7EB] text-xs text-[#202124] font-medium transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F3F4F6] border border-[#E5E7EB] hover:bg-[#E5E7EB] text-xs text-[#202124] font-medium transition-colors whitespace-nowrap"
             >
               <RefreshCw className="w-3.5 h-3.5 text-[#777777]" />
               <span className="hidden md:inline">Sync</span>
@@ -304,7 +322,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
             <button
               onClick={onBackToWebsite}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#30343B] hover:bg-[#202124] text-white text-xs font-semibold transition-colors whitespace-nowrap"
             >
               <span>Public Site</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -314,31 +332,46 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#F3F4F6]">
           {activeTab === 'dashboard' && (
-            <AdminDashboardView stats={stats} loading={statsLoading} onNavigate={setActiveTab} />
+            <AdminDashboardView
+              stats={stats}
+              loading={statsLoading}
+              userRole={user.role}
+              onNavigate={handleNavigate}
+            />
           )}
-          {activeTab === 'content' && (
+          {activeTab === 'content' && canRoleAccessTab(user.role, 'content') && (
             <WebsiteContentView onContentUpdated={onSiteDataChanged} />
           )}
-          {activeTab === 'internships' && (
+          {activeTab === 'internships' && canRoleAccessTab(user.role, 'internships') && (
             <InternshipManagementView onRefreshStats={fetchStats} />
           )}
-          {activeTab === 'programs' && (
+          {activeTab === 'programs' && canRoleAccessTab(user.role, 'programs') && (
             <TrainingManagementView
               onRefreshStats={fetchStats}
               onSiteDataUpdated={onSiteDataChanged}
             />
           )}
-          {activeTab === 'contacts' && (
+          {activeTab === 'contacts' && canRoleAccessTab(user.role, 'contacts') && (
             <ContactInquiryView onRefreshStats={fetchStats} />
           )}
-          {activeTab === 'leads' && <LeadManagementView />}
-          {activeTab === 'location' && (
+          {activeTab === 'leads' && canRoleAccessTab(user.role, 'leads') && (
+            <LeadManagementView />
+          )}
+          {activeTab === 'location' && canRoleAccessTab(user.role, 'location') && (
             <LocationManagementView onLocationUpdated={onSiteDataChanged} />
           )}
-          {activeTab === 'kb' && <KnowledgeBaseView onRefreshStats={fetchStats} />}
-          {activeTab === 'training' && <TrainingCenterView onKnowledgeUpdated={fetchStats} />}
-          {activeTab === 'livechat' && <LiveChatMonitoringView />}
-          {activeTab === 'documents' && <DocumentIngestionView onKnowledgeUpdated={fetchStats} />}
+          {activeTab === 'kb' && canRoleAccessTab(user.role, 'kb') && (
+            <KnowledgeBaseView onRefreshStats={fetchStats} />
+          )}
+          {activeTab === 'training' && canRoleAccessTab(user.role, 'training') && (
+            <TrainingCenterView onKnowledgeUpdated={fetchStats} />
+          )}
+          {activeTab === 'livechat' && canRoleAccessTab(user.role, 'livechat') && (
+            <LiveChatMonitoringView />
+          )}
+          {activeTab === 'documents' && canRoleAccessTab(user.role, 'documents') && (
+            <DocumentIngestionView onKnowledgeUpdated={fetchStats} />
+          )}
           {activeTab === 'settings' && (
             <AdminSettingsView
               currentUser={user}

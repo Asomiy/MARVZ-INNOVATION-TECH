@@ -116,16 +116,6 @@ const ECOSYSTEM_ORGANIZATIONS: EcosystemOrganization[] = [
     badgeCode: 'GOV · 08',
   },
   {
-    id: 'btrc',
-    acronym: 'BTRC',
-    name: 'Bangladesh Telecommunication Regulatory Commission (BTRC)',
-    category: 'Government & Technology Initiatives',
-    sectorFocus: 'RF Spectrum & IoT Telemetry Compliance',
-    summary:
-      'Telecom and radio-frequency regulator governing wireless communication bands, IoT telemetry equipment, and network compliance.',
-    badgeCode: 'GOV · 09',
-  },
-  {
     id: 'doict',
     acronym: 'DoICT',
     name: 'Department of ICT (DoICT)',
@@ -177,28 +167,8 @@ const ECOSYSTEM_ORGANIZATIONS: EcosystemOrganization[] = [
       'National industry association advancing IT outsourcing, enterprise support operations, and digital service exports.',
     badgeCode: 'ASSOC · 02',
   },
-  {
-    id: 'bcs',
-    acronym: 'BCS',
-    name: 'Bangladesh Computer Samity (BCS)',
-    category: 'Industry Associations',
-    sectorFocus: 'Hardware, Systems & ICT Commerce',
-    summary:
-      'Foundational ICT hardware, systems integration, and enterprise computing association across Bangladesh.',
-    badgeCode: 'ASSOC · 03',
-  },
-  {
-    id: 'ecab',
-    acronym: 'e-CAB',
-    name: 'e-Commerce Association of Bangladesh (e-CAB)',
-    category: 'Industry Associations',
-    sectorFocus: 'Digital Commerce & FinTech Platforms',
-    summary:
-      'Trade organization driving web commerce standards, digital logistics automation, and online platform trust.',
-    badgeCode: 'ASSOC · 04',
-  },
 
-  // Skills Development & Technical Organizations (3)
+  // Skills Development & Technical Organizations (2)
   {
     id: 'nsda',
     acronym: 'NSDA',
@@ -210,16 +180,6 @@ const ECOSYSTEM_ORGANIZATIONS: EcosystemOrganization[] = [
     badgeCode: 'SKILL · 01',
   },
   {
-    id: 'bitac',
-    acronym: 'BITAC',
-    name: 'Bangladesh Industrial Technical Assistance Center (BITAC)',
-    category: 'Skills Development & Technical Organizations',
-    sectorFocus: 'Industrial Machining, Robotics & Mechatronics',
-    summary:
-      'Premier industrial center specializing in precision fabrication, automation tooling, and applied mechanical engineering skills.',
-    badgeCode: 'SKILL · 02',
-  },
-  {
     id: 'bteb',
     acronym: 'BTEB',
     name: 'Bangladesh Technical Education Board (BTEB)',
@@ -227,7 +187,7 @@ const ECOSYSTEM_ORGANIZATIONS: EcosystemOrganization[] = [
     sectorFocus: 'Technical & Vocational Accreditation',
     summary:
       'Statutory education board overseeing technical and vocational engineering curricula, examinations, and skills accreditation.',
-    badgeCode: 'SKILL · 03',
+    badgeCode: 'SKILL · 02',
   },
 ];
 
@@ -446,7 +406,7 @@ export const EcosystemClientsSection: React.FC<EcosystemClientsSectionProps> = (
             <Info className="w-4 h-4 text-[#30343B] shrink-0 mt-0.5" />
             <p>
               <strong className="text-[#202124]">Ecosystem Transparency Notice:</strong> The organizations listed below
-              represent key national technology initiatives, regulatory commissions, industry associations, and technical
+              represent key national technology initiatives, industry associations, and technical
               skills boards within Bangladesh&apos;s ICT ecosystem. Listing reflects sector alignment, regulatory
               compliance awareness, and standards orientation—not an implied client contract, sponsorship, or official
               endorsement without separate written authorization.

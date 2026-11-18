@@ -3,17 +3,11 @@ import { MessageSquare, Sparkles, GripHorizontal, GripVertical } from 'lucide-re
 import { ChatWindow } from './ChatWindow';
 import { LeadCaptureModal } from './LeadCaptureModal';
 import { KnowledgeBaseModal } from './KnowledgeBaseModal';
-import { AdminDashboardModal } from './AdminDashboardModal';
 import { useDraggablePosition } from './useDraggablePosition';
 
-interface MarvzChatbotProps {
-  onOpenControlCenter?: () => void;
-}
-
-export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter }) => {
+export const MarvzChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isKbOpen, setIsKbOpen] = useState(false);
-  const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isLeadModalOpen, setIsLeadModalOpen] = useState(false);
   const [leadCategory, setLeadCategory] = useState('Services');
 
@@ -155,13 +149,6 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
         launcherPos={launcherPos}
         onClose={() => setIsOpen(false)}
         onOpenKnowledgeBase={() => setIsKbOpen(true)}
-        onOpenAdmin={() => {
-          if (onOpenControlCenter) {
-            onOpenControlCenter();
-          } else {
-            setIsAdminOpen(true);
-          }
-        }}
         onOpenLeadModal={handleOpenLeadModal}
       />
 
@@ -170,12 +157,6 @@ export const MarvzChatbot: React.FC<MarvzChatbotProps> = ({ onOpenControlCenter 
         isOpen={isKbOpen}
         onClose={() => setIsKbOpen(false)}
         onAskQuestion={handleAskQuestionFromKb}
-      />
-
-      {/* Modal: Admin Inquiries Dashboard */}
-      <AdminDashboardModal
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
       />
 
       {/* Modal: Lead & Requirement Capture Form */}

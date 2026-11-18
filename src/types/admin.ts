@@ -104,7 +104,21 @@ export interface AdminUser {
   department?: string;
   avatar?: string;
   lastLogin: string;
+  createdAt?: string;
+  needsPasswordSetup?: boolean;
   isActive?: boolean;
+}
+
+export interface AuthAuditLog {
+  id: string;
+  eventType: string;
+  email: string;
+  userId: string;
+  success: boolean;
+  ipAddress: string;
+  userAgent: string;
+  details: string;
+  createdAt: string;
 }
 
 export interface ControlCenterSettings {
@@ -243,12 +257,14 @@ export interface TrainingRegistration {
   registeredAt: string;
 }
 
-export type ContactMessageStatus = 'New' | 'In Progress' | 'Replied' | 'Resolved';
+export type ContactMessageStatus = 'New' | 'Read' | 'Replied' | 'Archived';
+export type EmailDeliveryStatus = 'pending' | 'sent' | 'failed' | 'not_configured';
 
 export interface ContactReply {
   id: string;
   senderName: string;
   message: string;
+  emailSent?: boolean;
   sentAt: string;
 }
 
@@ -262,8 +278,12 @@ export interface ContactMessage {
   subject: string;
   message: string;
   status: ContactMessageStatus;
+  companyEmailStatus?: EmailDeliveryStatus;
+  visitorEmailStatus?: EmailDeliveryStatus;
+  emailError?: string;
   replies: ContactReply[];
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface ActivityLogItem {
