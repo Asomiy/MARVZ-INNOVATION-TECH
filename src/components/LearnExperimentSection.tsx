@@ -1,10 +1,13 @@
 import React from 'react';
-import { ArrowRight, Briefcase, GraduationCap } from 'lucide-react';
+import { ArrowRight, Briefcase, GraduationCap, CheckCircle2 } from 'lucide-react';
 import { WORKSHOP_TRACKS } from '../data/companyData';
 import { TrainingProgram } from '../types/admin';
 import { SafeImage } from './SafeImage';
 import { TechBackdrop } from './TechBackdrop';
 import { Reveal } from './Reveal';
+import { ProfileSlideshow } from './ProfileSlideshow';
+import { CountUpNumber } from './CountUpNumber';
+import { EMPOWERING_CREATORS_SLIDESHOW } from '../data/profileSlideshowData';
 
 interface LearnExperimentSectionProps {
   programs?: TrainingProgram[];
@@ -124,6 +127,65 @@ export const LearnExperimentSection: React.FC<LearnExperimentSectionProps> = ({
               </div>
             </div>
           </Reveal>
+        </div>
+
+        {/* Slideshow 4: Empowering Future Creators (PDF Page 7, 4 Original Photos) */}
+        <div
+          id={EMPOWERING_CREATORS_SLIDESHOW.sectionAnchor}
+          className="mb-16 pt-14 border-t border-[#E5E7EB]"
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+            <Reveal delayMs={60} className="lg:col-span-7">
+              <ProfileSlideshow
+                slides={EMPOWERING_CREATORS_SLIDESHOW.slides}
+                aspectClassName="aspect-[16/10]"
+                ariaLabel="Empowering Future Creators Workshop Slideshow"
+              />
+            </Reveal>
+
+            <Reveal className="lg:col-span-5 space-y-5">
+              <div className="text-xs font-mono uppercase tracking-wider text-[#DC2626] font-semibold">
+                {EMPOWERING_CREATORS_SLIDESHOW.eyebrow}
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-[#202124] tracking-tight leading-tight">
+                {EMPOWERING_CREATORS_SLIDESHOW.title}
+              </h3>
+              <p className="text-sm text-[#777777] leading-relaxed">
+                {EMPOWERING_CREATORS_SLIDESHOW.subtitle}
+              </p>
+
+              {/* Verified PDF Impact Counters */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                  <div className="text-2xl font-extrabold text-[#202124] tabular-nums">
+                    <CountUpNumber value={1000} suffix="+" />
+                  </div>
+                  <div className="text-[11px] text-[#777777] mt-1 leading-snug">
+                    Students, educators &amp; technology enthusiasts trained
+                  </div>
+                </div>
+                <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                  <div className="text-2xl font-extrabold text-[#202124] tabular-nums">
+                    <CountUpNumber value={500} suffix="+" />
+                  </div>
+                  <div className="text-[11px] text-[#777777] mt-1 leading-snug">
+                    Customized robotics &amp; science projects delivered
+                  </div>
+                </div>
+              </div>
+
+              <ul className="space-y-2 text-xs text-[#202124]">
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
+                  <span>Direct mentorship from circuit design sketches to functional science exhibition models</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
+                  <span>Robotic manipulator kits, breadboard electronics, and youth STEM cohorts</span>
+                </li>
+              </ul>
+            </Reveal>
+          </div>
         </div>
 
         {/* Live Training Programs Grid */}

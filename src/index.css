@@ -220,6 +220,45 @@
   animation: marvz-loader-bar 0.44s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+@keyframes marvz-marquee-rtl {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marvz-marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+}
+
+.marvz-marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marvz-marquee-rtl 36s linear infinite;
+}
+
+@media (min-width: 640px) {
+  .marvz-marquee-track {
+    animation-duration: 44s;
+  }
+}
+
+@media (min-width: 1024px) {
+  .marvz-marquee-track {
+    animation-duration: 54s;
+  }
+}
+
+.marvz-marquee-viewport:hover .marvz-marquee-track,
+.marvz-marquee-viewport:focus-within .marvz-marquee-track,
+.marvz-marquee-track[data-paused="true"] {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -228,6 +267,16 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+  .marvz-marquee-viewport {
+    overflow-x: auto;
+  }
+  .marvz-marquee-track {
+    animation: none !important;
+    transform: none !important;
+  }
+  .marvz-marquee-duplicate {
+    display: none !important;
   }
 }
 

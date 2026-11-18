@@ -1,9 +1,11 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { SafeImage } from './SafeImage';
 import { WebsiteContentConfig } from '../types/admin';
 import { TechBackdrop } from './TechBackdrop';
 import { Reveal } from './Reveal';
+import { ProfileSlideshow } from './ProfileSlideshow';
+import { ProfileMarqueeGallery } from './ProfileMarqueeGallery';
+import { INTRO_SLIDESHOW } from '../data/profileSlideshowData';
 
 interface AboutSectionProps {
   content?: WebsiteContentConfig;
@@ -36,9 +38,9 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ content, onOpenInqui
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <Reveal>
-          <div className="max-w-3xl mb-16">
-            <div className="text-xs font-mono uppercase tracking-wider text-[#777777] mb-2 font-semibold">
-              01. Startup Identity
+          <div className="max-w-3xl mb-14">
+            <div className="text-xs font-mono uppercase tracking-wider text-[#DC2626] mb-2 font-semibold">
+              01. Organizational Introduction · Startup Identity
             </div>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-[#202124] tracking-tight leading-tight">
               {content?.aboutHeading || 'Who We Are'}
@@ -50,10 +52,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ content, onOpenInqui
           </div>
         </Reveal>
 
-        {/* 2-Column Story: Mission & Authentic Startup Collaboration Photo */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-16">
-          {/* Left: Startup Narrative */}
-          <Reveal delayMs={60} className="lg:col-span-7 space-y-6">
+        {/* 2-Column Story: Mission & Organizational Introduction Photo Slideshow */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start mb-16">
+          {/* Left: Startup Narrative, Vision, Mission & Leadership */}
+          <Reveal delayMs={60} className="lg:col-span-6 space-y-6">
             <h3 className="text-2xl font-bold text-[#202124] leading-snug">
               {content?.aboutSubheading || 'Pioneering Emerging Technologies with a Fresh, Hands-On Approach'}
             </h3>
@@ -70,7 +72,35 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ content, onOpenInqui
               competence.
             </p>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Organizational Profile Vision, Mission & Leadership */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                <div className="text-[11px] font-mono uppercase tracking-wider text-[#DC2626] font-semibold mb-1.5">
+                  Our Vision
+                </div>
+                <p className="text-xs text-[#202124] leading-relaxed">
+                  A technologically self-reliant Bangladesh where young people design, build and secure the technology
+                  the country needs.
+                </p>
+              </div>
+              <div className="p-4 rounded-xl bg-[#F3F4F6] border border-[#E5E7EB]">
+                <div className="text-[11px] font-mono uppercase tracking-wider text-[#DC2626] font-semibold mb-1.5">
+                  Our Mission
+                </div>
+                <p className="text-xs text-[#202124] leading-relaxed">
+                  Deliver job-ready IT training and homegrown technology solutions in AI, cybersecurity, drones and
+                  robotics with focus on employability and inclusion.
+                </p>
+              </div>
+            </div>
+
+            <div className="px-4 py-3 rounded-xl bg-[#FAFAFB] border border-[#E5E7EB] text-xs text-[#777777] flex flex-wrap items-center justify-between gap-2">
+              <span>
+                <strong className="text-[#202124]">Leadership:</strong> Md. Ibna Zahan (Prince), Managing Partner &amp; Nafisa Tabassum, Partner
+              </span>
+            </div>
+
+            <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <button
                 onClick={() => onOpenInquiry('Startup Partnership Discussion')}
                 className="group inline-flex items-center gap-2 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white bg-[#30343B] hover:bg-[#202124] rounded-xl hover:-translate-y-0.5 transition-all duration-300 shadow-xs hover:shadow-md"
@@ -85,22 +115,14 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ content, onOpenInqui
             </div>
           </Reveal>
 
-          {/* Right: Authentic Real Photo of Workshop & Collaboration */}
-          <Reveal delayMs={120} className="lg:col-span-5">
-            <div className="group relative rounded-2xl overflow-hidden border border-[#E5E7EB] shadow-md hover:shadow-lg transition-shadow duration-300 bg-[#F3F4F6] aspect-[4/3]">
-              <SafeImage
-                src={content?.aboutImageUrl || '/assets/tech/robotics-arm.jpg'}
-                alt="Precision 6-axis robotics manipulator and embedded engineering station at MARVZ laboratory"
-                fallbackTitle="Collaborative Technology Environment"
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
-              />
-              <div className="absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-white/95 backdrop-blur-xs border border-[#E5E7EB] text-xs shadow-sm transition-transform duration-300 group-hover:-translate-y-0.5">
-                <span className="font-bold text-[#202124]">Authentic Collaboration</span>
-                <p className="text-[#777777] text-[11px] mt-0.5">
-                  Mentors, builders, and innovators co-developing hardware and software projects.
-                </p>
-              </div>
-            </div>
+          {/* Right: Organizational Introduction Slideshow (Original PDF Cover Photo) */}
+          <Reveal delayMs={120} className="lg:col-span-6">
+            <ProfileSlideshow
+              slides={INTRO_SLIDESHOW.slides}
+              aspectClassName="aspect-[4/3]"
+              compact={true}
+              ariaLabel="Organizational Introduction Photo Showcase"
+            />
           </Reveal>
         </div>
 
@@ -124,6 +146,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ content, onOpenInqui
             </Reveal>
           ))}
         </div>
+      </div>
+
+      {/* Seamless Infinite Horizontal Moving Photo Gallery across all 5 Profile Categories */}
+      <div className="relative z-10">
+        <ProfileMarqueeGallery />
       </div>
     </section>
   );
