@@ -144,7 +144,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
 
     if (shouldFetchConfig) {
       fetch('/api/visitor/config')
-        .then((res) => (res.ok ? res.json() : null))
+        .then((res) => {
+          const contentType = res.headers.get('content-type') || '';
+          return res.ok && contentType.includes('application/json') ? res.json() : null;
+        })
         .then((data) => {
           if (data) {
             setConfig(data);

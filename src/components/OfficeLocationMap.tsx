@@ -193,9 +193,12 @@ export const OfficeLocationMap: React.FC<OfficeLocationMapProps> = ({
 
     let cancelled = false;
     fetch(`/api/public/geocode-office?address=${encodeURIComponent(location.mapSearchQuery || location.officeAddress)}`)
-      .then((res) => res.json())
+      .then((res) => {
+        const contentType = res.headers.get('content-type') || '';
+        return res.ok && contentType.includes('application/json') ? res.json() : null;
+      })
       .then((data) => {
-        if (!cancelled && typeof data.lat === 'number' && typeof data.lng === 'number') {
+        if (!cancelled && data && typeof data.lat === 'number' && typeof data.lng === 'number') {
           setServerCoords({
             lat: data.lat,
             lng: data.lng,

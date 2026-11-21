@@ -9,6 +9,7 @@ import { Footer } from './components/Footer';
 import { HeroSection } from './components/HeroSection';
 import { CinematicAnimationSection } from './components/CinematicAnimationSection';
 import { AboutSection } from './components/AboutSection';
+import { LeadershipTeamSection } from './components/LeadershipTeamSection';
 import { TechnologiesSection } from './components/TechnologiesSection';
 import { OfficesCollaborationSection } from './components/OfficesCollaborationSection';
 import { EcosystemClientsSection } from './components/EcosystemClientsSection';
@@ -109,14 +110,15 @@ export default function App() {
   const refreshSiteData = useCallback(async () => {
     try {
       const res = await fetch('/api/public/site-data');
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (data.content) setSiteContent(data.content);
         if (data.location) setSiteLocation(data.location);
         if (Array.isArray(data.trainingPrograms)) setTrainingPrograms(data.trainingPrograms);
       }
-    } catch (err) {
-      console.warn('Public site-data sync skipped:', err);
+    } catch {
+      // Static fallback data already initialized cleanly
     }
   }, []);
 
@@ -131,7 +133,8 @@ export default function App() {
         credentials: 'include',
         headers,
       });
-      if (res.ok) {
+      const contentType = res.headers.get('content-type') || '';
+      if (res.ok && contentType.includes('application/json')) {
         const data = await res.json();
         if (data?.user) {
           setAdminUser(data.user);
@@ -320,6 +323,9 @@ export default function App() {
 
         {/* B. Who We Are – Startup Identity */}
         <AboutSection content={siteContent} onOpenInquiry={handleOpenInquiry} />
+
+        {/* B2. Top Management & Team Members */}
+        <LeadershipTeamSection />
 
         {/* C. Explore Our Technology – Service Cards */}
         <TechnologiesSection services={siteContent.services} onOpenInquiry={handleOpenInquiry} />
